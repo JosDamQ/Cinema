@@ -120,19 +120,55 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AsignacionPeliculasSalas.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Clientes.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="CompraBoletos.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Landing.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Login.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Peliculas.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Salas.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Usuarios.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AsignacionPeliculasSalas.resx">
+      <DependentUpon>AsignacionPeliculasSalas.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Clientes.resx">
+      <DependentUpon>Clientes.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CompraBoletos.resx">
+      <DependentUpon>CompraBoletos.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Landing.resx">
       <DependentUpon>Landing.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Peliculas.resx">
+      <DependentUpon>Peliculas.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Salas.resx">
+      <DependentUpon>Salas.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Usuarios.resx">
+      <DependentUpon>Usuarios.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
