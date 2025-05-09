@@ -18,8 +18,8 @@ namespace ProyectMovies {
 	private: 
 		array<User^>^ usuarios;
 		int ultimoCodigo;
-	private: System::Windows::Forms::Button^ btnReporte;
-		   int userSeleccionado;
+
+		int userSeleccionado;
 
 	public:
 		Usuarios(void)
@@ -74,7 +74,18 @@ namespace ProyectMovies {
 		}
 
 		// Resetear el formulario
-
+		void ResetearFormulario()
+		{
+			txtUsuario->Clear();
+			txtPassword->Clear();
+			txtNombre->Clear();
+			txtApellido->Clear();
+			txtCUI->Clear();
+			txtTelefono->Clear();
+			txtEmail->Clear();
+			txtDireccion->Clear();
+			cboRol->SelectedIndex = -1; // Resetear el combo box a Admin
+		}
 
 	protected:
 		~Usuarios()
@@ -163,7 +174,6 @@ namespace ProyectMovies {
 			this->btnAgregar = (gcnew System::Windows::Forms::Button());
 			this->btnEditar = (gcnew System::Windows::Forms::Button());
 			this->btnEliminar = (gcnew System::Windows::Forms::Button());
-			this->btnReporte = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblUsuarios))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -383,7 +393,7 @@ namespace ProyectMovies {
 			// 
 			// btnAgregar
 			// 
-			this->btnAgregar->Location = System::Drawing::Point(291, 160);
+			this->btnAgregar->Location = System::Drawing::Point(346, 160);
 			this->btnAgregar->Name = L"btnAgregar";
 			this->btnAgregar->Size = System::Drawing::Size(98, 37);
 			this->btnAgregar->TabIndex = 20;
@@ -393,7 +403,7 @@ namespace ProyectMovies {
 			// 
 			// btnEditar
 			// 
-			this->btnEditar->Location = System::Drawing::Point(605, 160);
+			this->btnEditar->Location = System::Drawing::Point(675, 160);
 			this->btnEditar->Name = L"btnEditar";
 			this->btnEditar->Size = System::Drawing::Size(98, 37);
 			this->btnEditar->TabIndex = 21;
@@ -402,28 +412,19 @@ namespace ProyectMovies {
 			// 
 			// btnEliminar
 			// 
-			this->btnEliminar->Location = System::Drawing::Point(449, 160);
+			this->btnEliminar->Location = System::Drawing::Point(505, 160);
 			this->btnEliminar->Name = L"btnEliminar";
 			this->btnEliminar->Size = System::Drawing::Size(98, 37);
 			this->btnEliminar->TabIndex = 22;
 			this->btnEliminar->Text = L"Eliminar";
 			this->btnEliminar->UseVisualStyleBackColor = true;
-			// 
-			// btnReporte
-			// 
-			this->btnReporte->Location = System::Drawing::Point(768, 160);
-			this->btnReporte->Name = L"btnReporte";
-			this->btnReporte->Size = System::Drawing::Size(98, 37);
-			this->btnReporte->TabIndex = 23;
-			this->btnReporte->Text = L"Reporte";
-			this->btnReporte->UseVisualStyleBackColor = true;
+			this->btnEliminar->Click += gcnew System::EventHandler(this, &Usuarios::btnEliminar_Click);
 			// 
 			// Usuarios
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1201, 707);
-			this->Controls->Add(this->btnReporte);
 			this->Controls->Add(this->btnEliminar);
 			this->Controls->Add(this->btnEditar);
 			this->Controls->Add(this->btnAgregar);
@@ -489,15 +490,29 @@ namespace ProyectMovies {
 		String^ direccion = txtDireccion->Text;
 		Role role = (Role)Enum::Parse(Role::typeid, cboRol->SelectedItem->ToString());
 		AgregarUsuario(username, password, nombre, apellido, dpi, telefono, email, direccion, role);
-		txtUsuario->Clear();
-		txtPassword->Clear();
-		txtNombre->Clear();
-		txtApellido->Clear();
-		txtCUI->Clear();
-		txtTelefono->Clear();
-		txtEmail->Clear();
-		txtDireccion->Clear();
-		cboRol->SelectedIndex = -1; // Resetear el combo box a Admin
+		ResetearFormulario();
+	}
+	private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (userSeleccionado >= 0 && userSeleccionado < ultimoCodigo) {
+			System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show(
+				"¿Estás seguro de que deseas eliminar este usuario?",
+				"Confirmar eliminación",
+				System::Windows::Forms::MessageBoxButtons::YesNo,
+				System::Windows::Forms::MessageBoxIcon::Warning
+			);
+
+			if (result == System::Windows::Forms::DialogResult::Yes) {
+				usuarios[userSeleccionado] = nullptr;
+				MostrarUsuarios();
+			}
+			ResetearFormulario();
+			tblUsuarios->ClearSelection();
+
+			userSeleccionado = -1; // Resetear la selección
+		}
+		else {
+			System::Windows::Forms::MessageBox::Show("Seleccione un usuario para eliminar.");
+		}
 	}
 };
 }
