@@ -18,8 +18,15 @@ namespace ProyectMovies {
 	private: 
 		array<User^>^ usuarios;
 		int ultimoCodigo;
-
 		int userSeleccionado;
+
+		enum class ModoFormulario {
+			Ninguno,
+			Agregar,
+			Editar
+		};
+
+		ModoFormulario estadoActual = ModoFormulario::Ninguno;
 
 	public:
 		Usuarios(void)
@@ -29,6 +36,9 @@ namespace ProyectMovies {
 			usuarios = gcnew array<User^>(50);
 			ultimoCodigo = 0;
 			userSeleccionado = -1;
+
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
 		}
 
 		// Funcion de agregar
@@ -85,6 +95,40 @@ namespace ProyectMovies {
 			txtEmail->Clear();
 			txtDireccion->Clear();
 			cboRol->SelectedIndex = -1; // Resetear el combo box a Admin
+		}
+
+		//Estado formulario
+		void ActualizarEstadoFormulario() {
+			bool habilitar = estadoActual != ModoFormulario::Ninguno;
+
+			txtUsuario->Enabled = habilitar;
+			txtPassword->Enabled = habilitar;
+			txtNombre->Enabled = habilitar;
+			txtApellido->Enabled = habilitar;
+			txtCUI->Enabled = habilitar;
+			txtTelefono->Enabled = habilitar;
+			txtEmail->Enabled = habilitar;
+			txtDireccion->Enabled = habilitar;
+			cboRol->Enabled = habilitar;
+
+			if (estadoActual == ModoFormulario::Agregar) {
+				btnAgregar->Text = "Confirmar";
+				btnEliminar->Text = "Cancelar";
+				btnEditar->Enabled = false;
+			}
+			else if (estadoActual == ModoFormulario::Editar) {
+				btnEditar->Text = "Confirmar";
+				btnEliminar->Text = "Cancelar";
+				btnAgregar->Enabled = false;
+			}
+			else {
+				btnAgregar->Text = "Agregar";
+				btnEliminar->Text = "Eliminar";
+				btnEditar->Text = "Editar";
+				btnAgregar->Enabled = true;
+				btnEliminar->Enabled = true;
+				btnEditar->Enabled = true;
+			}
 		}
 
 	protected:
@@ -324,6 +368,8 @@ namespace ProyectMovies {
 			this->cboRol->Name = L"cboRol";
 			this->cboRol->Size = System::Drawing::Size(121, 28);
 			this->cboRol->TabIndex = 18;
+			//Esto es para que no se pueda escribir en el combobox
+			this->cboRol->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// tblUsuarios
 			// 
@@ -409,6 +455,7 @@ namespace ProyectMovies {
 			this->btnEditar->TabIndex = 21;
 			this->btnEditar->Text = L"Editar";
 			this->btnEditar->UseVisualStyleBackColor = true;
+			this->btnEditar->Click += gcnew System::EventHandler(this, &Usuarios::btnEditar_Click);
 			// 
 			// btnEliminar
 			// 
@@ -480,19 +527,63 @@ namespace ProyectMovies {
 		}
 	}
 	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e){
-		String^ username = txtUsuario->Text;
-		String^ password = txtPassword->Text;
-		String^ nombre = txtNombre->Text;
-		String^ apellido = txtApellido->Text;
-		String^ dpi = txtCUI->Text;
-		String^ telefono = txtTelefono->Text;
-		String^ email = txtEmail->Text;
-		String^ direccion = txtDireccion->Text;
-		Role role = (Role)Enum::Parse(Role::typeid, cboRol->SelectedItem->ToString());
-		AgregarUsuario(username, password, nombre, apellido, dpi, telefono, email, direccion, role);
-		ResetearFormulario();
+		if (estadoActual == ModoFormulario::Ninguno) {
+			estadoActual = ModoFormulario::Agregar;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+		}
+		else if (estadoActual == ModoFormulario::Agregar) {
+			if (txtUsuario->Text->Trim() == "" ||
+				txtPassword->Text->Trim() == "" ||
+				txtNombre->Text->Trim() == "" ||
+				txtApellido->Text->Trim() == "" ||
+				txtCUI->Text->Trim() == "" ||
+				txtTelefono->Text->Trim() == "" ||
+				txtEmail->Text->Trim() == "" ||
+				txtDireccion->Text->Trim() == "" ||
+				cboRol->SelectedIndex == -1) {
+
+				MessageBox::Show("Por favor complete todos los campos antes de agregar el usuario.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+				return;
+			}
+
+			String^ username = txtUsuario->Text;
+			String^ password = txtPassword->Text;
+			String^ nombre = txtNombre->Text;
+			String^ apellido = txtApellido->Text;
+			String^ dpi = txtCUI->Text;
+			String^ telefono = txtTelefono->Text;
+			String^ email = txtEmail->Text;
+			String^ direccion = txtDireccion->Text;
+			Role role = (Role)Enum::Parse(Role::typeid, cboRol->SelectedItem->ToString());
+
+			AgregarUsuario(username, password, nombre, apellido, dpi, telefono, email, direccion, role);
+
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblUsuarios->ClearSelection();
+		}
 	}
 	private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Agregar) {
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblUsuarios->ClearSelection();
+			userSeleccionado = -1; // Resetear la selección
+			return;
+		}
+
+		if (estadoActual == ModoFormulario::Editar) {
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblUsuarios->ClearSelection();
+			userSeleccionado = -1; // Resetear la selección
+			return;
+		}
+		
 		if (userSeleccionado >= 0 && userSeleccionado < ultimoCodigo) {
 			System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show(
 				"¿Estás seguro de que deseas eliminar este usuario?",
@@ -513,6 +604,60 @@ namespace ProyectMovies {
 		else {
 			System::Windows::Forms::MessageBox::Show("Seleccione un usuario para eliminar.");
 		}
+	}
+	private: System::Void btnEditar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			if (userSeleccionado < 0 || userSeleccionado >= ultimoCodigo || usuarios[userSeleccionado] == nullptr) {
+				MessageBox::Show("Seleccione un usuario para editar.");
+				return;
+			}
+
+			estadoActual = ModoFormulario::Editar;
+			ActualizarEstadoFormulario();
+		}
+		else if (estadoActual == ModoFormulario::Editar) {
+			if (txtUsuario->Text->Trim() == "" ||
+				txtPassword->Text->Trim() == "" ||
+				txtNombre->Text->Trim() == "" ||
+				txtApellido->Text->Trim() == "" ||
+				txtCUI->Text->Trim() == "" ||
+				txtTelefono->Text->Trim() == "" ||
+				txtEmail->Text->Trim() == "" ||
+				txtDireccion->Text->Trim() == "" ||
+				cboRol->SelectedIndex == -1) {
+
+				MessageBox::Show("Por favor complete todos los campos antes de confirmar la edición.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+				return;
+			}
+
+			String^ username = txtUsuario->Text;
+			String^ password = txtPassword->Text;
+			String^ nombre = txtNombre->Text;
+			String^ apellido = txtApellido->Text;
+			String^ dpi = txtCUI->Text;
+			String^ telefono = txtTelefono->Text;
+			String^ email = txtEmail->Text;
+			String^ direccion = txtDireccion->Text;
+			Role role = (Role)Enum::Parse(Role::typeid, cboRol->SelectedItem->ToString());
+			usuarios[userSeleccionado]->Username = username;
+			usuarios[userSeleccionado]->Password = password;
+			usuarios[userSeleccionado]->Nombre = nombre;
+			usuarios[userSeleccionado]->Apellido = apellido;
+			usuarios[userSeleccionado]->DPI = dpi;
+			usuarios[userSeleccionado]->Telefono = telefono;
+			usuarios[userSeleccionado]->Email = email;
+			usuarios[userSeleccionado]->Direccion = direccion;
+			usuarios[userSeleccionado]->UserRole = role;
+
+			MostrarUsuarios();
+
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblUsuarios->ClearSelection();
+			userSeleccionado = -1; // Resetear la selección
+		}
+
 	}
 };
 }
