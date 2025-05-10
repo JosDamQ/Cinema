@@ -22,13 +22,26 @@ namespace ProyectMovies {
 	/// </summary>
 	public ref class Landing : public System::Windows::Forms::Form
 	{
+	private:
+		Peliculas^ peliculas;
+		Salas^ salas;
+		AsignacionPeliculasSalas^ asignacionPeliculasSalas;
+		CompraBoletos^ compraBoletos;
+		Clientes^ clientes;
+		Usuarios^ usuarios;
+
 	public:
 		Landing(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: agregar código de constructor aquí
-			//
+			
+			// Inicializar los formularios
+			peliculas = gcnew Peliculas();
+			salas = gcnew Salas();
+			asignacionPeliculasSalas = gcnew AsignacionPeliculasSalas();
+			compraBoletos = gcnew CompraBoletos();
+			clientes = gcnew Clientes();
+			usuarios = gcnew Usuarios();
 		}
 
 	protected:
@@ -59,6 +72,7 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::Button^ btnClientes;
 	private: System::Windows::Forms::Button^ btnUsuarios;
 	private: System::Windows::Forms::Label^ txtTitulo;
+	private: System::Windows::Forms::Panel^ panelContenido;
 
 
 
@@ -83,6 +97,7 @@ namespace ProyectMovies {
 		void InitializeComponent(void)
 		{
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Landing::typeid));
+			this->panelContenido = (gcnew System::Windows::Forms::Panel());
 			this->flowLayoutPanelButtons = (gcnew System::Windows::Forms::FlowLayoutPanel());
 			this->panel1 = (gcnew System::Windows::Forms::Panel());
 			this->PictureLogo = (gcnew System::Windows::Forms::PictureBox());
@@ -98,6 +113,14 @@ namespace ProyectMovies {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureLogo))->BeginInit();
 			this->SuspendLayout();
 			// 
+			// panelContenido
+			// 
+			this->panelContenido->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->panelContenido->Location = System::Drawing::Point(224, 0);
+			this->panelContenido->Name = L"panelContenido";
+			this->panelContenido->Size = System::Drawing::Size(1281, 965);
+			this->panelContenido->TabIndex = 3;
+			// 
 			// flowLayoutPanelButtons
 			// 
 			this->flowLayoutPanelButtons->BackColor = System::Drawing::Color::LightSeaGreen;
@@ -111,7 +134,7 @@ namespace ProyectMovies {
 			this->flowLayoutPanelButtons->Dock = System::Windows::Forms::DockStyle::Left;
 			this->flowLayoutPanelButtons->Location = System::Drawing::Point(0, 0);
 			this->flowLayoutPanelButtons->Name = L"flowLayoutPanelButtons";
-			this->flowLayoutPanelButtons->Size = System::Drawing::Size(224, 851);
+			this->flowLayoutPanelButtons->Size = System::Drawing::Size(224, 965);
 			this->flowLayoutPanelButtons->TabIndex = 1;
 			// 
 			// panel1
@@ -234,7 +257,7 @@ namespace ProyectMovies {
 				static_cast<System::Byte>(0)));
 			this->txtTitulo->Location = System::Drawing::Point(424, 243);
 			this->txtTitulo->Name = L"txtTitulo";
-			this->txtTitulo->Size = System::Drawing::Size(436, 74);
+			this->txtTitulo->Size = System::Drawing::Size(290, 50);
 			this->txtTitulo->TabIndex = 2;
 			this->txtTitulo->Text = L"BIENVENIDO/A";
 			// 
@@ -242,7 +265,8 @@ namespace ProyectMovies {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1275, 851);
+			this->ClientSize = System::Drawing::Size(1505, 965);
+			this->Controls->Add(this->panelContenido);
 			this->Controls->Add(this->txtTitulo);
 			this->Controls->Add(this->flowLayoutPanelButtons);
 			this->Name = L"Landing";
@@ -262,38 +286,46 @@ namespace ProyectMovies {
 
 	//Logica para ir a vista peliculas
 	private: System::Void btnPeliculas_Click(System::Object^ sender, System::EventArgs^ e) {
-		ProyectMovies::Peliculas^ formularioPeliculas = gcnew ProyectMovies::Peliculas();
-		formularioPeliculas->Show(); // Usa ShowDialog() si quieres que sea modal
+		AbrirFormulario(peliculas);
 	}
 
 	//Logica para ir a la vista de salas
 	private: System::Void btnSalas_Click(System::Object^ sender, System::EventArgs^ e) {
-		ProyectMovies::Salas^ formularioSalas = gcnew ProyectMovies::Salas();
-		formularioSalas->Show(); // Usa ShowDialog() si quieres que sea modal
+		AbrirFormulario(salas);
 	}
 
 	//Logica para ir a la vista de asignacion de peliculas a salas
 	private: System::Void btnAsignacionPeliculasSalas_Click(System::Object^ sender, System::EventArgs^ e) {
-		ProyectMovies::AsignacionPeliculasSalas^ formularioAsignacion = gcnew ProyectMovies::AsignacionPeliculasSalas();
-		formularioAsignacion->Show(); // Usa ShowDialog() si quieres que sea modal
+		AbrirFormulario(asignacionPeliculasSalas);
 	}
 
 	//Logica para ir a la vista de compra de boletos
 	private: System::Void btnCompraBoletos_Click(System::Object^ sender, System::EventArgs^ e) {
-		ProyectMovies::CompraBoletos^ formularioCompraBoletos = gcnew ProyectMovies::CompraBoletos();
-		formularioCompraBoletos->Show(); // Usa ShowDialog() si quieres que sea modal
+		AbrirFormulario(compraBoletos);
+
 	}
 
 	//Logica para ir a la vista de clientes
 	private: System::Void btnClientes_Click(System::Object^ sender, System::EventArgs^ e) {
-		ProyectMovies::Clientes^ formularioClientes = gcnew ProyectMovies::Clientes();
-		formularioClientes->Show(); // Usa ShowDialog() si quieres que sea modal
+		AbrirFormulario(clientes);
 	}
 
 	//Logica para ir a la vista de usuarios
 	private: System::Void btnUsuarios_Click(System::Object^ sender, System::EventArgs^ e) {
-		ProyectMovies::Usuarios^ formularioUsuarios = gcnew ProyectMovies::Usuarios();
-		formularioUsuarios->Show(); // Usa ShowDialog() si quieres que sea modal
+		AbrirFormulario(usuarios);
+	}
+
+	private: void AbrirFormulario(System::Windows::Forms::Form^ formHijo)
+	{
+		if (this->panelContenido->Controls->Count > 0)
+			this->panelContenido->Controls[0]->Hide();
+
+		formHijo->TopLevel = false;
+		formHijo->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
+		formHijo->Dock = DockStyle::Fill;
+		this->panelContenido->Controls->Clear();
+		this->panelContenido->Controls->Add(formHijo);
+		formHijo->Show();
 	}
 
 };
