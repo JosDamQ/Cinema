@@ -23,6 +23,7 @@ namespace ProyectMovies {
 	public ref class Landing : public System::Windows::Forms::Form
 	{
 	private:
+		//Para las que usare combobox externos las tengo que comentar
 		Peliculas^ peliculas;
 		Salas^ salas;
 		AsignacionPeliculasSalas^ asignacionPeliculasSalas;
@@ -33,6 +34,7 @@ namespace ProyectMovies {
 	public:
 		Landing(void)
 		{
+			// Para los combobox externos los tengo que comentar
 			InitializeComponent();
 			
 			// Inicializar los formularios
@@ -307,6 +309,10 @@ namespace ProyectMovies {
 
 	//Logica para ir a la vista de clientes
 	private: System::Void btnClientes_Click(System::Object^ sender, System::EventArgs^ e) {
+		//Para los combobox externos tengo que hacer todo este vergeo
+		/*array<User^>^ usuariosRegistrados = this->usuarios->ObtenerUsuariosRegistrados();
+		Clientes^ formularioClientes = gcnew Clientes(usuariosRegistrados);
+		AbrirFormulario(formularioClientes);*/
 		AbrirFormulario(clientes);
 	}
 

@@ -130,6 +130,11 @@ namespace ProyectMovies {
 				btnEditar->Enabled = true;
 			}
 		}
+		
+		// Para mostrar los usuarios en combo box externo
+		/*array<User^>^ ObtenerUsuariosRegistrados() {
+			return usuarios;
+		}*/
 
 	protected:
 		~Usuarios()
