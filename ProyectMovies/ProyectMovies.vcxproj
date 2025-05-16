@@ -131,6 +131,7 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="ClasePelicula.h" />
+    <ClInclude Include="ClaseSalas.h" />
     <ClInclude Include="Landing.h">
       <FileType>CppForm</FileType>
     </ClInclude>
