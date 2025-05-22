@@ -37,6 +37,7 @@ namespace ProyectMovies {
 	public ref class Pelicula {
 
 	private:
+		int codigo;
 		String^ nombre;
 		Genero genero;
 		Clasificacion clasificacion;
@@ -47,7 +48,8 @@ namespace ProyectMovies {
 
 	public:
 		// Constructor
-		Pelicula(String^ nombre, Genero genero, Clasificacion clasificacion, Idioma idioma, Formato formato, String^ precio, Estado estado) {
+		Pelicula(int codigo, String^ nombre, Genero genero, Clasificacion clasificacion, Idioma idioma, Formato formato, String^ precio, Estado estado) {
+			this->codigo = codigo;
 			this->nombre = nombre;
 			this->genero = genero;
 			this->clasificacion = clasificacion;
@@ -58,6 +60,11 @@ namespace ProyectMovies {
 		}
 
 		// Propiedades
+		property int Codigo {
+			int get() { return codigo; }
+			void set(int value) { codigo = value; }
+		}
+
 		property String^ Nombre {
 			String^ get() { return nombre; }
 			void set(String^ value) { nombre = value; }

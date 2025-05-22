@@ -86,11 +86,12 @@ namespace ProyectMovies {
             Estado estado
         )
         {
+			ultimoCodigo++;
             Pelicula^ nuevaPelicula = gcnew Pelicula(
-                nombre, genero, clasificacion, idioma, formato, precio, estado
+                ultimoCodigo, nombre, genero, clasificacion, idioma, formato, precio, estado
             );
-            peliculas[ultimoCodigo] = nuevaPelicula;
-            ultimoCodigo++;
+            peliculas[ultimoCodigo - 1] = nuevaPelicula;
+            //ultimoCodigo++;
             MostrarPeliculas();
         }
 
@@ -156,6 +157,12 @@ namespace ProyectMovies {
                 btnEliminar->Enabled = true;
                 btnEditar->Enabled = true;
             }
+        }
+
+		//Cargar comboBox
+        array<Pelicula^>^ ObtenerPeliculasExistentes()
+        {
+			return peliculas;
         }
 
     protected:
@@ -581,16 +588,22 @@ namespace ProyectMovies {
 
             if (result == System::Windows::Forms::DialogResult::Yes) {
                 // Mover todas las películas posteriores una posición hacia atrás
-                for (int i = peliculaSeleccionada; i < ultimoCodigo - 1; i++) {
+                /*for (int i = peliculaSeleccionada; i < ultimoCodigo - 1; i++) {
                     peliculas[i] = peliculas[i + 1];
                 }
                 peliculas[ultimoCodigo - 1] = nullptr;
                 ultimoCodigo--;
+                MostrarPeliculas();*/
+                peliculas[peliculaSeleccionada] = nullptr;
                 MostrarPeliculas();
             }
-            ResetearFormulario();
+            /*ResetearFormulario();
             tblPelicula->ClearSelection();
-            peliculaSeleccionada = -1;
+            peliculaSeleccionada = -1;*/
+
+			ResetearFormulario();
+			tblPelicula->ClearSelection();
+            peliculaSeleccionada = -1; // Resetear la selección
         }
         else {
             System::Windows::Forms::MessageBox::Show("Seleccione una película para eliminar.");

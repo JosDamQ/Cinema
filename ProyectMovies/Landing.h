@@ -23,7 +23,6 @@ namespace ProyectMovies {
 	public ref class Landing : public System::Windows::Forms::Form
 	{
 	private:
-		//Para las que usare combobox externos las tengo que comentar
 		Peliculas^ peliculas;
 		Salas^ salas;
 		AsignacionPeliculasSalas^ asignacionPeliculasSalas;
@@ -34,13 +33,15 @@ namespace ProyectMovies {
 	public:
 		Landing(void)
 		{
-			// Para los combobox externos los tengo que comentar
 			InitializeComponent();
 			
 			// Inicializar los formularios
 			peliculas = gcnew Peliculas();
 			salas = gcnew Salas();
-			asignacionPeliculasSalas = gcnew AsignacionPeliculasSalas();
+			asignacionPeliculasSalas = gcnew AsignacionPeliculasSalas(
+				peliculas->ObtenerPeliculasExistentes(),
+				salas->ObtenerSalasExistentes()
+			);
 			compraBoletos = gcnew CompraBoletos();
 			clientes = gcnew Clientes();
 			usuarios = gcnew Usuarios();
@@ -298,6 +299,11 @@ namespace ProyectMovies {
 
 	//Logica para ir a la vista de asignacion de peliculas a salas
 	private: System::Void btnAsignacionPeliculasSalas_Click(System::Object^ sender, System::EventArgs^ e) {
+		//Para los comboBox
+		asignacionPeliculasSalas->ActualizarListas(
+			peliculas->ObtenerPeliculasExistentes(),
+			salas->ObtenerSalasExistentes()
+		);
 		AbrirFormulario(asignacionPeliculasSalas);
 	}
 
@@ -309,10 +315,6 @@ namespace ProyectMovies {
 
 	//Logica para ir a la vista de clientes
 	private: System::Void btnClientes_Click(System::Object^ sender, System::EventArgs^ e) {
-		//Para los combobox externos tengo que hacer todo este vergeo
-		/*array<User^>^ usuariosRegistrados = this->usuarios->ObtenerUsuariosRegistrados();
-		Clientes^ formularioClientes = gcnew Clientes(usuariosRegistrados);
-		AbrirFormulario(formularioClientes);*/
 		AbrirFormulario(clientes);
 	}
 

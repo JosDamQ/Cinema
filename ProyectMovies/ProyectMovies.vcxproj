@@ -123,6 +123,7 @@
     <ClInclude Include="AsignacionPeliculasSalas.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="ClaseAsignacionPeliculasSalas.h" />
     <ClInclude Include="ClaseClientes.h" />
     <ClInclude Include="ClasePelicula.h" />
     <ClInclude Include="ClaseSalas.h" />
