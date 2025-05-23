@@ -101,15 +101,25 @@ namespace ProyectMovies {
             tblPelicula->Rows->Clear();
             for (int i = 0; i < ultimoCodigo; i++) {
                 if (peliculas[i] != nullptr) {
+                    Pelicula^ p = peliculas[i];
                     tblPelicula->Rows->Add(
-                        i + 1, // Código autoincremental
+                        //i + 1, // Código autoincremental
+						/*peliculas[i]->Codigo,
                         peliculas[i]->Nombre,
                         peliculas[i]->GeneroPelicula.ToString(),
                         peliculas[i]->ClasificacionPelicula.ToString(),
                         peliculas[i]->IdiomaPelicula.ToString(),
                         peliculas[i]->FormatoPelicula.ToString(),
                         peliculas[i]->Precio,
-                        peliculas[i]->EstadoPelicula.ToString()
+                        peliculas[i]->EstadoPelicula.ToString()*/
+                        p->Codigo,
+                        p->Nombre,
+                        p->GeneroPelicula.ToString(),
+                        p->ClasificacionPelicula.ToString(),
+                        p->IdiomaPelicula.ToString(),
+                        p->FormatoPelicula.ToString(),
+                        p->Precio,
+                        p->EstadoPelicula.ToString()
                     );
                 }
             }
@@ -505,7 +515,10 @@ namespace ProyectMovies {
                 cdoFormato->SelectedItem = fila->Cells["colFormato"]->Value;
                 cdoEstado->SelectedItem = fila->Cells["colEstado"]->Value;
 
-                peliculaSeleccionada = e->RowIndex;
+                //peliculaSeleccionada = e->RowIndex;
+
+                // Cambio Update
+                peliculaSeleccionada = Convert::ToInt32(fila->Cells["colCodigo"]->Value);
             }
         }
     }
@@ -612,10 +625,21 @@ namespace ProyectMovies {
 
     private: System::Void btnEditar_Click(System::Object^ sender, System::EventArgs^ e) {
         if (estadoActual == ModoFormulario::Ninguno) {
-            if (peliculaSeleccionada < 0 || peliculaSeleccionada >= ultimoCodigo || peliculas[peliculaSeleccionada] == nullptr) {
+            bool encontrada = false;
+            for (int i = 0; i < ultimoCodigo; i++) {
+                if (peliculas[i] != nullptr && peliculas[i]->Codigo == peliculaSeleccionada) {
+                    encontrada = true;
+                    break;
+                }
+            }
+            if (!encontrada) {
                 MessageBox::Show("Seleccione una película para editar.");
                 return;
             }
+            /*if (peliculaSeleccionada < 0 || peliculaSeleccionada >= ultimoCodigo || peliculas[peliculaSeleccionada] == nullptr) {
+                MessageBox::Show("Seleccione una película para editar.");
+                return;
+            }*/
 
             estadoActual = ModoFormulario::Editar;
             ActualizarEstadoFormulario();
@@ -654,14 +678,27 @@ namespace ProyectMovies {
             String^ precio = txtPrecio->Text;
             Estado estado = (Estado)Enum::Parse(Estado::typeid, cdoEstado->SelectedItem->ToString());
 
-            // Actualizar la película seleccionada
-            peliculas[peliculaSeleccionada]->Nombre = nombre;
-            peliculas[peliculaSeleccionada]->GeneroPelicula = genero;
-            peliculas[peliculaSeleccionada]->ClasificacionPelicula = clasificacion;
-            peliculas[peliculaSeleccionada]->IdiomaPelicula = idioma;
-            peliculas[peliculaSeleccionada]->FormatoPelicula = formato;
-            peliculas[peliculaSeleccionada]->Precio = precio;
-            peliculas[peliculaSeleccionada]->EstadoPelicula = estado;
+            for (int i = 0; i < ultimoCodigo; i++) {
+                if (peliculas[i] != nullptr && peliculas[i]->Codigo == peliculaSeleccionada) {
+                    peliculas[i]->Nombre = nombre;
+                    peliculas[i]->GeneroPelicula = genero;
+                    peliculas[i]->ClasificacionPelicula = clasificacion;
+                    peliculas[i]->IdiomaPelicula = idioma;
+                    peliculas[i]->FormatoPelicula = formato;
+                    peliculas[i]->Precio = precio;
+                    peliculas[i]->EstadoPelicula = estado;
+                    break;
+                }
+            }
+
+            //// Actualizar la película seleccionada
+            //peliculas[peliculaSeleccionada]->Nombre = nombre;
+            //peliculas[peliculaSeleccionada]->GeneroPelicula = genero;
+            //peliculas[peliculaSeleccionada]->ClasificacionPelicula = clasificacion;
+            //peliculas[peliculaSeleccionada]->IdiomaPelicula = idioma;
+            //peliculas[peliculaSeleccionada]->FormatoPelicula = formato;
+            //peliculas[peliculaSeleccionada]->Precio = precio;
+            //peliculas[peliculaSeleccionada]->EstadoPelicula = estado;
 
             MostrarPeliculas();
 
