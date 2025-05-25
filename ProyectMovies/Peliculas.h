@@ -170,10 +170,30 @@ namespace ProyectMovies {
         }
 
 		//Cargar comboBox
-        array<Pelicula^>^ ObtenerPeliculasExistentes()
+        /*array<Pelicula^>^ ObtenerPeliculasExistentes()
         {
 			return peliculas;
+        }*/
+        array<Pelicula^>^ ObtenerPeliculasExistentes()
+        {
+            int cantidadActivas = 0;
+            for (int i = 0; i < peliculas->Length; i++) {
+                if (peliculas[i] != nullptr && peliculas[i]->EstadoPelicula == Estado::Activo) {
+                    cantidadActivas++;
+                }
+            }
+
+            array<Pelicula^>^ activas = gcnew array<Pelicula^>(cantidadActivas);
+            int idx = 0;
+            for (int i = 0; i < peliculas->Length; i++) {
+                if (peliculas[i] != nullptr && peliculas[i]->EstadoPelicula == Estado::Activo) {
+                    activas[idx++] = peliculas[i];
+                }
+            }
+
+            return activas;
         }
+
 
     protected:
         ~Peliculas()

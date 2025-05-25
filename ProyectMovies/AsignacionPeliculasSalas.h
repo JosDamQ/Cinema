@@ -21,6 +21,17 @@ namespace ProyectMovies {
 		array<AsignacionPeliculaSala^>^ asignacionesPeliculasSalas;
 		int ultimoCodigo;
 		int asignacionSeleccionada;
+	private: System::Windows::Forms::Label^ lblHora;
+	private: System::Windows::Forms::TextBox^ txtHora;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaHoraAsignacion;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCapacidad;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colSala;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colIdioma;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFormato;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colPelicula;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
+	private: System::Windows::Forms::DataGridView^ tblAsignacionPeliculas;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colHora;
 
 		enum class ModoFormulario {
 			Ninguno,
@@ -60,11 +71,12 @@ namespace ProyectMovies {
 		(
 			Pelicula^ pelicula,
 			Sala^ sala,
-			DateTime fechaHoraEstreno
+			DateTime fechaHoraEstreno,
+			String^ horaFuncion
 		)
 		{
 			ultimoCodigo++;
-			AsignacionPeliculaSala^ nuevaAsignacion = gcnew AsignacionPeliculaSala(ultimoCodigo, pelicula, sala, fechaHoraEstreno);
+			AsignacionPeliculaSala^ nuevaAsignacion = gcnew AsignacionPeliculaSala(ultimoCodigo, pelicula, sala, fechaHoraEstreno, horaFuncion);
 			asignacionesPeliculasSalas[ultimoCodigo - 1] = nuevaAsignacion;
 			MostrarAsignacion();
 		}
@@ -82,7 +94,8 @@ namespace ProyectMovies {
 						asignacionesPeliculasSalas[i]->PeliculaAsignada->IdiomaPelicula.ToString(),
 						asignacionesPeliculasSalas[i]->SalaAsignada->Nombre,
 						asignacionesPeliculasSalas[i]->SalaAsignada->Capacidad.ToString(),
-						asignacionesPeliculasSalas[i]->FechaEstreno.ToShortDateString()
+						asignacionesPeliculasSalas[i]->FechaEstreno.ToShortDateString(),
+						asignacionesPeliculasSalas[i]->HoraFuncion
 					);
 				}
 			}
@@ -94,6 +107,7 @@ namespace ProyectMovies {
 			cboPeliculas->SelectedIndex = -1;
 			cboSala->SelectedIndex = -1;
 			dateFechaAsignacion->ResetText();
+			txtHora->Clear();
 		}
 
 		//Estado formulario
@@ -104,6 +118,7 @@ namespace ProyectMovies {
 			cboPeliculas->Enabled = habilitar;
 			cboSala->Enabled = habilitar;
 			dateFechaAsignacion->Enabled = habilitar;
+			txtHora->Enabled = habilitar;
 
 			if (estadoActual == ModoFormulario::Agregar) {
 				btnAgregar->Text = "Confirmar";
@@ -147,14 +162,14 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::Button^ btnAgregar;
 	private: System::Windows::Forms::Button^ btnEliminar;
 	private: System::Windows::Forms::Button^ btnEditar;
-	private: System::Windows::Forms::DataGridView^ tblAsignacionPeliculas;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colPelicula;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFormato;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colIdioma;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colSala;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCapacidad;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaHoraAsignacion;
+
+
+
+
+
+
+
+
 
 
 	protected:
@@ -200,14 +215,17 @@ namespace ProyectMovies {
 			this->btnAgregar = (gcnew System::Windows::Forms::Button());
 			this->btnEliminar = (gcnew System::Windows::Forms::Button());
 			this->btnEditar = (gcnew System::Windows::Forms::Button());
-			this->tblAsignacionPeliculas = (gcnew System::Windows::Forms::DataGridView());
-			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->colPelicula = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->colFormato = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->colIdioma = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->colSala = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->colCapacidad = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->lblHora = (gcnew System::Windows::Forms::Label());
+			this->txtHora = (gcnew System::Windows::Forms::TextBox());
 			this->colFechaHoraAsignacion = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->colCapacidad = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->colSala = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->colIdioma = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->colFormato = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->colPelicula = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->tblAsignacionPeliculas = (gcnew System::Windows::Forms::DataGridView());
+			this->colHora = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblAsignacionPeliculas))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -222,12 +240,12 @@ namespace ProyectMovies {
 			// 
 			// cboPeliculas
 			// 
+			this->cboPeliculas->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cboPeliculas->FormattingEnabled = true;
 			this->cboPeliculas->Location = System::Drawing::Point(100, 35);
 			this->cboPeliculas->Name = L"cboPeliculas";
 			this->cboPeliculas->Size = System::Drawing::Size(121, 28);
 			this->cboPeliculas->TabIndex = 1;
-			this->cboPeliculas->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblSala
 			// 
@@ -240,12 +258,12 @@ namespace ProyectMovies {
 			// 
 			// cboSala
 			// 
+			this->cboSala->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cboSala->FormattingEnabled = true;
 			this->cboSala->Location = System::Drawing::Point(298, 35);
 			this->cboSala->Name = L"cboSala";
 			this->cboSala->Size = System::Drawing::Size(121, 28);
 			this->cboSala->TabIndex = 3;
-			this->cboSala->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// dateFechaAsignacion
 			// 
@@ -293,60 +311,100 @@ namespace ProyectMovies {
 			this->btnEditar->UseVisualStyleBackColor = true;
 			this->btnEditar->Click += gcnew System::EventHandler(this, &AsignacionPeliculasSalas::btnEditar_Click);
 			// 
-			// tblAsignacionPeliculas
+			// lblHora
 			// 
-			this->tblAsignacionPeliculas->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->tblAsignacionPeliculas->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(7) {
-				this->colCodigo,
-					this->colPelicula, this->colFormato, this->colIdioma, this->colSala, this->colCapacidad, this->colFechaHoraAsignacion
-			});
-			this->tblAsignacionPeliculas->Location = System::Drawing::Point(12, 201);
-			this->tblAsignacionPeliculas->Name = L"tblAsignacionPeliculas";
-			this->tblAsignacionPeliculas->RowTemplate->Height = 28;
-			this->tblAsignacionPeliculas->Size = System::Drawing::Size(952, 364);
-			this->tblAsignacionPeliculas->TabIndex = 9;
-			this->tblAsignacionPeliculas->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &AsignacionPeliculasSalas::tblAsignacionPeliculas_CellClick);
+			this->lblHora->AutoSize = true;
+			this->lblHora->Location = System::Drawing::Point(995, 43);
+			this->lblHora->Name = L"lblHora";
+			this->lblHora->Size = System::Drawing::Size(44, 20);
+			this->lblHora->TabIndex = 10;
+			this->lblHora->Text = L"Hora";
 			// 
-			// colCodigo
+			// txtHora
 			// 
-			this->colCodigo->HeaderText = L"Codigo";
-			this->colCodigo->Name = L"colCodigo";
-			// 
-			// colPelicula
-			// 
-			this->colPelicula->HeaderText = L"Pelicula";
-			this->colPelicula->Name = L"colPelicula";
-			// 
-			// colFormato
-			// 
-			this->colFormato->HeaderText = L"Formato";
-			this->colFormato->Name = L"colFormato";
-			// 
-			// colIdioma
-			// 
-			this->colIdioma->HeaderText = L"Idioma";
-			this->colIdioma->Name = L"colIdioma";
-			// 
-			// colSala
-			// 
-			this->colSala->HeaderText = L"Sala";
-			this->colSala->Name = L"colSala";
-			// 
-			// colCapacidad
-			// 
-			this->colCapacidad->HeaderText = L"Capacidad";
-			this->colCapacidad->Name = L"colCapacidad";
+			this->txtHora->Location = System::Drawing::Point(1049, 43);
+			this->txtHora->Name = L"txtHora";
+			this->txtHora->Size = System::Drawing::Size(145, 26);
+			this->txtHora->TabIndex = 11;
 			// 
 			// colFechaHoraAsignacion
 			// 
 			this->colFechaHoraAsignacion->HeaderText = L"Fecha y Hora estreno";
+			this->colFechaHoraAsignacion->MinimumWidth = 8;
 			this->colFechaHoraAsignacion->Name = L"colFechaHoraAsignacion";
+			this->colFechaHoraAsignacion->Width = 150;
+			// 
+			// colCapacidad
+			// 
+			this->colCapacidad->HeaderText = L"Capacidad";
+			this->colCapacidad->MinimumWidth = 8;
+			this->colCapacidad->Name = L"colCapacidad";
+			this->colCapacidad->Width = 150;
+			// 
+			// colSala
+			// 
+			this->colSala->HeaderText = L"Sala";
+			this->colSala->MinimumWidth = 8;
+			this->colSala->Name = L"colSala";
+			this->colSala->Width = 150;
+			// 
+			// colIdioma
+			// 
+			this->colIdioma->HeaderText = L"Idioma";
+			this->colIdioma->MinimumWidth = 8;
+			this->colIdioma->Name = L"colIdioma";
+			this->colIdioma->Width = 150;
+			// 
+			// colFormato
+			// 
+			this->colFormato->HeaderText = L"Formato";
+			this->colFormato->MinimumWidth = 8;
+			this->colFormato->Name = L"colFormato";
+			this->colFormato->Width = 150;
+			// 
+			// colPelicula
+			// 
+			this->colPelicula->HeaderText = L"Pelicula";
+			this->colPelicula->MinimumWidth = 8;
+			this->colPelicula->Name = L"colPelicula";
+			this->colPelicula->Width = 150;
+			// 
+			// colCodigo
+			// 
+			this->colCodigo->HeaderText = L"Codigo";
+			this->colCodigo->MinimumWidth = 8;
+			this->colCodigo->Name = L"colCodigo";
+			this->colCodigo->Width = 150;
+			// 
+			// tblAsignacionPeliculas
+			// 
+			this->tblAsignacionPeliculas->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+			this->tblAsignacionPeliculas->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(8) {
+				this->colCodigo,
+					this->colPelicula, this->colFormato, this->colIdioma, this->colSala, this->colCapacidad, this->colFechaHoraAsignacion, this->colHora
+			});
+			this->tblAsignacionPeliculas->Location = System::Drawing::Point(12, 201);
+			this->tblAsignacionPeliculas->Name = L"tblAsignacionPeliculas";
+			this->tblAsignacionPeliculas->RowHeadersWidth = 62;
+			this->tblAsignacionPeliculas->RowTemplate->Height = 28;
+			this->tblAsignacionPeliculas->Size = System::Drawing::Size(1238, 364);
+			this->tblAsignacionPeliculas->TabIndex = 9;
+			this->tblAsignacionPeliculas->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &AsignacionPeliculasSalas::tblAsignacionPeliculas_CellClick);
+			// 
+			// colHora
+			// 
+			this->colHora->HeaderText = L"HoraFuncion";
+			this->colHora->MinimumWidth = 8;
+			this->colHora->Name = L"colHora";
+			this->colHora->Width = 150;
 			// 
 			// AsignacionPeliculasSalas
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(976, 663);
+			this->ClientSize = System::Drawing::Size(1359, 663);
+			this->Controls->Add(this->txtHora);
+			this->Controls->Add(this->lblHora);
 			this->Controls->Add(this->tblAsignacionPeliculas);
 			this->Controls->Add(this->btnEditar);
 			this->Controls->Add(this->btnEliminar);
@@ -407,6 +465,17 @@ namespace ProyectMovies {
 						// Opcional: asignar fecha por si esta nulo
 						dateFechaAsignacion->Value = DateTime::Now;
 					}
+
+					//Hora
+					Object^ valorHora = fila->Cells["colHora"]->Value->ToString();
+					if (valorHora != nullptr && !String::IsNullOrWhiteSpace(valorHora->ToString())) {
+						txtHora->Text = valorHora->ToString();
+					}
+					/*else {
+						// Opcional: asignar hora por si esta nulo
+						txtHora->Text = "";
+					}*/
+
 				}
 			}
 		}
@@ -419,6 +488,7 @@ namespace ProyectMovies {
 			else if (estadoActual == ModoFormulario::Agregar) {
 				if (cboPeliculas->SelectedIndex == -1 ||
 					cboSala->SelectedIndex == -1 ||
+					txtHora->Text->Trim() == "" ||
 					dateFechaAsignacion->Value == DateTime::MinValue) {
 
 					MessageBox::Show("Por favor, complete todos los campos.");
@@ -428,8 +498,9 @@ namespace ProyectMovies {
 				Pelicula^ peliculaSeleccionada = dynamic_cast<Pelicula^>(cboPeliculas->SelectedItem);
 				Sala^ salaSeleccionada = dynamic_cast<Sala^>(cboSala->SelectedItem);
 				DateTime fechaHoraEstreno = dateFechaAsignacion->Value;
+				String^ horaFuncion = txtHora->Text;
 
-				AgregarAsignacion(peliculaSeleccionada, salaSeleccionada, fechaHoraEstreno);
+				AgregarAsignacion(peliculaSeleccionada, salaSeleccionada, fechaHoraEstreno, horaFuncion);
 
 				estadoActual = ModoFormulario::Ninguno;
 				ActualizarEstadoFormulario();
@@ -491,18 +562,21 @@ namespace ProyectMovies {
 			else if (estadoActual == ModoFormulario::Editar) {
 				if (cboPeliculas->SelectedIndex == -1 ||
 					cboSala->SelectedIndex == -1 ||
+					txtHora->Text->Trim() == "" ||
 					dateFechaAsignacion->Value == DateTime::MinValue) {
 					MessageBox::Show("Por favor, complete todos los campos.");
 					return;
 				}
-
+				
 				Pelicula^ peliculaSeleccionada = dynamic_cast<Pelicula^>(cboPeliculas->SelectedItem);
 				Sala^ salaSeleccionada = dynamic_cast<Sala^>(cboSala->SelectedItem);
 				DateTime fechaHoraEstreno = dateFechaAsignacion->Value;
+				String^ horaFuncion = txtHora->Text;
 
 				asignacionesPeliculasSalas[asignacionSeleccionada]->PeliculaAsignada = peliculaSeleccionada;
 				asignacionesPeliculasSalas[asignacionSeleccionada]->SalaAsignada = salaSeleccionada;
 				asignacionesPeliculasSalas[asignacionSeleccionada]->FechaEstreno = fechaHoraEstreno;
+				asignacionesPeliculasSalas[asignacionSeleccionada]->HoraFuncion = horaFuncion;
 
 				MostrarAsignacion();
 

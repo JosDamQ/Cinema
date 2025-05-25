@@ -11,14 +11,16 @@ namespace ProyectMovies {
 		Pelicula^ pelicula;
 		Sala^ sala;
 		DateTime fechaHoraEstreno;
+		String^ horaFuncion;
 
 	public:
-		AsignacionPeliculaSala(int codigo, Pelicula^ pelicula, Sala^ sala, DateTime fechaHoraEstreno)
+		AsignacionPeliculaSala(int codigo, Pelicula^ pelicula, Sala^ sala, DateTime fechaHoraEstreno, String^ horaFuncion)
 		{
 			this->codigo = codigo;
 			this->pelicula = pelicula;
 			this->sala = sala;
 			this->fechaHoraEstreno = fechaHoraEstreno;
+			this->horaFuncion = horaFuncion;
 		}
 
 		//Propiedades
@@ -40,6 +42,11 @@ namespace ProyectMovies {
 		property DateTime FechaEstreno {
 			DateTime get() { return fechaHoraEstreno; }
 			void set(DateTime value) { fechaHoraEstreno = value; }
+		}
+
+		property String^ HoraFuncion{
+			String^ get() { return horaFuncion; }
+			void set(String^ value) { horaFuncion = value; }
 		}
 
 		// Método para mostrar resumen de asignación
