@@ -3,6 +3,11 @@
 #include "ClaseUsuarios.h"
 #include "Usuarios.h"
 #include "Landing.h"
+#include "Peliculas.h"
+#include "Salas.h"
+#include "AsignacionPeliculasSalas.h"
+#include "CompraBoletos.h"
+#include "Clientes.h"
 
 namespace ProyectMovies {
 
@@ -15,11 +20,35 @@ namespace ProyectMovies {
 
     public ref class Login : public System::Windows::Forms::Form
     {
+    private:
+        // Instancias de los formularios
+        Peliculas^ peliculas;
+        Salas^ salas;
+        AsignacionPeliculasSalas^ asignacionPeliculasSalas;
+        CompraBoletos^ compraBoletos;
+        Clientes^ clientes;
+        Usuarios^ usuarios;
+        System::Collections::Generic::List<User^>^ users;
+
     public:
+        // Método para obtener la lista de usuarios
+        System::Collections::Generic::List<User^>^ GetUsersList()
+        {
+            return users;
+        }
+
         Login(void)
         {
             InitializeComponent();
             CreateDefaultUsers();
+
+            // Inicializar formularios pasando la lista de usuarios
+            usuarios = gcnew Usuarios(GetUsersList());
+            peliculas = gcnew Peliculas();
+            salas = gcnew Salas();
+            asignacionPeliculasSalas = gcnew AsignacionPeliculasSalas();
+            compraBoletos = gcnew CompraBoletos();
+            clientes = gcnew Clientes();
         }
 
     protected:
@@ -33,7 +62,6 @@ namespace ProyectMovies {
 
     private:
         System::ComponentModel::Container^ components;
-        System::Collections::Generic::List<User^>^ users;
 
         // Controles del formulario
         System::Windows::Forms::Label^ lblLogin;
@@ -79,7 +107,7 @@ namespace ProyectMovies {
 
         bool ValidateUser(String^ username, String^ password)
         {
-            for each (User ^ user in users)
+            for each(User ^ user in users)
             {
                 if (user->Username->Equals(username) && user->Password->Equals(password))
                 {
@@ -91,7 +119,7 @@ namespace ProyectMovies {
 
         User^ GetUser(String^ username)
         {
-            for each (User ^ user in users)
+            for each(User ^ user in users)
             {
                 if (user->Username->Equals(username))
                 {
@@ -194,8 +222,7 @@ namespace ProyectMovies {
             this->PerformLayout();
         }
 #pragma endregion
-    
-        
+
     private: System::Void btnIngresar_Click(System::Object^ sender, System::EventArgs^ e)
     {
         String^ username = txtUsuario->Text;
@@ -213,19 +240,16 @@ namespace ProyectMovies {
             lblMensaje->ForeColor = Color::Green;
             lblMensaje->Text = String::Format("Bienvenido {0}", loggedUser->Nombre);
 
-            // Crear instancia de Landing
-            Landing^ landingForm = gcnew Landing(loggedUser);
+            // Pasar los formularios al Landing, incluyendo la lista de usuarios
+            Landing^ landingForm = gcnew Landing(loggedUser, peliculas, salas,
+                asignacionPeliculasSalas, compraBoletos, clientes, usuarios);
 
-            // Configurar para mostrar dentro del panel
             landingForm->TopLevel = false;
             landingForm->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
             landingForm->Dock = DockStyle::Fill;
 
-            // Limpiar y agregar al panel de contenido
             this->Controls->Clear();
             this->Controls->Add(landingForm);
-
-            // Mostrar el formulario
             landingForm->Show();
         }
         else
@@ -234,7 +258,5 @@ namespace ProyectMovies {
             lblMensaje->Text = "Usuario o contraseña incorrectos";
         }
     }
-
-
     };
 }

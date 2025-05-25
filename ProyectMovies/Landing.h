@@ -19,7 +19,7 @@ namespace ProyectMovies {
     public ref class Landing : public System::Windows::Forms::Form
     {
     private:
-        // Instancias de los formularios
+        // Cambiar a punteros recibidos en lugar de crear nuevas instancias
         Peliculas^ peliculas;
         Salas^ salas;
         AsignacionPeliculasSalas^ asignacionPeliculasSalas;
@@ -29,19 +29,22 @@ namespace ProyectMovies {
         User^ usuarioActual;
 
     public:
-        Landing(User^ usuario)
+        // Modificar el constructor para recibir los formularios
+        Landing(User^ usuario, Peliculas^ pelis, Salas^ sal,
+            AsignacionPeliculasSalas^ asign, CompraBoletos^ compra,
+            Clientes^ cli, Usuarios^ users)
         {
             usuarioActual = usuario;
+
+            // Asignar los formularios recibidos
+            peliculas = pelis;
+            salas = sal;
+            asignacionPeliculasSalas = asign;
+            compraBoletos = compra;
+            clientes = cli;
+            usuarios = users;
+
             InitializeComponent();
-
-            // Inicializar formularios
-            peliculas = gcnew Peliculas();
-            salas = gcnew Salas();
-            asignacionPeliculasSalas = gcnew AsignacionPeliculasSalas();
-            compraBoletos = gcnew CompraBoletos();
-            clientes = gcnew Clientes();
-            usuarios = gcnew Usuarios();
-
             ConfigurarVistaSegunRol();
         }
 
