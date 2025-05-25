@@ -26,18 +26,16 @@ namespace ProyectMovies {
         ModoFormulario estadoActual = ModoFormulario::Ninguno;
 
     public:
-        // Constructor modificado para recibir la lista de usuarios
         Usuarios(System::Collections::Generic::List<User^>^ usersList)
         {
             InitializeComponent();
             CargarRoles();
 
-            usuarios = usersList; // Usar la lista compartida
-            // Encontrar el último código usado
+            usuarios = usersList;
             ultimoCodigo = 0;
-            for each(User ^ user in usuarios)
+            for each (User ^ user in usuarios)
             {
-                if (user->Codigo > ultimoCodigo)
+                if (user != nullptr && user->Codigo > ultimoCodigo)
                     ultimoCodigo = user->Codigo;
             }
 
@@ -48,7 +46,6 @@ namespace ProyectMovies {
             ResetearFormulario();
         }
 
-        // Función de agregar usuario
         void AgregarUsuario(
             String^ username,
             String^ password,
@@ -78,11 +75,10 @@ namespace ProyectMovies {
             MostrarUsuarios();
         }
 
-        // Función de mostrar usuarios
         void MostrarUsuarios()
         {
             tblUsuarios->Rows->Clear();
-            for each(User ^ user in usuarios)
+            for each (User ^ user in usuarios)
             {
                 if (user != nullptr) {
                     tblUsuarios->Rows->Add(
@@ -101,7 +97,6 @@ namespace ProyectMovies {
             }
         }
 
-        // Resetear el formulario
         void ResetearFormulario()
         {
             txtUsuario->Clear();
@@ -115,7 +110,6 @@ namespace ProyectMovies {
             cboRol->SelectedIndex = -1;
         }
 
-        // Actualizar estado del formulario
         void ActualizarEstadoFormulario() {
             bool habilitar = estadoActual != ModoFormulario::Ninguno;
 
@@ -159,7 +153,6 @@ namespace ProyectMovies {
         }
 
     private:
-        // Controles del formulario
         System::Windows::Forms::Label^ lblName;
         System::Windows::Forms::TextBox^ txtUsuario;
         System::Windows::Forms::Label^ lblPassword;
@@ -198,6 +191,7 @@ namespace ProyectMovies {
         void CargarRoles() {
             this->cboRol->Items->Add(Role::Admin.ToString());
             this->cboRol->Items->Add(Role::User.ToString());
+            this->cboRol->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
         }
 
         void InitializeComponent(void)
@@ -320,7 +314,7 @@ namespace ProyectMovies {
             this->lblTelefono->Name = L"lblTelefono";
             this->lblTelefono->Size = System::Drawing::Size(86, 20);
             this->lblTelefono->TabIndex = 10;
-            this->lblTelefono->Text = L"lblTelefono";
+            this->lblTelefono->Text = L"Teléfono";
             // 
             // txtTelefono
             // 
@@ -368,7 +362,7 @@ namespace ProyectMovies {
             this->lblDireccion->Name = L"lblDireccion";
             this->lblDireccion->Size = System::Drawing::Size(75, 20);
             this->lblDireccion->TabIndex = 16;
-            this->lblDireccion->Text = L"Direccion";
+            this->lblDireccion->Text = L"Dirección";
             // 
             // txtDireccion
             // 
@@ -434,7 +428,7 @@ namespace ProyectMovies {
             // 
             // colTelefono
             // 
-            this->colTelefono->HeaderText = L"Telefono";
+            this->colTelefono->HeaderText = L"Teléfono";
             this->colTelefono->Name = L"colTelefono";
             // 
             // colEmail
@@ -444,7 +438,7 @@ namespace ProyectMovies {
             // 
             // colDireccion
             // 
-            this->colDireccion->HeaderText = L"Direccion";
+            this->colDireccion->HeaderText = L"Dirección";
             this->colDireccion->Name = L"colDireccion";
             // 
             // colRol
@@ -519,10 +513,14 @@ namespace ProyectMovies {
 #pragma endregion
 
     private:
-        // Event handlers
-        System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {}
-        System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {}
-        System::Void lblApellido_Click(System::Object^ sender, System::EventArgs^ e) {}
+        System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+        }
+
+        System::Void label2_Click(System::Object^ sender, System::EventArgs^ e) {
+        }
+
+        System::Void lblApellido_Click(System::Object^ sender, System::EventArgs^ e) {
+        }
 
         System::Void tblUsuarios_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e)
         {
@@ -530,16 +528,30 @@ namespace ProyectMovies {
                 DataGridViewRow^ fila = tblUsuarios->Rows[e->RowIndex];
 
                 if (!fila->IsNewRow) {
-                    txtUsuario->Text = fila->Cells["colUsuario"]->Value->ToString();
-                    txtPassword->Text = fila->Cells["colPassword"]->Value->ToString();
-                    txtNombre->Text = fila->Cells["colNombre"]->Value->ToString();
-                    txtApellido->Text = fila->Cells["colApellido"]->Value->ToString();
-                    txtCUI->Text = fila->Cells["colCUI"]->Value->ToString();
-                    txtTelefono->Text = fila->Cells["colTelefono"]->Value->ToString();
-                    txtEmail->Text = fila->Cells["colEmail"]->Value->ToString();
-                    txtDireccion->Text = fila->Cells["colDireccion"]->Value->ToString();
-                    cboRol->SelectedItem = fila->Cells["colRol"]->Value;
-                    userSeleccionado = e->RowIndex;
+                    int codigo = Convert::ToInt32(fila->Cells["colCodigo"]->Value);
+                    userSeleccionado = -1;
+
+                    for (int i = 0; i < usuarios->Count; i++)
+                    {
+                        if (usuarios[i] != nullptr && usuarios[i]->Codigo == codigo)
+                        {
+                            userSeleccionado = i;
+                            break;
+                        }
+                    }
+
+                    if (userSeleccionado != -1)
+                    {
+                        txtUsuario->Text = usuarios[userSeleccionado]->Username;
+                        txtPassword->Text = usuarios[userSeleccionado]->Password;
+                        txtNombre->Text = usuarios[userSeleccionado]->Nombre;
+                        txtApellido->Text = usuarios[userSeleccionado]->Apellido;
+                        txtCUI->Text = usuarios[userSeleccionado]->DPI;
+                        txtTelefono->Text = usuarios[userSeleccionado]->Telefono;
+                        txtEmail->Text = usuarios[userSeleccionado]->Email;
+                        txtDireccion->Text = usuarios[userSeleccionado]->Direccion;
+                        cboRol->SelectedItem = usuarios[userSeleccionado]->UserRole.ToString();
+                    }
                 }
             }
         }
@@ -552,7 +564,6 @@ namespace ProyectMovies {
                 ResetearFormulario();
             }
             else if (estadoActual == ModoFormulario::Agregar) {
-                // Validar campos
                 if (String::IsNullOrEmpty(txtUsuario->Text) ||
                     String::IsNullOrEmpty(txtPassword->Text) ||
                     String::IsNullOrEmpty(txtNombre->Text) ||
@@ -567,7 +578,6 @@ namespace ProyectMovies {
                     return;
                 }
 
-                // Agregar el nuevo usuario
                 AgregarUsuario(
                     txtUsuario->Text,
                     txtPassword->Text,
@@ -586,61 +596,49 @@ namespace ProyectMovies {
             }
         }
 
-        private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
-            if (estadoActual == ModoFormulario::Agregar) {
+        System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e)
+        {
+            if (estadoActual == ModoFormulario::Agregar || estadoActual == ModoFormulario::Editar) {
                 estadoActual = ModoFormulario::Ninguno;
                 ActualizarEstadoFormulario();
                 ResetearFormulario();
                 tblUsuarios->ClearSelection();
-                userSeleccionado = -1; // Resetear la selección
+                userSeleccionado = -1;
                 return;
             }
 
-            if (estadoActual == ModoFormulario::Editar) {
-                estadoActual = ModoFormulario::Ninguno;
-                ActualizarEstadoFormulario();
-                ResetearFormulario();
-                tblUsuarios->ClearSelection();
-                userSeleccionado = -1; // Resetear la selección
-                return;
-            }
-
-            if (userSeleccionado >= 0 && userSeleccionado < ultimoCodigo) {
-                System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show(
+            if (userSeleccionado >= 0 && userSeleccionado < usuarios->Count && usuarios[userSeleccionado] != nullptr) {
+                System::Windows::Forms::DialogResult result = MessageBox::Show(
                     "¿Estás seguro de que deseas eliminar este usuario?",
                     "Confirmar eliminación",
-                    System::Windows::Forms::MessageBoxButtons::YesNo,
-                    System::Windows::Forms::MessageBoxIcon::Warning
+                    MessageBoxButtons::YesNo,
+                    MessageBoxIcon::Warning
                 );
 
                 if (result == System::Windows::Forms::DialogResult::Yes) {
-                    usuarios[userSeleccionado] = nullptr;
+                    usuarios->RemoveAt(userSeleccionado);
                     MostrarUsuarios();
+                    ResetearFormulario();
+                    tblUsuarios->ClearSelection();
+                    userSeleccionado = -1;
                 }
-                ResetearFormulario();
-                tblUsuarios->ClearSelection();
-
-                userSeleccionado = -1; // Resetear la selección
             }
             else {
-                System::Windows::Forms::MessageBox::Show("Seleccione un usuario para eliminar.");
+                MessageBox::Show("Seleccione un usuario válido para eliminar.");
             }
         }
-
-
 
         System::Void btnEditar_Click(System::Object^ sender, System::EventArgs^ e)
         {
             if (estadoActual == ModoFormulario::Ninguno) {
-                if (userSeleccionado < 0 || userSeleccionado >= usuarios->Count) {
-                    MessageBox::Show("Seleccione un usuario para editar");
+                if (userSeleccionado < 0 || userSeleccionado >= usuarios->Count || usuarios[userSeleccionado] == nullptr) {
+                    MessageBox::Show("Seleccione un usuario válido para editar");
                     return;
                 }
                 estadoActual = ModoFormulario::Editar;
                 ActualizarEstadoFormulario();
             }
             else if (estadoActual == ModoFormulario::Editar) {
-                // Validar campos
                 if (String::IsNullOrEmpty(txtUsuario->Text) ||
                     String::IsNullOrEmpty(txtPassword->Text) ||
                     String::IsNullOrEmpty(txtNombre->Text) ||
@@ -655,22 +653,22 @@ namespace ProyectMovies {
                     return;
                 }
 
-                // Actualizar usuario
-                User^ usuario = usuarios[userSeleccionado];
-                usuario->Username = txtUsuario->Text;
-                usuario->Password = txtPassword->Text;
-                usuario->Nombre = txtNombre->Text;
-                usuario->Apellido = txtApellido->Text;
-                usuario->DPI = txtCUI->Text;
-                usuario->Telefono = txtTelefono->Text;
-                usuario->Email = txtEmail->Text;
-                usuario->Direccion = txtDireccion->Text;
-                usuario->UserRole = (Role)Enum::Parse(Role::typeid, cboRol->SelectedItem->ToString());
+                if (userSeleccionado >= 0 && userSeleccionado < usuarios->Count && usuarios[userSeleccionado] != nullptr) {
+                    usuarios[userSeleccionado]->Username = txtUsuario->Text;
+                    usuarios[userSeleccionado]->Password = txtPassword->Text;
+                    usuarios[userSeleccionado]->Nombre = txtNombre->Text;
+                    usuarios[userSeleccionado]->Apellido = txtApellido->Text;
+                    usuarios[userSeleccionado]->DPI = txtCUI->Text;
+                    usuarios[userSeleccionado]->Telefono = txtTelefono->Text;
+                    usuarios[userSeleccionado]->Email = txtEmail->Text;
+                    usuarios[userSeleccionado]->Direccion = txtDireccion->Text;
+                    usuarios[userSeleccionado]->UserRole = (Role)Enum::Parse(Role::typeid, cboRol->SelectedItem->ToString());
 
-                MostrarUsuarios();
-                estadoActual = ModoFormulario::Ninguno;
-                ActualizarEstadoFormulario();
-                ResetearFormulario();
+                    MostrarUsuarios();
+                    estadoActual = ModoFormulario::Ninguno;
+                    ActualizarEstadoFormulario();
+                    ResetearFormulario();
+                }
             }
         }
     };
