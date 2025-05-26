@@ -51,7 +51,6 @@ namespace ProyectMovies {
                 peliculas->ObtenerPeliculasExistentes(),
                 salas->ObtenerSalasExistentes()
             );
-            //compraBoletos = gcnew CompraBoletos();
             compraBoletos = gcnew CompraBoletos(
                 asignacionPeliculasSalas->ObtenerAsignacionesExistentes(),
                 clientes->ObtenerClientesExistentes()

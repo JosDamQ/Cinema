@@ -19,22 +19,30 @@ namespace ProyectMovies {
     public ref class Landing : public System::Windows::Forms::Form
     {
     private:
+        // Instancias de formularios (ahora recibidas desde Login)
         Peliculas^ peliculas;
         Salas^ salas;
-        Clientes^ clientes;
-        Usuarios^ usuarios;
-        User^ usuarioActual;
         AsignacionPeliculasSalas^ asignacionPeliculasSalas;
         CompraBoletos^ compraBoletos;
+        Clientes^ clientes;
+        Usuarios^ usuarios;
+
+        // Datos del usuario actual
+        User^ usuarioActual;
         System::Windows::Forms::Form^ ownerForm;
 
     public:
+        /// <summary>
+        /// Constructor modificado para recibir instancias de formularios
+        /// </summary>
         Landing(User^ usuario, Peliculas^ pelis, Salas^ sal,
             AsignacionPeliculasSalas^ asign, CompraBoletos^ compra,
             Clientes^ cli, Usuarios^ users, System::Windows::Forms::Form^ owner)
         {
             usuarioActual = usuario;
             ownerForm = owner;
+
+            // Asignar los formularios recibidos
             peliculas = pelis;
             salas = sal;
             asignacionPeliculasSalas = asign;
@@ -58,6 +66,7 @@ namespace ProyectMovies {
     private:
         System::ComponentModel::Container^ components;
 
+        // Controles de la interfaz
         System::Windows::Forms::FlowLayoutPanel^ flowLayoutPanelButtons;
         System::Windows::Forms::Panel^ panel1;
         System::Windows::Forms::PictureBox^ PictureLogo;
@@ -75,7 +84,7 @@ namespace ProyectMovies {
         {
             if (usuarioActual->UserRole == Role::User)
             {
-                // Ocultar botones de administración
+                // Ocultar botones de administración para usuarios normales
                 btnPeliculas->Visible = false;
                 btnSalas->Visible = false;
                 btnAsignacionPeliculasSalas->Visible = false;
@@ -86,9 +95,17 @@ namespace ProyectMovies {
                 btnClientes->Location = Point(3, 274);
                 btnCambiarUsuario->Location = Point(3, 350);
             }
+            else
+            {
+                // Posiciones originales para admin
+                btnCompraBoletos->Location = Point(3, 405);
+                btnClientes->Location = Point(3, 461);
+                btnCambiarUsuario->Location = Point(3, 573);
+            }
 
             // Mostrar siempre el botón de cambiar usuario
             btnCambiarUsuario->Visible = true;
+            btnCambiarUsuario->Text = "Cerrar sesión"; // Texto más claro
 
             // Personalizar mensaje de bienvenida
             txtTitulo->Text = String::Format("BIENVENIDO/A {0} {1}",
@@ -120,9 +137,9 @@ namespace ProyectMovies {
             // panelContenido
             // 
             this->panelContenido->Dock = System::Windows::Forms::DockStyle::Fill;
-            this->panelContenido->Location = System::Drawing::Point(199, 0);
+            this->panelContenido->Location = System::Drawing::Point(224, 0);
             this->panelContenido->Name = L"panelContenido";
-            this->panelContenido->Size = System::Drawing::Size(1139, 772);
+            this->panelContenido->Size = System::Drawing::Size(1281, 965);
             this->panelContenido->TabIndex = 3;
             // 
             // flowLayoutPanelButtons
@@ -139,7 +156,7 @@ namespace ProyectMovies {
             this->flowLayoutPanelButtons->Dock = System::Windows::Forms::DockStyle::Left;
             this->flowLayoutPanelButtons->Location = System::Drawing::Point(0, 0);
             this->flowLayoutPanelButtons->Name = L"flowLayoutPanelButtons";
-            this->flowLayoutPanelButtons->Size = System::Drawing::Size(199, 772);
+            this->flowLayoutPanelButtons->Size = System::Drawing::Size(224, 965);
             this->flowLayoutPanelButtons->TabIndex = 1;
             // 
             // panel1
@@ -147,15 +164,15 @@ namespace ProyectMovies {
             this->panel1->Controls->Add(this->PictureLogo);
             this->panel1->Location = System::Drawing::Point(3, 3);
             this->panel1->Name = L"panel1";
-            this->panel1->Size = System::Drawing::Size(193, 192);
+            this->panel1->Size = System::Drawing::Size(217, 240);
             this->panel1->TabIndex = 5;
             // 
             // PictureLogo
             // 
             this->PictureLogo->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PictureLogo.Image")));
-            this->PictureLogo->Location = System::Drawing::Point(-3, -2);
+            this->PictureLogo->Location = System::Drawing::Point(-3, -3);
             this->PictureLogo->Name = L"PictureLogo";
-            this->PictureLogo->Size = System::Drawing::Size(196, 194);
+            this->PictureLogo->Size = System::Drawing::Size(220, 243);
             this->PictureLogo->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
             this->PictureLogo->TabIndex = 4;
             this->PictureLogo->TabStop = false;
@@ -166,9 +183,9 @@ namespace ProyectMovies {
             this->btnPeliculas->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
             this->btnPeliculas->Font = (gcnew System::Drawing::Font(L"Segoe UI", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                 static_cast<System::Byte>(0)));
-            this->btnPeliculas->Location = System::Drawing::Point(3, 201);
+            this->btnPeliculas->Location = System::Drawing::Point(3, 249);
             this->btnPeliculas->Name = L"btnPeliculas";
-            this->btnPeliculas->Size = System::Drawing::Size(193, 50);
+            this->btnPeliculas->Size = System::Drawing::Size(217, 62);
             this->btnPeliculas->TabIndex = 2;
             this->btnPeliculas->Text = L"Peliculas";
             this->btnPeliculas->UseVisualStyleBackColor = true;
@@ -180,9 +197,10 @@ namespace ProyectMovies {
             this->btnSalas->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
             this->btnSalas->Font = (gcnew System::Drawing::Font(L"Segoe UI", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                 static_cast<System::Byte>(0)));
-            this->btnSalas->Location = System::Drawing::Point(3, 257);
+            this->btnSalas->Location = System::Drawing::Point(3, 344);
+            this->btnSalas->Margin = System::Windows::Forms::Padding(3, 30, 3, 3);
             this->btnSalas->Name = L"btnSalas";
-            this->btnSalas->Size = System::Drawing::Size(193, 50);
+            this->btnSalas->Size = System::Drawing::Size(217, 62);
             this->btnSalas->TabIndex = 6;
             this->btnSalas->Text = L"Salas";
             this->btnSalas->UseVisualStyleBackColor = true;
@@ -194,9 +212,10 @@ namespace ProyectMovies {
             this->btnAsignacionPeliculasSalas->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
             this->btnAsignacionPeliculasSalas->Font = (gcnew System::Drawing::Font(L"Segoe UI", 11.25F, System::Drawing::FontStyle::Regular,
                 System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-            this->btnAsignacionPeliculasSalas->Location = System::Drawing::Point(3, 313);
+            this->btnAsignacionPeliculasSalas->Location = System::Drawing::Point(3, 439);
+            this->btnAsignacionPeliculasSalas->Margin = System::Windows::Forms::Padding(3, 30, 3, 3);
             this->btnAsignacionPeliculasSalas->Name = L"btnAsignacionPeliculasSalas";
-            this->btnAsignacionPeliculasSalas->Size = System::Drawing::Size(193, 86);
+            this->btnAsignacionPeliculasSalas->Size = System::Drawing::Size(217, 108);
             this->btnAsignacionPeliculasSalas->TabIndex = 7;
             this->btnAsignacionPeliculasSalas->Text = L"Asignacion de peliculas a salas";
             this->btnAsignacionPeliculasSalas->UseVisualStyleBackColor = true;
@@ -208,9 +227,10 @@ namespace ProyectMovies {
             this->btnCompraBoletos->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
             this->btnCompraBoletos->Font = (gcnew System::Drawing::Font(L"Segoe UI", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                 static_cast<System::Byte>(0)));
-            this->btnCompraBoletos->Location = System::Drawing::Point(3, 405);
+            this->btnCompraBoletos->Location = System::Drawing::Point(3, 580);
+            this->btnCompraBoletos->Margin = System::Windows::Forms::Padding(3, 30, 3, 3);
             this->btnCompraBoletos->Name = L"btnCompraBoletos";
-            this->btnCompraBoletos->Size = System::Drawing::Size(193, 50);
+            this->btnCompraBoletos->Size = System::Drawing::Size(217, 62);
             this->btnCompraBoletos->TabIndex = 8;
             this->btnCompraBoletos->Text = L"Compra boletos";
             this->btnCompraBoletos->UseVisualStyleBackColor = true;
@@ -222,9 +242,10 @@ namespace ProyectMovies {
             this->btnClientes->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
             this->btnClientes->Font = (gcnew System::Drawing::Font(L"Segoe UI", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                 static_cast<System::Byte>(0)));
-            this->btnClientes->Location = System::Drawing::Point(3, 461);
+            this->btnClientes->Location = System::Drawing::Point(3, 675);
+            this->btnClientes->Margin = System::Windows::Forms::Padding(3, 30, 3, 3);
             this->btnClientes->Name = L"btnClientes";
-            this->btnClientes->Size = System::Drawing::Size(193, 50);
+            this->btnClientes->Size = System::Drawing::Size(217, 62);
             this->btnClientes->TabIndex = 9;
             this->btnClientes->Text = L"Clientes";
             this->btnClientes->UseVisualStyleBackColor = true;
@@ -236,9 +257,10 @@ namespace ProyectMovies {
             this->btnUsuarios->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
             this->btnUsuarios->Font = (gcnew System::Drawing::Font(L"Segoe UI", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                 static_cast<System::Byte>(0)));
-            this->btnUsuarios->Location = System::Drawing::Point(3, 517);
+            this->btnUsuarios->Location = System::Drawing::Point(3, 770);
+            this->btnUsuarios->Margin = System::Windows::Forms::Padding(3, 30, 3, 3);
             this->btnUsuarios->Name = L"btnUsuarios";
-            this->btnUsuarios->Size = System::Drawing::Size(193, 50);
+            this->btnUsuarios->Size = System::Drawing::Size(217, 62);
             this->btnUsuarios->TabIndex = 10;
             this->btnUsuarios->Text = L"Usuarios";
             this->btnUsuarios->UseVisualStyleBackColor = true;
@@ -250,11 +272,12 @@ namespace ProyectMovies {
             this->btnCambiarUsuario->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
             this->btnCambiarUsuario->Font = (gcnew System::Drawing::Font(L"Segoe UI", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
                 static_cast<System::Byte>(0)));
-            this->btnCambiarUsuario->Location = System::Drawing::Point(3, 573);
+            this->btnCambiarUsuario->Location = System::Drawing::Point(3, 865);
+            this->btnCambiarUsuario->Margin = System::Windows::Forms::Padding(3, 30, 3, 3);
             this->btnCambiarUsuario->Name = L"btnCambiarUsuario";
-            this->btnCambiarUsuario->Size = System::Drawing::Size(193, 50);
+            this->btnCambiarUsuario->Size = System::Drawing::Size(217, 62);
             this->btnCambiarUsuario->TabIndex = 11;
-            this->btnCambiarUsuario->Text = L"Cerrar sesion";
+            this->btnCambiarUsuario->Text = L"Cerrar sesión";
             this->btnCambiarUsuario->UseVisualStyleBackColor = true;
             this->btnCambiarUsuario->Click += gcnew System::EventHandler(this, &Landing::btnCambiarUsuario_Click);
             // 
@@ -263,17 +286,17 @@ namespace ProyectMovies {
             this->txtTitulo->AutoSize = true;
             this->txtTitulo->Font = (gcnew System::Drawing::Font(L"Segoe UI", 27.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
                 static_cast<System::Byte>(0)));
-            this->txtTitulo->Location = System::Drawing::Point(377, 194);
+            this->txtTitulo->Location = System::Drawing::Point(424, 243);
             this->txtTitulo->Name = L"txtTitulo";
-            this->txtTitulo->Size = System::Drawing::Size(367, 62);
+            this->txtTitulo->Size = System::Drawing::Size(290, 50);
             this->txtTitulo->TabIndex = 2;
             this->txtTitulo->Text = L"BIENVENIDO/A";
             // 
             // Landing
             // 
-            this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+            this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(1338, 772);
+            this->ClientSize = System::Drawing::Size(1505, 965);
             this->Controls->Add(this->panelContenido);
             this->Controls->Add(this->txtTitulo);
             this->Controls->Add(this->flowLayoutPanelButtons);
@@ -298,18 +321,21 @@ namespace ProyectMovies {
         }
 
         System::Void btnAsignacionPeliculasSalas_Click(System::Object^ sender, System::EventArgs^ e) {
+            // Actualizar listas antes de abrir (de la versión vieja)
             asignacionPeliculasSalas->ActualizarListas(
                 peliculas->ObtenerPeliculasExistentes(),
                 salas->ObtenerSalasExistentes()
             );
-            //MessageBox::Show("Click en asignar peliculas");
+            AbrirFormulario(asignacionPeliculasSalas);
         }
 
         System::Void btnCompraBoletos_Click(System::Object^ sender, System::EventArgs^ e) {
+            // Actualizar listas antes de abrir (de la versión vieja)
             compraBoletos->ActualizarListas(
                 asignacionPeliculasSalas->ObtenerAsignacionesExistentes(),
                 clientes->ObtenerClientesExistentes()
             );
+            AbrirFormulario(compraBoletos);
         }
 
         System::Void btnClientes_Click(System::Object^ sender, System::EventArgs^ e) {
