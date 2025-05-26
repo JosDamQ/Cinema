@@ -29,7 +29,10 @@ namespace ProyectMovies {
 
         // Datos del usuario actual
         User^ usuarioActual;
-        System::Windows::Forms::Form^ ownerForm;
+    public: System::Windows::Forms::Label^ label1;
+    private:
+
+           System::Windows::Forms::Form^ ownerForm;
 
     public:
         /// <summary>
@@ -129,6 +132,8 @@ namespace ProyectMovies {
             this->btnUsuarios = (gcnew System::Windows::Forms::Button());
             this->btnCambiarUsuario = (gcnew System::Windows::Forms::Button());
             this->txtTitulo = (gcnew System::Windows::Forms::Label());
+            this->label1 = (gcnew System::Windows::Forms::Label());
+            this->panelContenido->SuspendLayout();
             this->flowLayoutPanelButtons->SuspendLayout();
             this->panel1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureLogo))->BeginInit();
@@ -136,6 +141,7 @@ namespace ProyectMovies {
             // 
             // panelContenido
             // 
+            this->panelContenido->Controls->Add(this->label1);
             this->panelContenido->Dock = System::Windows::Forms::DockStyle::Fill;
             this->panelContenido->Location = System::Drawing::Point(224, 0);
             this->panelContenido->Name = L"panelContenido";
@@ -288,9 +294,20 @@ namespace ProyectMovies {
                 static_cast<System::Byte>(0)));
             this->txtTitulo->Location = System::Drawing::Point(424, 243);
             this->txtTitulo->Name = L"txtTitulo";
-            this->txtTitulo->Size = System::Drawing::Size(290, 50);
+            this->txtTitulo->Size = System::Drawing::Size(436, 74);
             this->txtTitulo->TabIndex = 2;
             this->txtTitulo->Text = L"BIENVENIDO/A";
+            // 
+            // label1
+            // 
+            this->label1->AutoSize = true;
+            this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 60, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+                static_cast<System::Byte>(0)));
+            this->label1->Location = System::Drawing::Point(190, 317);
+            this->label1->Name = L"label1";
+            this->label1->Size = System::Drawing::Size(797, 135);
+            this->label1->TabIndex = 0;
+            this->label1->Text = L"BIENVENIDO";
             // 
             // Landing
             // 
@@ -302,6 +319,8 @@ namespace ProyectMovies {
             this->Controls->Add(this->flowLayoutPanelButtons);
             this->Name = L"Landing";
             this->Text = L"Landing";
+            this->panelContenido->ResumeLayout(false);
+            this->panelContenido->PerformLayout();
             this->flowLayoutPanelButtons->ResumeLayout(false);
             this->panel1->ResumeLayout(false);
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PictureLogo))->EndInit();

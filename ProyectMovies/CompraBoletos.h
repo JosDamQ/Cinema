@@ -23,19 +23,11 @@ namespace ProyectMovies {
 		enum class ModoFormulario {
 			Ninguno,
 			Agregar,
-			//Editar
 		};
 		ModoFormulario estadoActual = ModoFormulario::Ninguno;
 
 
 	public:
-		/*CompraBoletos(void)
-		{
-			InitializeComponent();
-			//
-			//TODO: agregar código de constructor aquí
-			//
-		}*/
 		CompraBoletos(array<AsignacionPeliculaSala^>^ asignacionesExistentes, array<Cliente^>^ clientesExistentes)
 		{
 			InitializeComponent();
@@ -266,6 +258,7 @@ namespace ProyectMovies {
 			this->tblCompras->RowTemplate->Height = 28;
 			this->tblCompras->Size = System::Drawing::Size(1193, 409);
 			this->tblCompras->TabIndex = 6;
+			this->tblCompras->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &CompraBoletos::tblCompras_CellClick);
 			// 
 			// colCodigo
 			// 
@@ -338,7 +331,7 @@ namespace ProyectMovies {
 			this->lblFecha->Size = System::Drawing::Size(54, 20);
 			this->lblFecha->TabIndex = 7;
 			this->lblFecha->Text = L"Fecha";
-			this->lblFecha->Click += gcnew System::EventHandler(this, &CompraBoletos::label1_Click);
+
 			// 
 			// dateFecha
 			// 
@@ -355,6 +348,7 @@ namespace ProyectMovies {
 			this->btnAgregar->TabIndex = 9;
 			this->btnAgregar->Text = L"Agregar";
 			this->btnAgregar->UseVisualStyleBackColor = true;
+			this->btnAgregar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnAgregar_Click);
 			// 
 			// btnEliminar
 			// 
@@ -388,7 +382,77 @@ namespace ProyectMovies {
 
 		}
 #pragma endregion
-	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void tblCompras_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+		if (e->RowIndex >= 0 && e->RowIndex < tblCompras->Rows->Count) {
+        DataGridViewRow^ fila = tblCompras->Rows[e->RowIndex];
+        
+        if (!fila->IsNewRow) {
+            compraSeleccionada = e->RowIndex;
+            
+            // Obtener el código de la compra seleccionada
+            int codigoCompra = Convert::ToInt32(fila->Cells["colCodigo"]->Value);
+            
+            // Buscar la compra en el array de comprasBoletos
+            ComprasBoletos^ compraSeleccionadaObj = nullptr;
+            for (int i = 0; i < ultimoCodigo; i++) {
+                if (comprasBoletos[i] != nullptr && comprasBoletos[i]->Codigo == codigoCompra) {
+                    compraSeleccionadaObj = comprasBoletos[i];
+                    break;
+                }
+            }
+            
+            if (compraSeleccionadaObj != nullptr) {
+                // Cargar los datos en los controles
+                // Seleccionar la función correspondiente en el ComboBox
+                for (int i = 0; i < cboFuncion->Items->Count; i++) {
+                    AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->Items[i]);
+                    if (asignacion != nullptr && asignacion == compraSeleccionadaObj->AsignacionCompra) {
+                        cboFuncion->SelectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Seleccionar el cliente correspondiente en el ComboBox
+                for (int i = 0; i < cboCliente->Items->Count; i++) {
+                    Cliente^ cliente = dynamic_cast<Cliente^>(cboCliente->Items[i]);
+                    if (cliente != nullptr && cliente == compraSeleccionadaObj->ClienteCompra) {
+                        cboCliente->SelectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Establecer la fecha de compra
+                dateFecha->Value = compraSeleccionadaObj->FechaCompra;
+                
+                // Cambiar al modo de edición (si lo implementas)
+                // estadoActual = ModoFormulario::Editar;
+                // ActualizarEstadoFormulario();
+            }
+        }
+    }
+	}
+	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			estadoActual = ModoFormulario::Agregar;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+		}
+		else if (estadoActual == ModoFormulario::Agregar) {
+			if (cboFuncion->SelectedIndex == -1 || cboCliente->SelectedIndex == -1 || dateFecha->Value == DateTime::MinValue) {
+				MessageBox::Show("Por favor, complete todos los campos.");
+				return;
+			}
+			AsignacionPeliculaSala^ asignacionSeleccionada = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+			Cliente^ clienteSeleccionado = dynamic_cast<Cliente^>(cboCliente->SelectedItem);
+			DateTime fechaCompra = dateFecha->Value;
+
+			AgregarCompraBoleto(asignacionSeleccionada, clienteSeleccionado, fechaCompra);
+
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblCompras->ClearSelection();
+		}
 	}
 };
 }
