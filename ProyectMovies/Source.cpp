@@ -1,13 +1,12 @@
-#include "Login.h";
-//#include "Landing.h";
-using namespace ProyectMovies;
+#include "Login.h"
 
-int main() 
+int main()
 {
-	Login^ login = gcnew Login();
-	//Landing^ landing = gcnew Landing();
+    System::Windows::Forms::Application::EnableVisualStyles();
+    System::Windows::Forms::Application::SetCompatibleTextRenderingDefault(false);
 
-	Application::Run(login);
-	//Application::Run(landing);
-	return 0;
+    ProyectMovies::Login^ loginForm = gcnew ProyectMovies::Login();
+    System::Windows::Forms::Application::Run(loginForm);
+
+    return 0;
 }

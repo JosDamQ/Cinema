@@ -107,7 +107,7 @@ namespace ProyectMovies {
 
         bool ValidateUser(String^ username, String^ password)
         {
-            for each(User ^ user in users)
+            for each (User ^ user in users)
             {
                 if (user->Username->Equals(username) && user->Password->Equals(password))
                 {
@@ -119,7 +119,7 @@ namespace ProyectMovies {
 
         User^ GetUser(String^ username)
         {
-            for each(User ^ user in users)
+            for each (User ^ user in users)
             {
                 if (user->Username->Equals(username))
                 {
@@ -240,17 +240,19 @@ namespace ProyectMovies {
             lblMensaje->ForeColor = Color::Green;
             lblMensaje->Text = String::Format("Bienvenido {0}", loggedUser->Nombre);
 
-            // Pasar los formularios al Landing, incluyendo la lista de usuarios
+            // Ocultar el Login en lugar de cerrarlo
+            this->Hide();
+
+            // Crear y mostrar el Landing (pasando this como owner para poder volver)
             Landing^ landingForm = gcnew Landing(loggedUser, peliculas, salas,
-                asignacionPeliculasSalas, compraBoletos, clientes, usuarios);
+                asignacionPeliculasSalas, compraBoletos, clientes, usuarios, this);
+            landingForm->ShowDialog();
 
-            landingForm->TopLevel = false;
-            landingForm->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
-            landingForm->Dock = DockStyle::Fill;
-
-            this->Controls->Clear();
-            this->Controls->Add(landingForm);
-            landingForm->Show();
+            // Cuando se cierre el Landing, mostrar el Login nuevamente
+            this->Show();
+            txtUsuario->Text = "";
+            txtContrasena->Text = "";
+            txtUsuario->Focus();
         }
         else
         {
