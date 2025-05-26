@@ -497,11 +497,11 @@ namespace ProyectMovies {
             // 
             // btnCargaDatos
             // 
-            this->btnCargaDatos->Location = System::Drawing::Point(849, 160);
+            this->btnCargaDatos->Location = System::Drawing::Point(840, 153);
             this->btnCargaDatos->Name = L"btnCargaDatos";
-            this->btnCargaDatos->Size = System::Drawing::Size(98, 37);
+            this->btnCargaDatos->Size = System::Drawing::Size(112, 51);
             this->btnCargaDatos->TabIndex = 24;
-            this->btnCargaDatos->Text = L"Cargar Datos";
+            this->btnCargaDatos->Text = L"Carga de datos";
             this->btnCargaDatos->UseVisualStyleBackColor = true;
             // 
             // Usuarios
