@@ -104,6 +104,13 @@ namespace ProyectMovies {
 			return false; // Asiento ya ocupado o coordenadas inválidas
 		}
 
+		void LiberarAsiento(int fila, int columna) {
+			if (fila >= 0 && fila < asientos->Length &&
+				columna >= 0 && columna < asientos[0]->Length) {
+				asientos[fila][columna] = true;
+			}
+		}
+
 		// Aqui podria ir el liberar todos los asientos
 		void RestaurarAsientos() {
 			for (int i = 0; i < asientos->Length; i++) {

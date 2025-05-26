@@ -190,6 +190,29 @@ namespace ProyectMovies {
 			}
 		}
 
+		void CompactarArrayCompras() {
+			int indiceDestino = 0;
+			for (int i = 0; i < comprasBoletos->Length; i++) {
+				if (comprasBoletos[i] != nullptr) {
+					if (i != indiceDestino) {
+						comprasBoletos[indiceDestino] = comprasBoletos[i];
+						comprasBoletos[i] = nullptr;
+					}
+					indiceDestino++;
+				}
+			}
+		}
+
+		void ActualizarUltimoCodigo() {
+			ultimoCodigo = 0;
+			for (int i = 0; i < comprasBoletos->Length; i++) {
+				if (comprasBoletos[i] != nullptr) {
+					ultimoCodigo++;
+				}
+			}
+		}
+
+
 		void CargarClientesComboBox() {
 			this->cboCliente->Items->Clear();
 			this->cboCliente->DisplayMember = "Nombre";
@@ -424,6 +447,7 @@ namespace ProyectMovies {
 			this->btnEliminar->TabIndex = 10;
 			this->btnEliminar->Text = L"Eliminar";
 			this->btnEliminar->UseVisualStyleBackColor = true;
+			this->btnEliminar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnEliminar_Click);
 			// 
 			// panelAsientos
 			// 
@@ -506,61 +530,6 @@ namespace ProyectMovies {
         }
     }
 	}
-	/*private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
-		if (estadoActual == ModoFormulario::Ninguno) {
-			estadoActual = ModoFormulario::Agregar;
-			ActualizarEstadoFormulario();
-			ResetearFormulario();
-		}
-		else if (estadoActual == ModoFormulario::Agregar) {
-			if (cboFuncion->SelectedIndex == -1 || cboCliente->SelectedIndex == -1 || dateFecha->Value == DateTime::MinValue) {
-				MessageBox::Show("Por favor, complete todos los campos.");
-				return;
-			}
-
-			if (asientoFilaSeleccionado == -1 || asientoColumnaSeleccionado == -1) {
-				MessageBox::Show("Por favor, seleccione un asiento.");
-				return;
-			}
-
-			AsignacionPeliculaSala^ asignacionSeleccionada = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
-			Cliente^ clienteSeleccionado = dynamic_cast<Cliente^>(cboCliente->SelectedItem);
-			DateTime fechaCompra = dateFecha->Value;
-
-			int totalColumnas = 8;
-			Button^ btnAsientoSeleccionado = dynamic_cast<Button^>(
-				panelAsientos->Controls[asientoFilaSeleccionado * totalColumnas + asientoColumnaSeleccionado]
-			);
-
-			if (btnAsientoSeleccionado != nullptr && btnAsientoSeleccionado->BackColor == Color::Green) {
-				// Intentar ocupar el asiento
-				if (asignacionSeleccionada->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado)) {
-					// Cambiar el color del asiento a rojo y deshabilitarlo
-					btnAsientoSeleccionado->BackColor = Color::Red;
-					btnAsientoSeleccionado->Enabled = false;
-
-					// Agregar la compra
-					AgregarCompraBoleto(asignacionSeleccionada, clienteSeleccionado, fechaCompra);
-
-					// Resetear el formulario
-					estadoActual = ModoFormulario::Ninguno;
-					ActualizarEstadoFormulario();
-					ResetearFormulario();
-					tblCompras->ClearSelection();
-
-					// Resetear la selección de asientos
-					asientoFilaSeleccionado = -1;
-					asientoColumnaSeleccionado = -1;
-				}
-				else {
-					MessageBox::Show("Error al ocupar el asiento. Intente nuevamente.");
-				}
-			}
-			else {
-				MessageBox::Show("El asiento seleccionado no está disponible.");
-			}
-		}
-	}*/
 	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (estadoActual == ModoFormulario::Ninguno) {
 			estadoActual = ModoFormulario::Agregar;
@@ -655,5 +624,66 @@ namespace ProyectMovies {
 			btnAsiento->BackColor = Color::Blue; // Asiento seleccionado
 		}
 	}
+	private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
+			   if (estadoActual == ModoFormulario::Agregar) {
+				   estadoActual = ModoFormulario::Ninguno;
+				   ActualizarEstadoFormulario();
+				   ResetearFormulario();
+				   tblCompras->ClearSelection();
+				   compraSeleccionada = -1;
+				   panelAsientos->Controls->Clear();
+				   return;
+			   }
+
+			   if (compraSeleccionada >= 0 && compraSeleccionada < comprasBoletos->Length && comprasBoletos[compraSeleccionada] != nullptr) {
+				   System::Windows::Forms::DialogResult result = MessageBox::Show(
+					   "¿Estás seguro de eliminar esta compra?",
+					   "Confirmar eliminación",
+					   MessageBoxButtons::YesNo,
+					   MessageBoxIcon::Warning
+				   );
+
+				   if (result == System::Windows::Forms::DialogResult::Yes) {
+					   ComprasBoletos^ compraAEliminar = comprasBoletos[compraSeleccionada];
+
+					   // Liberar asiento
+					   if (compraAEliminar->AsignacionCompra != nullptr &&
+						   compraAEliminar->AsignacionCompra->SalaAsignada != nullptr) {
+						   compraAEliminar->AsignacionCompra->SalaAsignada->LiberarAsiento(
+							   compraAEliminar->FilaAsiento,
+							   compraAEliminar->ColumnaAsiento
+						   );
+					   }
+
+					   // Eliminar compra y compactar array
+					   comprasBoletos[compraSeleccionada] = nullptr;
+
+					   // Compactar el array eliminando nulls
+					   CompactarArrayCompras();
+
+					   // Actualizar último código
+					   ActualizarUltimoCodigo();
+
+					   MostrarComprasBoletos();
+
+					   // Actualizar visualización si es necesario
+					   if (cboFuncion->SelectedIndex != -1) {
+						   AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+						   if (asignacion != nullptr) {
+							   MostrarAsientos(asignacion->SalaAsignada);
+						   }
+					   }
+				   }
+
+				   ResetearFormulario();
+				   tblCompras->ClearSelection();
+				   compraSeleccionada = -1;
+				   panelAsientos->Controls->Clear();
+			   }
+			   else {
+				   MessageBox::Show("Seleccione una compra para eliminar.");
+			   }
+		   }
+
 };
 }
