@@ -308,6 +308,7 @@ namespace ProyectMovies {
 			this->cboFuncion->Size = System::Drawing::Size(1103, 28);
 			this->cboFuncion->TabIndex = 1;
 			this->cboFuncion->SelectedIndexChanged += gcnew System::EventHandler(this, &CompraBoletos::cboFuncion_SelectedIndexChanged);
+			this->cboFuncion->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblCliente
 			// 
@@ -325,6 +326,7 @@ namespace ProyectMovies {
 			this->cboCliente->Name = L"cboCliente";
 			this->cboCliente->Size = System::Drawing::Size(158, 28);
 			this->cboCliente->TabIndex = 3;
+			this->cboCliente->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblTotal
 			// 

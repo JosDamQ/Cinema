@@ -256,6 +256,7 @@ namespace ProyectMovies {
 			this->cboPeliculas->Name = L"cboPeliculas";
 			this->cboPeliculas->Size = System::Drawing::Size(121, 28);
 			this->cboPeliculas->TabIndex = 1;
+			this->cboPeliculas->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblSala
 			// 
@@ -274,6 +275,7 @@ namespace ProyectMovies {
 			this->cboSala->Name = L"cboSala";
 			this->cboSala->Size = System::Drawing::Size(121, 28);
 			this->cboSala->TabIndex = 3;
+			this->cboSala->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// dateFechaAsignacion
 			// 
