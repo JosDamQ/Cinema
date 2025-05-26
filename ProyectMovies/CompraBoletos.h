@@ -34,6 +34,8 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colAsiento;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colTotal;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaCompra;
+	private: System::Windows::Forms::Button^ btnHTML;
+	private: System::Windows::Forms::Button^ btnCargaDatos;
 
 
 
@@ -148,12 +150,16 @@ namespace ProyectMovies {
 			if (estadoActual == ModoFormulario::Agregar) {
 				btnAgregar->Text = "Confirmar";
 				btnEliminar->Text = "Cancelar";
+				btnHTML->Enabled = false;
+				btnCargaDatos->Enabled = false;
 			}
 			else {
 				btnAgregar->Text = "Agregar";
 				btnEliminar->Text = "Eliminar";
 				btnAgregar->Enabled = true;
 				btnEliminar->Enabled = true;
+				btnHTML->Enabled = true;
+				btnCargaDatos->Enabled = true;
 			}
 		}
 
@@ -297,11 +303,6 @@ namespace ProyectMovies {
 			this->cboCliente = (gcnew System::Windows::Forms::ComboBox());
 			this->lblTotal = (gcnew System::Windows::Forms::Label());
 			this->tblCompras = (gcnew System::Windows::Forms::DataGridView());
-			this->lblFecha = (gcnew System::Windows::Forms::Label());
-			this->dateFecha = (gcnew System::Windows::Forms::DateTimePicker());
-			this->btnAgregar = (gcnew System::Windows::Forms::Button());
-			this->btnEliminar = (gcnew System::Windows::Forms::Button());
-			this->panelAsientos = (gcnew System::Windows::Forms::Panel());
 			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colPelicula = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colIdioma = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
@@ -313,6 +314,13 @@ namespace ProyectMovies {
 			this->colAsiento = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colTotal = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colFechaCompra = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->lblFecha = (gcnew System::Windows::Forms::Label());
+			this->dateFecha = (gcnew System::Windows::Forms::DateTimePicker());
+			this->btnAgregar = (gcnew System::Windows::Forms::Button());
+			this->btnEliminar = (gcnew System::Windows::Forms::Button());
+			this->panelAsientos = (gcnew System::Windows::Forms::Panel());
+			this->btnHTML = (gcnew System::Windows::Forms::Button());
+			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblCompras))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -376,50 +384,6 @@ namespace ProyectMovies {
 			this->tblCompras->Size = System::Drawing::Size(1193, 409);
 			this->tblCompras->TabIndex = 6;
 			this->tblCompras->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &CompraBoletos::tblCompras_CellClick);
-			// 
-			// lblFecha
-			// 
-			this->lblFecha->AutoSize = true;
-			this->lblFecha->Location = System::Drawing::Point(605, 142);
-			this->lblFecha->Name = L"lblFecha";
-			this->lblFecha->Size = System::Drawing::Size(54, 20);
-			this->lblFecha->TabIndex = 7;
-			this->lblFecha->Text = L"Fecha";
-			// 
-			// dateFecha
-			// 
-			this->dateFecha->Location = System::Drawing::Point(682, 137);
-			this->dateFecha->Name = L"dateFecha";
-			this->dateFecha->Size = System::Drawing::Size(309, 26);
-			this->dateFecha->TabIndex = 8;
-			// 
-			// btnAgregar
-			// 
-			this->btnAgregar->Location = System::Drawing::Point(482, 181);
-			this->btnAgregar->Name = L"btnAgregar";
-			this->btnAgregar->Size = System::Drawing::Size(112, 43);
-			this->btnAgregar->TabIndex = 9;
-			this->btnAgregar->Text = L"Agregar";
-			this->btnAgregar->UseVisualStyleBackColor = true;
-			this->btnAgregar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnAgregar_Click);
-			// 
-			// btnEliminar
-			// 
-			this->btnEliminar->Location = System::Drawing::Point(632, 181);
-			this->btnEliminar->Name = L"btnEliminar";
-			this->btnEliminar->Size = System::Drawing::Size(112, 43);
-			this->btnEliminar->TabIndex = 10;
-			this->btnEliminar->Text = L"Eliminar";
-			this->btnEliminar->UseVisualStyleBackColor = true;
-			this->btnEliminar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnEliminar_Click);
-			// 
-			// panelAsientos
-			// 
-			this->panelAsientos->BackColor = System::Drawing::Color::LightGray;
-			this->panelAsientos->Location = System::Drawing::Point(1334, 40);
-			this->panelAsientos->Name = L"panelAsientos";
-			this->panelAsientos->Size = System::Drawing::Size(933, 741);
-			this->panelAsientos->TabIndex = 11;
 			// 
 			// colCodigo
 			// 
@@ -494,11 +458,75 @@ namespace ProyectMovies {
 			this->colFechaCompra->Name = L"colFechaCompra";
 			this->colFechaCompra->Width = 150;
 			// 
+			// lblFecha
+			// 
+			this->lblFecha->AutoSize = true;
+			this->lblFecha->Location = System::Drawing::Point(605, 142);
+			this->lblFecha->Name = L"lblFecha";
+			this->lblFecha->Size = System::Drawing::Size(54, 20);
+			this->lblFecha->TabIndex = 7;
+			this->lblFecha->Text = L"Fecha";
+			// 
+			// dateFecha
+			// 
+			this->dateFecha->Location = System::Drawing::Point(682, 137);
+			this->dateFecha->Name = L"dateFecha";
+			this->dateFecha->Size = System::Drawing::Size(309, 26);
+			this->dateFecha->TabIndex = 8;
+			// 
+			// btnAgregar
+			// 
+			this->btnAgregar->Location = System::Drawing::Point(287, 196);
+			this->btnAgregar->Name = L"btnAgregar";
+			this->btnAgregar->Size = System::Drawing::Size(112, 43);
+			this->btnAgregar->TabIndex = 9;
+			this->btnAgregar->Text = L"Agregar";
+			this->btnAgregar->UseVisualStyleBackColor = true;
+			this->btnAgregar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnAgregar_Click);
+			// 
+			// btnEliminar
+			// 
+			this->btnEliminar->Location = System::Drawing::Point(465, 196);
+			this->btnEliminar->Name = L"btnEliminar";
+			this->btnEliminar->Size = System::Drawing::Size(112, 43);
+			this->btnEliminar->TabIndex = 10;
+			this->btnEliminar->Text = L"Eliminar";
+			this->btnEliminar->UseVisualStyleBackColor = true;
+			this->btnEliminar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnEliminar_Click);
+			// 
+			// panelAsientos
+			// 
+			this->panelAsientos->BackColor = System::Drawing::Color::LightGray;
+			this->panelAsientos->Location = System::Drawing::Point(1334, 40);
+			this->panelAsientos->Name = L"panelAsientos";
+			this->panelAsientos->Size = System::Drawing::Size(933, 741);
+			this->panelAsientos->TabIndex = 11;
+			// 
+			// btnHTML
+			// 
+			this->btnHTML->Location = System::Drawing::Point(639, 196);
+			this->btnHTML->Name = L"btnHTML";
+			this->btnHTML->Size = System::Drawing::Size(112, 43);
+			this->btnHTML->TabIndex = 12;
+			this->btnHTML->Text = L"HTML";
+			this->btnHTML->UseVisualStyleBackColor = true;
+			// 
+			// btnCargaDatos
+			// 
+			this->btnCargaDatos->Location = System::Drawing::Point(802, 189);
+			this->btnCargaDatos->Name = L"btnCargaDatos";
+			this->btnCargaDatos->Size = System::Drawing::Size(110, 56);
+			this->btnCargaDatos->TabIndex = 13;
+			this->btnCargaDatos->Text = L"Carga de Datos";
+			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			// 
 			// CompraBoletos
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1684, 1031);
+			this->Controls->Add(this->btnCargaDatos);
+			this->Controls->Add(this->btnHTML);
 			this->Controls->Add(this->btnEliminar);
 			this->Controls->Add(this->btnAgregar);
 			this->Controls->Add(this->dateFecha);

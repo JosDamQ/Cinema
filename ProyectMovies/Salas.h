@@ -17,6 +17,8 @@ namespace ProyectMovies {
 		array<Sala^>^ salas;
 		int ultimoCodigo;
 		int salaSeleccionada;
+	private: System::Windows::Forms::Button^ btnHTML;
+	private: System::Windows::Forms::Button^ btnCargaDatos;
 
 		enum class ModoFormulario
 		{
@@ -95,11 +97,15 @@ namespace ProyectMovies {
 				btnAgregar->Text = "Confirmar";
 				btnEliminar->Text = "Cancelar";
 				btnEditar->Enabled = false;
+				btnHTML->Enabled = false;
+				btnCargaDatos->Enabled = false;
 			}
 			else if (estadoActual == ModoFormulario::Editar) {
 				btnEditar->Text = "Confirmar";
 				btnEliminar->Text = "Cancelar";
 				btnAgregar->Enabled = false;
+				btnHTML->Enabled = false;
+				btnCargaDatos->Enabled = false;
 			}
 			else {
 				btnAgregar->Text = "Agregar";
@@ -108,6 +114,8 @@ namespace ProyectMovies {
 				btnAgregar->Enabled = true;
 				btnEliminar->Enabled = true;
 				btnEditar->Enabled = true;
+				btnHTML->Enabled = true;
+				btnCargaDatos->Enabled = true;
 			}
 		}
 
@@ -194,6 +202,8 @@ namespace ProyectMovies {
 			this->btnAgregar = (gcnew System::Windows::Forms::Button());
 			this->btnEliminar = (gcnew System::Windows::Forms::Button());
 			this->btnEditar = (gcnew System::Windows::Forms::Button());
+			this->btnHTML = (gcnew System::Windows::Forms::Button());
+			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblSalas))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -224,13 +234,12 @@ namespace ProyectMovies {
 			// 
 			// cboCapacidad
 			// 
+			this->cboCapacidad->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->cboCapacidad->FormattingEnabled = true;
 			this->cboCapacidad->Location = System::Drawing::Point(376, 37);
 			this->cboCapacidad->Name = L"cboCapacidad";
 			this->cboCapacidad->Size = System::Drawing::Size(121, 28);
 			this->cboCapacidad->TabIndex = 3;
-			// Esto es para que no se pueda escribir en el combobox
-			this->cboCapacidad->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblUbicacion
 			// 
@@ -326,7 +335,7 @@ namespace ProyectMovies {
 			// 
 			// btnAgregar
 			// 
-			this->btnAgregar->Location = System::Drawing::Point(289, 185);
+			this->btnAgregar->Location = System::Drawing::Point(250, 185);
 			this->btnAgregar->Name = L"btnAgregar";
 			this->btnAgregar->Size = System::Drawing::Size(84, 35);
 			this->btnAgregar->TabIndex = 11;
@@ -336,7 +345,7 @@ namespace ProyectMovies {
 			// 
 			// btnEliminar
 			// 
-			this->btnEliminar->Location = System::Drawing::Point(422, 185);
+			this->btnEliminar->Location = System::Drawing::Point(365, 185);
 			this->btnEliminar->Name = L"btnEliminar";
 			this->btnEliminar->Size = System::Drawing::Size(84, 35);
 			this->btnEliminar->TabIndex = 12;
@@ -346,7 +355,7 @@ namespace ProyectMovies {
 			// 
 			// btnEditar
 			// 
-			this->btnEditar->Location = System::Drawing::Point(557, 185);
+			this->btnEditar->Location = System::Drawing::Point(477, 185);
 			this->btnEditar->Name = L"btnEditar";
 			this->btnEditar->Size = System::Drawing::Size(84, 35);
 			this->btnEditar->TabIndex = 13;
@@ -354,11 +363,31 @@ namespace ProyectMovies {
 			this->btnEditar->UseVisualStyleBackColor = true;
 			this->btnEditar->Click += gcnew System::EventHandler(this, &Salas::btnEditar_Click);
 			// 
+			// btnHTML
+			// 
+			this->btnHTML->Location = System::Drawing::Point(592, 185);
+			this->btnHTML->Name = L"btnHTML";
+			this->btnHTML->Size = System::Drawing::Size(84, 35);
+			this->btnHTML->TabIndex = 14;
+			this->btnHTML->Text = L"HTML";
+			this->btnHTML->UseVisualStyleBackColor = true;
+			// 
+			// btnCargaDatos
+			// 
+			this->btnCargaDatos->Location = System::Drawing::Point(702, 172);
+			this->btnCargaDatos->Name = L"btnCargaDatos";
+			this->btnCargaDatos->Size = System::Drawing::Size(94, 60);
+			this->btnCargaDatos->TabIndex = 15;
+			this->btnCargaDatos->Text = L"Carga de datos";
+			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			// 
 			// Salas
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1179, 681);
+			this->Controls->Add(this->btnCargaDatos);
+			this->Controls->Add(this->btnHTML);
 			this->Controls->Add(this->btnEditar);
 			this->Controls->Add(this->btnEliminar);
 			this->Controls->Add(this->btnAgregar);

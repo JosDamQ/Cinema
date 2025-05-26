@@ -32,6 +32,10 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
 	private: System::Windows::Forms::DataGridView^ tblAsignacionPeliculas;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colHora;
+	private: System::Windows::Forms::Button^ btnHTML;
+	private: System::Windows::Forms::Button^ btnCargaDatos;
+
+
 
 		enum class ModoFormulario {
 			Ninguno,
@@ -124,11 +128,15 @@ namespace ProyectMovies {
 				btnAgregar->Text = "Confirmar";
 				btnEliminar->Text = "Cancelar";
 				btnEditar->Enabled = false;
+				btnHTML->Enabled = false;
+				btnCargaDatos->Enabled = false;
 			}
 			else if (estadoActual == ModoFormulario::Editar) {
 				btnEditar->Text = "Confirmar";
 				btnEliminar->Text = "Cancelar";
 				btnAgregar->Enabled = false;
+				btnHTML->Enabled = false;
+				btnCargaDatos->Enabled = false;
 			}
 			else {
 				btnAgregar->Text = "Agregar";
@@ -137,6 +145,8 @@ namespace ProyectMovies {
 				btnAgregar->Enabled = true;
 				btnEliminar->Enabled = true;
 				btnEditar->Enabled = true;
+				btnHTML->Enabled = true;
+				btnCargaDatos->Enabled = true;
 			}
 		}
 
@@ -236,6 +246,8 @@ namespace ProyectMovies {
 			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->tblAsignacionPeliculas = (gcnew System::Windows::Forms::DataGridView());
 			this->colHora = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->btnHTML = (gcnew System::Windows::Forms::Button());
+			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblAsignacionPeliculas))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -256,7 +268,6 @@ namespace ProyectMovies {
 			this->cboPeliculas->Name = L"cboPeliculas";
 			this->cboPeliculas->Size = System::Drawing::Size(121, 28);
 			this->cboPeliculas->TabIndex = 1;
-			this->cboPeliculas->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblSala
 			// 
@@ -275,7 +286,6 @@ namespace ProyectMovies {
 			this->cboSala->Name = L"cboSala";
 			this->cboSala->Size = System::Drawing::Size(121, 28);
 			this->cboSala->TabIndex = 3;
-			this->cboSala->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// dateFechaAsignacion
 			// 
@@ -295,7 +305,7 @@ namespace ProyectMovies {
 			// 
 			// btnAgregar
 			// 
-			this->btnAgregar->Location = System::Drawing::Point(255, 122);
+			this->btnAgregar->Location = System::Drawing::Point(228, 122);
 			this->btnAgregar->Name = L"btnAgregar";
 			this->btnAgregar->Size = System::Drawing::Size(88, 31);
 			this->btnAgregar->TabIndex = 6;
@@ -305,7 +315,7 @@ namespace ProyectMovies {
 			// 
 			// btnEliminar
 			// 
-			this->btnEliminar->Location = System::Drawing::Point(392, 122);
+			this->btnEliminar->Location = System::Drawing::Point(352, 122);
 			this->btnEliminar->Name = L"btnEliminar";
 			this->btnEliminar->Size = System::Drawing::Size(88, 31);
 			this->btnEliminar->TabIndex = 7;
@@ -315,7 +325,7 @@ namespace ProyectMovies {
 			// 
 			// btnEditar
 			// 
-			this->btnEditar->Location = System::Drawing::Point(523, 122);
+			this->btnEditar->Location = System::Drawing::Point(478, 122);
 			this->btnEditar->Name = L"btnEditar";
 			this->btnEditar->Size = System::Drawing::Size(88, 31);
 			this->btnEditar->TabIndex = 8;
@@ -410,11 +420,31 @@ namespace ProyectMovies {
 			this->colHora->Name = L"colHora";
 			this->colHora->Width = 150;
 			// 
+			// btnHTML
+			// 
+			this->btnHTML->Location = System::Drawing::Point(606, 122);
+			this->btnHTML->Name = L"btnHTML";
+			this->btnHTML->Size = System::Drawing::Size(88, 31);
+			this->btnHTML->TabIndex = 12;
+			this->btnHTML->Text = L"HTML";
+			this->btnHTML->UseVisualStyleBackColor = true;
+			// 
+			// btnCargaDatos
+			// 
+			this->btnCargaDatos->Location = System::Drawing::Point(726, 111);
+			this->btnCargaDatos->Name = L"btnCargaDatos";
+			this->btnCargaDatos->Size = System::Drawing::Size(89, 52);
+			this->btnCargaDatos->TabIndex = 13;
+			this->btnCargaDatos->Text = L"Carga de datos";
+			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			// 
 			// AsignacionPeliculasSalas
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1359, 663);
+			this->Controls->Add(this->btnCargaDatos);
+			this->Controls->Add(this->btnHTML);
 			this->Controls->Add(this->txtHora);
 			this->Controls->Add(this->lblHora);
 			this->Controls->Add(this->tblAsignacionPeliculas);
