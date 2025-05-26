@@ -20,6 +20,10 @@ namespace ProyectMovies {
 		array<ComprasBoletos^>^ comprasBoletos;
 		int ultimoCodigo;
 		int compraSeleccionada;
+
+		int asientoFilaSeleccionado = -1;
+		int asientoColumnaSeleccionado = -1;
+
 		enum class ModoFormulario {
 			Ninguno,
 			Agregar,
@@ -52,7 +56,7 @@ namespace ProyectMovies {
 		}
 
 		//Funcion agregar
-		void AgregarCompraBoleto
+		/*void AgregarCompraBoleto
 		(
 			AsignacionPeliculaSala^ asignacion,
 			Cliente^ cliente,
@@ -61,6 +65,21 @@ namespace ProyectMovies {
 		{
 			ultimoCodigo++;
 			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra);
+			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
+			MostrarComprasBoletos();
+		}*/
+		void AgregarCompraBoleto(AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra, int fila, int columna) {
+			if (asientoFilaSeleccionado == -1) {
+				MessageBox::Show("Seleccione un asiento.");
+				return;
+			}
+
+			// Ocupar el asiento en la sala
+			asignacion->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+			// Resto de la lógica de agregar compra...
+			ultimoCodigo++;
+			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra, fila, columna);
 			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
 			MostrarComprasBoletos();
 		}
@@ -78,7 +97,9 @@ namespace ProyectMovies {
 						comprasBoletos[i]->ClienteCompra->Nombre,
 						comprasBoletos[i]->AsignacionCompra->ObtenerResumenAsignacion(),
 						comprasBoletos[i]->AsignacionCompra->FechaEstreno.ToString("dd/MM/yyyy") + " " + comprasBoletos[i]->AsignacionCompra->HoraFuncion,
-						"", //Asiento,
+						String::Format("Fila {0}, Columna {1}",
+							comprasBoletos[i]->FilaAsiento + 1,
+							comprasBoletos[i]->ColumnaAsiento + 1),
 						comprasBoletos[i]->AsignacionCompra->PeliculaAsignada->Precio,
 						comprasBoletos[i]->FechaCompra.ToString("dd/MM/yyyy")
 					);
@@ -145,7 +166,9 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::Label^ lblFecha;
 	private: System::Windows::Forms::DateTimePicker^ dateFecha;
 
-
+    // Asientos
+	private: System::Windows::Forms::Panel^ panelAsientos;
+	private: System::Windows::Forms::Label^ lblAsientos;
 
 
 	protected:
@@ -177,6 +200,48 @@ namespace ProyectMovies {
 			}
 		}
 
+		void MostrarAsientos(Sala^ sala) {
+			if (panelAsientos == nullptr) {
+				panelAsientos = gcnew Panel();
+				panelAsientos->Location = System::Drawing::Point(1334, 40);
+				panelAsientos->Size = System::Drawing::Size(933, 741);
+				this->Controls->Add(panelAsientos);
+			}
+
+			panelAsientos->Controls->Clear();
+
+			int filas = (sala->Capacidad == CapacidadSala::Capacidad_40) ? 5 : 7;
+			int columnas = 8;
+			int anchoBoton = 40;
+			int altoBoton = 40;
+			int espacio = 5;
+
+			for (int fila = 0; fila < filas; fila++) {
+				for (int columna = 0; columna < columnas; columna++) {
+					Button^ btnAsiento = gcnew Button();
+					btnAsiento->Width = anchoBoton;
+					btnAsiento->Height = altoBoton;
+					btnAsiento->Left = columna * (anchoBoton + espacio);
+					btnAsiento->Top = fila * (altoBoton + espacio);
+					btnAsiento->Text = String::Format("{0}-{1}", fila + 1, columna + 1);
+					btnAsiento->Tag = gcnew Tuple<int, int>(fila, columna);
+
+					bool disponible = sala->Asientos[fila][columna];
+
+					if (disponible) {
+						btnAsiento->BackColor = Color::Green;
+						btnAsiento->Click += gcnew EventHandler(this, &CompraBoletos::Asiento_Click);
+					}
+					else {
+						btnAsiento->BackColor = Color::Red;
+						btnAsiento->Enabled = false;
+					}
+
+					panelAsientos->Controls->Add(btnAsiento);
+				}
+			}
+		}
+
 
 		void InitializeComponent(void)
 		{
@@ -199,6 +264,7 @@ namespace ProyectMovies {
 			this->dateFecha = (gcnew System::Windows::Forms::DateTimePicker());
 			this->btnAgregar = (gcnew System::Windows::Forms::Button());
 			this->btnEliminar = (gcnew System::Windows::Forms::Button());
+			this->panelAsientos = (gcnew System::Windows::Forms::Panel());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblCompras))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -218,6 +284,7 @@ namespace ProyectMovies {
 			this->cboFuncion->Name = L"cboFuncion";
 			this->cboFuncion->Size = System::Drawing::Size(1103, 28);
 			this->cboFuncion->TabIndex = 1;
+			this->cboFuncion->SelectedIndexChanged += gcnew System::EventHandler(this, &CompraBoletos::cboFuncion_SelectedIndexChanged);
 			// 
 			// lblCliente
 			// 
@@ -331,7 +398,6 @@ namespace ProyectMovies {
 			this->lblFecha->Size = System::Drawing::Size(54, 20);
 			this->lblFecha->TabIndex = 7;
 			this->lblFecha->Text = L"Fecha";
-
 			// 
 			// dateFecha
 			// 
@@ -359,11 +425,19 @@ namespace ProyectMovies {
 			this->btnEliminar->Text = L"Eliminar";
 			this->btnEliminar->UseVisualStyleBackColor = true;
 			// 
+			// panelAsientos
+			// 
+			this->panelAsientos->BackColor = System::Drawing::Color::LightGray;
+			this->panelAsientos->Location = System::Drawing::Point(1334, 40);
+			this->panelAsientos->Name = L"panelAsientos";
+			this->panelAsientos->Size = System::Drawing::Size(933, 741);
+			this->panelAsientos->TabIndex = 11;
+			// 
 			// CompraBoletos
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(2284, 1046);
+			this->ClientSize = System::Drawing::Size(2408, 1046);
 			this->Controls->Add(this->btnEliminar);
 			this->Controls->Add(this->btnAgregar);
 			this->Controls->Add(this->dateFecha);
@@ -374,6 +448,7 @@ namespace ProyectMovies {
 			this->Controls->Add(this->lblCliente);
 			this->Controls->Add(this->cboFuncion);
 			this->Controls->Add(this->lblFuncion);
+			this->Controls->Add(this->panelAsientos);
 			this->Name = L"CompraBoletos";
 			this->Text = L"CompraBoletos";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblCompras))->EndInit();
@@ -431,7 +506,7 @@ namespace ProyectMovies {
         }
     }
 	}
-	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
+	/*private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (estadoActual == ModoFormulario::Ninguno) {
 			estadoActual = ModoFormulario::Agregar;
 			ActualizarEstadoFormulario();
@@ -442,16 +517,142 @@ namespace ProyectMovies {
 				MessageBox::Show("Por favor, complete todos los campos.");
 				return;
 			}
+
+			if (asientoFilaSeleccionado == -1 || asientoColumnaSeleccionado == -1) {
+				MessageBox::Show("Por favor, seleccione un asiento.");
+				return;
+			}
+
 			AsignacionPeliculaSala^ asignacionSeleccionada = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
 			Cliente^ clienteSeleccionado = dynamic_cast<Cliente^>(cboCliente->SelectedItem);
 			DateTime fechaCompra = dateFecha->Value;
 
-			AgregarCompraBoleto(asignacionSeleccionada, clienteSeleccionado, fechaCompra);
+			int totalColumnas = 8;
+			Button^ btnAsientoSeleccionado = dynamic_cast<Button^>(
+				panelAsientos->Controls[asientoFilaSeleccionado * totalColumnas + asientoColumnaSeleccionado]
+			);
 
-			estadoActual = ModoFormulario::Ninguno;
+			if (btnAsientoSeleccionado != nullptr && btnAsientoSeleccionado->BackColor == Color::Green) {
+				// Intentar ocupar el asiento
+				if (asignacionSeleccionada->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado)) {
+					// Cambiar el color del asiento a rojo y deshabilitarlo
+					btnAsientoSeleccionado->BackColor = Color::Red;
+					btnAsientoSeleccionado->Enabled = false;
+
+					// Agregar la compra
+					AgregarCompraBoleto(asignacionSeleccionada, clienteSeleccionado, fechaCompra);
+
+					// Resetear el formulario
+					estadoActual = ModoFormulario::Ninguno;
+					ActualizarEstadoFormulario();
+					ResetearFormulario();
+					tblCompras->ClearSelection();
+
+					// Resetear la selección de asientos
+					asientoFilaSeleccionado = -1;
+					asientoColumnaSeleccionado = -1;
+				}
+				else {
+					MessageBox::Show("Error al ocupar el asiento. Intente nuevamente.");
+				}
+			}
+			else {
+				MessageBox::Show("El asiento seleccionado no está disponible.");
+			}
+		}
+	}*/
+	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			estadoActual = ModoFormulario::Agregar;
 			ActualizarEstadoFormulario();
 			ResetearFormulario();
-			tblCompras->ClearSelection();
+		}
+		else if (estadoActual == ModoFormulario::Agregar) {
+			// Validar campos obligatorios
+			if (cboFuncion->SelectedIndex == -1 || cboCliente->SelectedIndex == -1 || dateFecha->Value == DateTime::MinValue) {
+				MessageBox::Show("Por favor, complete todos los campos.");
+				return;
+			}
+
+			// Validar que se haya seleccionado un asiento
+			if (asientoFilaSeleccionado == -1 || asientoColumnaSeleccionado == -1) {
+				MessageBox::Show("Por favor, seleccione un asiento.");
+				return;
+			}
+
+			AsignacionPeliculaSala^ asignacionSeleccionada = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+			Cliente^ clienteSeleccionado = dynamic_cast<Cliente^>(cboCliente->SelectedItem);
+			DateTime fechaCompra = dateFecha->Value;
+
+			// Obtener el botón del asiento seleccionado
+			int totalColumnas = 8;
+			int controlIndex = asientoFilaSeleccionado * totalColumnas + asientoColumnaSeleccionado;
+
+			if (controlIndex >= 0 && controlIndex < panelAsientos->Controls->Count) {
+				Button^ btnAsientoSeleccionado = dynamic_cast<Button^>(panelAsientos->Controls[controlIndex]);
+
+				if (btnAsientoSeleccionado != nullptr && btnAsientoSeleccionado->Enabled) {
+					// Ocupar el asiento en la sala
+					asignacionSeleccionada->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+					// Actualizar visualmente el asiento
+					btnAsientoSeleccionado->BackColor = Color::Red;
+					btnAsientoSeleccionado->Enabled = false;
+
+					// Agregar la compra
+					AgregarCompraBoleto(asignacionSeleccionada, clienteSeleccionado, fechaCompra, asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+					// Resetear el formulario
+					estadoActual = ModoFormulario::Ninguno;
+					ActualizarEstadoFormulario();
+					ResetearFormulario();
+					tblCompras->ClearSelection();
+
+					// Resetear la selección de asientos
+					asientoFilaSeleccionado = -1;
+					asientoColumnaSeleccionado = -1;
+
+					panelAsientos->Controls->Clear();
+				}
+				else {
+					MessageBox::Show("El asiento seleccionado no está disponible.");
+				}
+			}
+			else {
+				MessageBox::Show("Asiento inválido seleccionado.");
+			}
+		}
+	}
+	private: System::Void cboFuncion_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (cboFuncion->SelectedIndex != -1) {
+			// Obtener la asignación seleccionada
+			AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+
+			if (asignacion != nullptr && asignacion->SalaAsignada != nullptr) {
+				// Mostrar los asientos de la sala correspondiente
+				MostrarAsientos(asignacion->SalaAsignada);
+			}
+		}
+	}
+	private: System::Void Asiento_Click(System::Object^ sender, System::EventArgs^ e) {
+		Button^ btnAsiento = dynamic_cast<Button^>(sender);
+		if (btnAsiento != nullptr) {
+			// Resetear color del asiento previo (si hay uno seleccionado)
+			if (asientoFilaSeleccionado != -1) {
+				Button^ btnAnterior = dynamic_cast<Button^>(panelAsientos->Controls[
+					asientoFilaSeleccionado * 8 + asientoColumnaSeleccionado
+				]);
+				if (btnAnterior != nullptr) {
+					btnAnterior->BackColor = Color::Green;
+				}
+			}
+
+			// Seleccionar nuevo asiento
+			Tuple<int, int>^ posicion = dynamic_cast<Tuple<int, int>^>(btnAsiento->Tag);
+			asientoFilaSeleccionado = posicion->Item1;
+			asientoColumnaSeleccionado = posicion->Item2;
+
+			btnAsiento->BackColor = Color::Blue; // Asiento seleccionado
 		}
 	}
 };
