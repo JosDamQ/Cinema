@@ -120,12 +120,11 @@ namespace ProyectMovies {
 			}
 		}
 
-		//Metodo combobox
-		//Clientes(array<User^>^ usuariosExistentes) {  // Constructor modificado
-		//	InitializeComponent();
-		//	this->listaUsuarios = usuariosExistentes;
-		//	CargarUsuariosComboBox();
-		//}
+		// Cargar comboBox
+		array<Cliente^>^ ObtenerClientesExistentes()
+		{
+			return clientes;
+		}
 
 	protected:
 		~Clientes()

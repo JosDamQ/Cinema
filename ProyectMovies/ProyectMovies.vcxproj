@@ -123,7 +123,9 @@
     <ClInclude Include="AsignacionPeliculasSalas.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="ClaseAsignacionPeliculasSalas.h" />
     <ClInclude Include="ClaseClientes.h" />
+    <ClInclude Include="ClaseCompraBoletos.h" />
     <ClInclude Include="ClasePelicula.h" />
     <ClInclude Include="ClaseSalas.h" />
     <ClInclude Include="ClaseUsuarios.h" />
@@ -137,6 +139,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Login.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Login1.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Peliculas.h">
@@ -176,6 +181,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Login1.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

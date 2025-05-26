@@ -110,6 +110,12 @@ namespace ProyectMovies {
 				btnEditar->Enabled = true;
 			}
 		}
+
+		//cargar combobox
+		array<Sala^>^ ObtenerSalasExistentes()
+		{
+			return salas;
+		}
 		
 
 	protected:
