@@ -38,13 +38,17 @@ namespace ProyectMovies {
 			// Inicializar los formularios
 			peliculas = gcnew Peliculas();
 			salas = gcnew Salas();
+			clientes = gcnew Clientes();
+			usuarios = gcnew Usuarios();
 			asignacionPeliculasSalas = gcnew AsignacionPeliculasSalas(
 				peliculas->ObtenerPeliculasExistentes(),
 				salas->ObtenerSalasExistentes()
 			);
-			compraBoletos = gcnew CompraBoletos();
-			clientes = gcnew Clientes();
-			usuarios = gcnew Usuarios();
+			//compraBoletos = gcnew CompraBoletos();
+			compraBoletos = gcnew CompraBoletos(
+				asignacionPeliculasSalas->ObtenerAsignacionesExistentes(),
+				clientes->ObtenerClientesExistentes()
+			);
 		}
 
 	protected:
@@ -309,6 +313,11 @@ namespace ProyectMovies {
 
 	//Logica para ir a la vista de compra de boletos
 	private: System::Void btnCompraBoletos_Click(System::Object^ sender, System::EventArgs^ e) {
+		//Para los comboBox
+		compraBoletos->ActualizarListas(
+			asignacionPeliculasSalas->ObtenerAsignacionesExistentes(),
+			clientes->ObtenerClientesExistentes()
+		);
 		AbrirFormulario(compraBoletos);
 
 	}

@@ -125,6 +125,7 @@
     </ClInclude>
     <ClInclude Include="ClaseAsignacionPeliculasSalas.h" />
     <ClInclude Include="ClaseClientes.h" />
+    <ClInclude Include="ClaseCompraBoletos.h" />
     <ClInclude Include="ClasePelicula.h" />
     <ClInclude Include="ClaseSalas.h" />
     <ClInclude Include="ClaseUsuarios.h" />

@@ -140,6 +140,16 @@ namespace ProyectMovies {
 			}
 		}
 
+		//Cargar comboBox
+		/*array<Pelicula^>^ ObtenerPeliculasExistentes()
+		{
+			return peliculas;
+		}*/
+		array<AsignacionPeliculaSala^>^ ObtenerAsignacionesExistentes()
+		{
+			return asignacionesPeliculasSalas;
+		}
+
 	protected:
 		~AsignacionPeliculasSalas()
 		{

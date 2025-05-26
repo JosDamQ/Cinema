@@ -58,6 +58,12 @@ namespace ProyectMovies {
 				fechaHoraEstreno.ToString("dd/MM/yyyy hh:mm tt")
 			);
 		}
+
+		property String^ ResumenAsignacion {
+			String^ get() {
+				return ObtenerResumenAsignacion();
+			}
+		}
 	};
 
 }
