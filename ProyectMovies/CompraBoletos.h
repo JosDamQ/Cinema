@@ -20,22 +20,18 @@ namespace ProyectMovies {
 		array<ComprasBoletos^>^ comprasBoletos;
 		int ultimoCodigo;
 		int compraSeleccionada;
+
+		int asientoFilaSeleccionado = -1;
+		int asientoColumnaSeleccionado = -1;
+
 		enum class ModoFormulario {
 			Ninguno,
 			Agregar,
-			//Editar
 		};
 		ModoFormulario estadoActual = ModoFormulario::Ninguno;
 
 
 	public:
-		/*CompraBoletos(void)
-		{
-			InitializeComponent();
-			//
-			//TODO: agregar código de constructor aquí
-			//
-		}*/
 		CompraBoletos(array<AsignacionPeliculaSala^>^ asignacionesExistentes, array<Cliente^>^ clientesExistentes)
 		{
 			InitializeComponent();
@@ -60,7 +56,7 @@ namespace ProyectMovies {
 		}
 
 		//Funcion agregar
-		void AgregarCompraBoleto
+		/*void AgregarCompraBoleto
 		(
 			AsignacionPeliculaSala^ asignacion,
 			Cliente^ cliente,
@@ -69,6 +65,21 @@ namespace ProyectMovies {
 		{
 			ultimoCodigo++;
 			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra);
+			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
+			MostrarComprasBoletos();
+		}*/
+		void AgregarCompraBoleto(AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra, int fila, int columna) {
+			if (asientoFilaSeleccionado == -1) {
+				MessageBox::Show("Seleccione un asiento.");
+				return;
+			}
+
+			// Ocupar el asiento en la sala
+			asignacion->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+			// Resto de la lógica de agregar compra...
+			ultimoCodigo++;
+			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra, fila, columna);
 			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
 			MostrarComprasBoletos();
 		}
@@ -86,7 +97,9 @@ namespace ProyectMovies {
 						comprasBoletos[i]->ClienteCompra->Nombre,
 						comprasBoletos[i]->AsignacionCompra->ObtenerResumenAsignacion(),
 						comprasBoletos[i]->AsignacionCompra->FechaEstreno.ToString("dd/MM/yyyy") + " " + comprasBoletos[i]->AsignacionCompra->HoraFuncion,
-						"", //Asiento,
+						String::Format("Fila {0}, Columna {1}",
+							comprasBoletos[i]->FilaAsiento + 1,
+							comprasBoletos[i]->ColumnaAsiento + 1),
 						comprasBoletos[i]->AsignacionCompra->PeliculaAsignada->Precio,
 						comprasBoletos[i]->FechaCompra.ToString("dd/MM/yyyy")
 					);
@@ -153,7 +166,9 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::Label^ lblFecha;
 	private: System::Windows::Forms::DateTimePicker^ dateFecha;
 
-
+    // Asientos
+	private: System::Windows::Forms::Panel^ panelAsientos;
+	private: System::Windows::Forms::Label^ lblAsientos;
 
 
 	protected:
@@ -175,12 +190,77 @@ namespace ProyectMovies {
 			}
 		}
 
+		void CompactarArrayCompras() {
+			int indiceDestino = 0;
+			for (int i = 0; i < comprasBoletos->Length; i++) {
+				if (comprasBoletos[i] != nullptr) {
+					if (i != indiceDestino) {
+						comprasBoletos[indiceDestino] = comprasBoletos[i];
+						comprasBoletos[i] = nullptr;
+					}
+					indiceDestino++;
+				}
+			}
+		}
+
+		void ActualizarUltimoCodigo() {
+			ultimoCodigo = 0;
+			for (int i = 0; i < comprasBoletos->Length; i++) {
+				if (comprasBoletos[i] != nullptr) {
+					ultimoCodigo++;
+				}
+			}
+		}
+
+
 		void CargarClientesComboBox() {
 			this->cboCliente->Items->Clear();
 			this->cboCliente->DisplayMember = "Nombre";
 			for (int i = 0; i < listaClientes->Length; i++) {
 				if (listaClientes[i] != nullptr) {
 					cboCliente->Items->Add(listaClientes[i]);
+				}
+			}
+		}
+
+		void MostrarAsientos(Sala^ sala) {
+			if (panelAsientos == nullptr) {
+				panelAsientos = gcnew Panel();
+				panelAsientos->Location = System::Drawing::Point(1334, 40);
+				panelAsientos->Size = System::Drawing::Size(933, 741);
+				this->Controls->Add(panelAsientos);
+			}
+
+			panelAsientos->Controls->Clear();
+
+			int filas = (sala->Capacidad == CapacidadSala::Capacidad_40) ? 5 : 7;
+			int columnas = 8;
+			int anchoBoton = 40;
+			int altoBoton = 40;
+			int espacio = 5;
+
+			for (int fila = 0; fila < filas; fila++) {
+				for (int columna = 0; columna < columnas; columna++) {
+					Button^ btnAsiento = gcnew Button();
+					btnAsiento->Width = anchoBoton;
+					btnAsiento->Height = altoBoton;
+					btnAsiento->Left = columna * (anchoBoton + espacio);
+					btnAsiento->Top = fila * (altoBoton + espacio);
+					btnAsiento->Text = String::Format("{0}-{1}", fila + 1, columna + 1);
+					btnAsiento->Tag = gcnew Tuple<int, int>(fila, columna);
+
+					bool disponible = sala->Asientos[fila][columna];
+
+					if (disponible) {
+						btnAsiento->BackColor = Color::Green;
+						btnAsiento->Click += gcnew EventHandler(this, &CompraBoletos::Asiento_Click);
+					}
+					else {
+						btnAsiento->BackColor = Color::Red;
+						btnAsiento->Enabled = false;
+					}
+
+					panelAsientos->Controls->Add(btnAsiento);
 				}
 			}
 		}
@@ -207,6 +287,7 @@ namespace ProyectMovies {
 			this->dateFecha = (gcnew System::Windows::Forms::DateTimePicker());
 			this->btnAgregar = (gcnew System::Windows::Forms::Button());
 			this->btnEliminar = (gcnew System::Windows::Forms::Button());
+			this->panelAsientos = (gcnew System::Windows::Forms::Panel());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblCompras))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -226,6 +307,8 @@ namespace ProyectMovies {
 			this->cboFuncion->Name = L"cboFuncion";
 			this->cboFuncion->Size = System::Drawing::Size(1103, 28);
 			this->cboFuncion->TabIndex = 1;
+			this->cboFuncion->SelectedIndexChanged += gcnew System::EventHandler(this, &CompraBoletos::cboFuncion_SelectedIndexChanged);
+			this->cboFuncion->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblCliente
 			// 
@@ -243,6 +326,7 @@ namespace ProyectMovies {
 			this->cboCliente->Name = L"cboCliente";
 			this->cboCliente->Size = System::Drawing::Size(158, 28);
 			this->cboCliente->TabIndex = 3;
+			this->cboCliente->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			// 
 			// lblTotal
 			// 
@@ -266,6 +350,7 @@ namespace ProyectMovies {
 			this->tblCompras->RowTemplate->Height = 28;
 			this->tblCompras->Size = System::Drawing::Size(1193, 409);
 			this->tblCompras->TabIndex = 6;
+			this->tblCompras->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &CompraBoletos::tblCompras_CellClick);
 			// 
 			// colCodigo
 			// 
@@ -338,7 +423,6 @@ namespace ProyectMovies {
 			this->lblFecha->Size = System::Drawing::Size(54, 20);
 			this->lblFecha->TabIndex = 7;
 			this->lblFecha->Text = L"Fecha";
-			this->lblFecha->Click += gcnew System::EventHandler(this, &CompraBoletos::label1_Click);
 			// 
 			// dateFecha
 			// 
@@ -355,6 +439,7 @@ namespace ProyectMovies {
 			this->btnAgregar->TabIndex = 9;
 			this->btnAgregar->Text = L"Agregar";
 			this->btnAgregar->UseVisualStyleBackColor = true;
+			this->btnAgregar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnAgregar_Click);
 			// 
 			// btnEliminar
 			// 
@@ -364,12 +449,21 @@ namespace ProyectMovies {
 			this->btnEliminar->TabIndex = 10;
 			this->btnEliminar->Text = L"Eliminar";
 			this->btnEliminar->UseVisualStyleBackColor = true;
+			this->btnEliminar->Click += gcnew System::EventHandler(this, &CompraBoletos::btnEliminar_Click);
+			// 
+			// panelAsientos
+			// 
+			this->panelAsientos->BackColor = System::Drawing::Color::LightGray;
+			this->panelAsientos->Location = System::Drawing::Point(1334, 40);
+			this->panelAsientos->Name = L"panelAsientos";
+			this->panelAsientos->Size = System::Drawing::Size(933, 741);
+			this->panelAsientos->TabIndex = 11;
 			// 
 			// CompraBoletos
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(2284, 1046);
+			this->ClientSize = System::Drawing::Size(2408, 1046);
 			this->Controls->Add(this->btnEliminar);
 			this->Controls->Add(this->btnAgregar);
 			this->Controls->Add(this->dateFecha);
@@ -380,6 +474,7 @@ namespace ProyectMovies {
 			this->Controls->Add(this->lblCliente);
 			this->Controls->Add(this->cboFuncion);
 			this->Controls->Add(this->lblFuncion);
+			this->Controls->Add(this->panelAsientos);
 			this->Name = L"CompraBoletos";
 			this->Text = L"CompraBoletos";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblCompras))->EndInit();
@@ -388,7 +483,209 @@ namespace ProyectMovies {
 
 		}
 #pragma endregion
-	private: System::Void label1_Click(System::Object^ sender, System::EventArgs^ e) {
+	private: System::Void tblCompras_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+		if (e->RowIndex >= 0 && e->RowIndex < tblCompras->Rows->Count) {
+        DataGridViewRow^ fila = tblCompras->Rows[e->RowIndex];
+        
+        if (!fila->IsNewRow) {
+            compraSeleccionada = e->RowIndex;
+            
+            // Obtener el código de la compra seleccionada
+            int codigoCompra = Convert::ToInt32(fila->Cells["colCodigo"]->Value);
+            
+            // Buscar la compra en el array de comprasBoletos
+            ComprasBoletos^ compraSeleccionadaObj = nullptr;
+            for (int i = 0; i < ultimoCodigo; i++) {
+                if (comprasBoletos[i] != nullptr && comprasBoletos[i]->Codigo == codigoCompra) {
+                    compraSeleccionadaObj = comprasBoletos[i];
+                    break;
+                }
+            }
+            
+            if (compraSeleccionadaObj != nullptr) {
+                // Cargar los datos en los controles
+                // Seleccionar la función correspondiente en el ComboBox
+                for (int i = 0; i < cboFuncion->Items->Count; i++) {
+                    AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->Items[i]);
+                    if (asignacion != nullptr && asignacion == compraSeleccionadaObj->AsignacionCompra) {
+                        cboFuncion->SelectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Seleccionar el cliente correspondiente en el ComboBox
+                for (int i = 0; i < cboCliente->Items->Count; i++) {
+                    Cliente^ cliente = dynamic_cast<Cliente^>(cboCliente->Items[i]);
+                    if (cliente != nullptr && cliente == compraSeleccionadaObj->ClienteCompra) {
+                        cboCliente->SelectedIndex = i;
+                        break;
+                    }
+                }
+                
+                // Establecer la fecha de compra
+                dateFecha->Value = compraSeleccionadaObj->FechaCompra;
+                
+                // Cambiar al modo de edición (si lo implementas)
+                // estadoActual = ModoFormulario::Editar;
+                // ActualizarEstadoFormulario();
+            }
+        }
+    }
 	}
+	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			estadoActual = ModoFormulario::Agregar;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+		}
+		else if (estadoActual == ModoFormulario::Agregar) {
+			// Validar campos obligatorios
+			if (cboFuncion->SelectedIndex == -1 || cboCliente->SelectedIndex == -1 || dateFecha->Value == DateTime::MinValue) {
+				MessageBox::Show("Por favor, complete todos los campos.");
+				return;
+			}
+
+			// Validar que se haya seleccionado un asiento
+			if (asientoFilaSeleccionado == -1 || asientoColumnaSeleccionado == -1) {
+				MessageBox::Show("Por favor, seleccione un asiento.");
+				return;
+			}
+
+			AsignacionPeliculaSala^ asignacionSeleccionada = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+			Cliente^ clienteSeleccionado = dynamic_cast<Cliente^>(cboCliente->SelectedItem);
+			DateTime fechaCompra = dateFecha->Value;
+
+			// Obtener el botón del asiento seleccionado
+			int totalColumnas = 8;
+			int controlIndex = asientoFilaSeleccionado * totalColumnas + asientoColumnaSeleccionado;
+
+			if (controlIndex >= 0 && controlIndex < panelAsientos->Controls->Count) {
+				Button^ btnAsientoSeleccionado = dynamic_cast<Button^>(panelAsientos->Controls[controlIndex]);
+
+				if (btnAsientoSeleccionado != nullptr && btnAsientoSeleccionado->Enabled) {
+					// Ocupar el asiento en la sala
+					asignacionSeleccionada->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+					// Actualizar visualmente el asiento
+					btnAsientoSeleccionado->BackColor = Color::Red;
+					btnAsientoSeleccionado->Enabled = false;
+
+					// Agregar la compra
+					AgregarCompraBoleto(asignacionSeleccionada, clienteSeleccionado, fechaCompra, asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+					// Resetear el formulario
+					estadoActual = ModoFormulario::Ninguno;
+					ActualizarEstadoFormulario();
+					ResetearFormulario();
+					tblCompras->ClearSelection();
+
+					// Resetear la selección de asientos
+					asientoFilaSeleccionado = -1;
+					asientoColumnaSeleccionado = -1;
+
+					panelAsientos->Controls->Clear();
+				}
+				else {
+					MessageBox::Show("El asiento seleccionado no está disponible.");
+				}
+			}
+			else {
+				MessageBox::Show("Asiento inválido seleccionado.");
+			}
+		}
+	}
+	private: System::Void cboFuncion_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (cboFuncion->SelectedIndex != -1) {
+			// Obtener la asignación seleccionada
+			AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+
+			if (asignacion != nullptr && asignacion->SalaAsignada != nullptr) {
+				// Mostrar los asientos de la sala correspondiente
+				MostrarAsientos(asignacion->SalaAsignada);
+			}
+		}
+	}
+	private: System::Void Asiento_Click(System::Object^ sender, System::EventArgs^ e) {
+		Button^ btnAsiento = dynamic_cast<Button^>(sender);
+		if (btnAsiento != nullptr) {
+			// Resetear color del asiento previo (si hay uno seleccionado)
+			if (asientoFilaSeleccionado != -1) {
+				Button^ btnAnterior = dynamic_cast<Button^>(panelAsientos->Controls[
+					asientoFilaSeleccionado * 8 + asientoColumnaSeleccionado
+				]);
+				if (btnAnterior != nullptr) {
+					btnAnterior->BackColor = Color::Green;
+				}
+			}
+
+			// Seleccionar nuevo asiento
+			Tuple<int, int>^ posicion = dynamic_cast<Tuple<int, int>^>(btnAsiento->Tag);
+			asientoFilaSeleccionado = posicion->Item1;
+			asientoColumnaSeleccionado = posicion->Item2;
+
+			btnAsiento->BackColor = Color::Blue; // Asiento seleccionado
+		}
+	}
+	private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
+			   if (estadoActual == ModoFormulario::Agregar) {
+				   estadoActual = ModoFormulario::Ninguno;
+				   ActualizarEstadoFormulario();
+				   ResetearFormulario();
+				   tblCompras->ClearSelection();
+				   compraSeleccionada = -1;
+				   panelAsientos->Controls->Clear();
+				   return;
+			   }
+
+			   if (compraSeleccionada >= 0 && compraSeleccionada < comprasBoletos->Length && comprasBoletos[compraSeleccionada] != nullptr) {
+				   System::Windows::Forms::DialogResult result = MessageBox::Show(
+					   "¿Estás seguro de eliminar esta compra?",
+					   "Confirmar eliminación",
+					   MessageBoxButtons::YesNo,
+					   MessageBoxIcon::Warning
+				   );
+
+				   if (result == System::Windows::Forms::DialogResult::Yes) {
+					   ComprasBoletos^ compraAEliminar = comprasBoletos[compraSeleccionada];
+
+					   // Liberar asiento
+					   if (compraAEliminar->AsignacionCompra != nullptr &&
+						   compraAEliminar->AsignacionCompra->SalaAsignada != nullptr) {
+						   compraAEliminar->AsignacionCompra->SalaAsignada->LiberarAsiento(
+							   compraAEliminar->FilaAsiento,
+							   compraAEliminar->ColumnaAsiento
+						   );
+					   }
+
+					   // Eliminar compra y compactar array
+					   comprasBoletos[compraSeleccionada] = nullptr;
+
+					   // Compactar el array eliminando nulls
+					   CompactarArrayCompras();
+
+					   // Actualizar último código
+					   ActualizarUltimoCodigo();
+
+					   MostrarComprasBoletos();
+
+					   // Actualizar visualización si es necesario
+					   if (cboFuncion->SelectedIndex != -1) {
+						   AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+						   if (asignacion != nullptr) {
+							   MostrarAsientos(asignacion->SalaAsignada);
+						   }
+					   }
+				   }
+
+				   ResetearFormulario();
+				   tblCompras->ClearSelection();
+				   compraSeleccionada = -1;
+				   panelAsientos->Controls->Clear();
+			   }
+			   else {
+				   MessageBox::Show("Seleccione una compra para eliminar.");
+			   }
+		   }
+
 };
 }

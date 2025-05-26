@@ -146,8 +146,8 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::TextBox^ txtTelefono;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::TextBox^ txtEmail;
-	private: System::Windows::Forms::Label^ lblUsuarios;
-	private: System::Windows::Forms::ComboBox^ cboUsuarios;
+
+
 	private: System::Windows::Forms::DataGridView^ tblClientes;
 
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
@@ -198,8 +198,6 @@ namespace ProyectMovies {
 			this->txtTelefono = (gcnew System::Windows::Forms::TextBox());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->txtEmail = (gcnew System::Windows::Forms::TextBox());
-			this->lblUsuarios = (gcnew System::Windows::Forms::Label());
-			this->cboUsuarios = (gcnew System::Windows::Forms::ComboBox());
 			this->tblClientes = (gcnew System::Windows::Forms::DataGridView());
 			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colNombre = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
@@ -312,23 +310,6 @@ namespace ProyectMovies {
 			this->txtEmail->Size = System::Drawing::Size(100, 26);
 			this->txtEmail->TabIndex = 11;
 			// 
-			// lblUsuarios
-			// 
-			this->lblUsuarios->AutoSize = true;
-			this->lblUsuarios->Location = System::Drawing::Point(781, 134);
-			this->lblUsuarios->Name = L"lblUsuarios";
-			this->lblUsuarios->Size = System::Drawing::Size(64, 20);
-			this->lblUsuarios->TabIndex = 12;
-			this->lblUsuarios->Text = L"Usuario";
-			// 
-			// cboUsuarios
-			// 
-			this->cboUsuarios->FormattingEnabled = true;
-			this->cboUsuarios->Location = System::Drawing::Point(851, 131);
-			this->cboUsuarios->Name = L"cboUsuarios";
-			this->cboUsuarios->Size = System::Drawing::Size(121, 28);
-			this->cboUsuarios->TabIndex = 13;
-			// 
 			// tblClientes
 			// 
 			this->tblClientes->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
@@ -422,8 +403,6 @@ namespace ProyectMovies {
 			this->Controls->Add(this->btnEliminar);
 			this->Controls->Add(this->btnAgregar);
 			this->Controls->Add(this->tblClientes);
-			this->Controls->Add(this->cboUsuarios);
-			this->Controls->Add(this->lblUsuarios);
 			this->Controls->Add(this->txtEmail);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->txtTelefono);

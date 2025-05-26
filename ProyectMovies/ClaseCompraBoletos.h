@@ -12,15 +12,19 @@ namespace ProyectMovies {
 		AsignacionPeliculaSala^ asignacion;
 		Cliente^ cliente;
 		DateTime fechaCompra;
+		int filaAsiento;
+		int columnaAsiento;
 		//int totalBoletos;
 
 	public:
-		ComprasBoletos(int codigo, AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra)
+		ComprasBoletos(int codigo, AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra, int fila, int columna)
 		{
 			this->codigo = codigo;
 			this->asignacion = asignacion;
 			this->cliente = cliente;
 			this->fechaCompra = fechaCompra;
+			this->filaAsiento = fila;
+			this->columnaAsiento = columna;
 		}
 		property int Codigo
 		{
@@ -41,6 +45,16 @@ namespace ProyectMovies {
 		{
 			DateTime get() { return fechaCompra; }
 			void set(DateTime value) { fechaCompra = value; }
+		}
+		property int FilaAsiento
+		{
+			int get() { return filaAsiento; }
+			void set(int value) { filaAsiento = value; }
+		}
+		property int ColumnaAsiento
+		{
+			int get() { return columnaAsiento; }
+			void set(int value) { columnaAsiento = value; }
 		}
 	};
 }

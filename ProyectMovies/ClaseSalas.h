@@ -90,6 +90,10 @@ namespace ProyectMovies {
 		//	array<array<bool>^>^ get() { return asientos; }
 		//}
 
+		property array<array<bool>^>^ Asientos {
+			array<array<bool>^>^ get() { return asientos; }
+		}
+
 		bool OcuparAsiento(int fila, int columna) {
 			if (fila >= 0 && fila < asientos->Length && columna >= 0 && columna < asientos[0]->Length) {
 				if (asientos[fila][columna]) {
@@ -98,6 +102,13 @@ namespace ProyectMovies {
 				}
 			}
 			return false; // Asiento ya ocupado o coordenadas inválidas
+		}
+
+		void LiberarAsiento(int fila, int columna) {
+			if (fila >= 0 && fila < asientos->Length &&
+				columna >= 0 && columna < asientos[0]->Length) {
+				asientos[fila][columna] = true;
+			}
 		}
 
 		// Aqui podria ir el liberar todos los asientos
