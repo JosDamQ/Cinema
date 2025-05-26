@@ -16,6 +16,8 @@ namespace ProyectMovies {
         System::Collections::Generic::List<User^>^ usuarios;
         int ultimoCodigo;
         int userSeleccionado;
+    private: System::Windows::Forms::Button^ btnHTML;
+    private: System::Windows::Forms::Button^ btnCargaDatos;
 
         enum class ModoFormulario {
             Ninguno,
@@ -127,11 +129,15 @@ namespace ProyectMovies {
                 btnAgregar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnEditar->Enabled = false;
+				btnHTML->Enabled = false;
+				btnCargaDatos->Enabled = false;
             }
             else if (estadoActual == ModoFormulario::Editar) {
                 btnEditar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnAgregar->Enabled = false;
+				btnHTML->Enabled = false;
+				btnCargaDatos->Enabled = false;
             }
             else {
                 btnAgregar->Text = "Agregar";
@@ -140,6 +146,8 @@ namespace ProyectMovies {
                 btnAgregar->Enabled = true;
                 btnEliminar->Enabled = true;
                 btnEditar->Enabled = true;
+				btnHTML->Enabled = true;
+				btnCargaDatos->Enabled = true;
             }
         }
 
@@ -228,6 +236,8 @@ namespace ProyectMovies {
             this->btnAgregar = (gcnew System::Windows::Forms::Button());
             this->btnEditar = (gcnew System::Windows::Forms::Button());
             this->btnEliminar = (gcnew System::Windows::Forms::Button());
+            this->btnHTML = (gcnew System::Windows::Forms::Button());
+            this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblUsuarios))->BeginInit();
             this->SuspendLayout();
             // 
@@ -312,7 +322,7 @@ namespace ProyectMovies {
             this->lblTelefono->AutoSize = true;
             this->lblTelefono->Location = System::Drawing::Point(905, 33);
             this->lblTelefono->Name = L"lblTelefono";
-            this->lblTelefono->Size = System::Drawing::Size(86, 20);
+            this->lblTelefono->Size = System::Drawing::Size(71, 20);
             this->lblTelefono->TabIndex = 10;
             this->lblTelefono->Text = L"Teléfono";
             // 
@@ -373,12 +383,12 @@ namespace ProyectMovies {
             // 
             // cboRol
             // 
+            this->cboRol->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
             this->cboRol->FormattingEnabled = true;
             this->cboRol->Location = System::Drawing::Point(840, 82);
             this->cboRol->Name = L"cboRol";
             this->cboRol->Size = System::Drawing::Size(121, 28);
             this->cboRol->TabIndex = 18;
-            this->cboRol->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
             // 
             // tblUsuarios
             // 
@@ -448,7 +458,7 @@ namespace ProyectMovies {
             // 
             // btnAgregar
             // 
-            this->btnAgregar->Location = System::Drawing::Point(346, 160);
+            this->btnAgregar->Location = System::Drawing::Point(295, 160);
             this->btnAgregar->Name = L"btnAgregar";
             this->btnAgregar->Size = System::Drawing::Size(98, 37);
             this->btnAgregar->TabIndex = 20;
@@ -458,7 +468,7 @@ namespace ProyectMovies {
             // 
             // btnEditar
             // 
-            this->btnEditar->Location = System::Drawing::Point(675, 160);
+            this->btnEditar->Location = System::Drawing::Point(581, 160);
             this->btnEditar->Name = L"btnEditar";
             this->btnEditar->Size = System::Drawing::Size(98, 37);
             this->btnEditar->TabIndex = 21;
@@ -468,7 +478,7 @@ namespace ProyectMovies {
             // 
             // btnEliminar
             // 
-            this->btnEliminar->Location = System::Drawing::Point(505, 160);
+            this->btnEliminar->Location = System::Drawing::Point(440, 160);
             this->btnEliminar->Name = L"btnEliminar";
             this->btnEliminar->Size = System::Drawing::Size(98, 37);
             this->btnEliminar->TabIndex = 22;
@@ -476,11 +486,31 @@ namespace ProyectMovies {
             this->btnEliminar->UseVisualStyleBackColor = true;
             this->btnEliminar->Click += gcnew System::EventHandler(this, &Usuarios::btnEliminar_Click);
             // 
+            // btnHTML
+            // 
+            this->btnHTML->Location = System::Drawing::Point(717, 160);
+            this->btnHTML->Name = L"btnHTML";
+            this->btnHTML->Size = System::Drawing::Size(98, 37);
+            this->btnHTML->TabIndex = 23;
+            this->btnHTML->Text = L"HTML";
+            this->btnHTML->UseVisualStyleBackColor = true;
+            // 
+            // btnCargaDatos
+            // 
+            this->btnCargaDatos->Location = System::Drawing::Point(849, 160);
+            this->btnCargaDatos->Name = L"btnCargaDatos";
+            this->btnCargaDatos->Size = System::Drawing::Size(98, 37);
+            this->btnCargaDatos->TabIndex = 24;
+            this->btnCargaDatos->Text = L"Cargar Datos";
+            this->btnCargaDatos->UseVisualStyleBackColor = true;
+            // 
             // Usuarios
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(1201, 707);
+            this->Controls->Add(this->btnCargaDatos);
+            this->Controls->Add(this->btnHTML);
             this->Controls->Add(this->btnEliminar);
             this->Controls->Add(this->btnEditar);
             this->Controls->Add(this->btnAgregar);
