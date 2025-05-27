@@ -1,6 +1,13 @@
 #pragma once
-#include "ClaseClientes.h";
-//#include "ClaseUsuarios.h";
+#include "ClaseClientes.h"
+// Coloca estos includes al inicio
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fstream>
+
+
+// Evita conflictos con ServiceProvider de Windows
+#undef ServiceProvider
 
 namespace ProyectMovies {
 
@@ -10,10 +17,12 @@ namespace ProyectMovies {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::IO;
+	using namespace System::Text;
 
 	public ref class Clientes : public System::Windows::Forms::Form
 	{
-	private: 
+	private:
 		// para traer a los externos
 		//array<User^>^ listaUsuarios;
 		array <Cliente^>^ clientes;
@@ -22,14 +31,88 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::Button^ btnHTML;
 	private: System::Windows::Forms::Button^ btnCargaDatos;
 
-		enum class ModoFormulario {
-			Ninguno,
-			Agregar,
-			Editar
-		};
+		   enum class ModoFormulario {
+			   Ninguno,
+			   Agregar,
+			   Editar
+		   };
 
-		ModoFormulario estadoActual = ModoFormulario::Ninguno;
+		   ModoFormulario estadoActual = ModoFormulario::Ninguno;
+	private:
+		void GenerarReporteHTML()
+		{
+			if (ultimoCodigo == 0) {
+				MessageBox::Show("No hay clientes para generar el reporte.",
+					"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				return;
+			}
 
+			// Crear y configurar el diálogo para guardar archivo
+			SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+			saveFileDialog->Filter = "Archivos HTML (*.html)|*.html|Todos los archivos (*.*)|*.*";
+			saveFileDialog->FilterIndex = 1;
+			saveFileDialog->RestoreDirectory = true;
+			saveFileDialog->FileName = "ReporteClientes_" + DateTime::Now.ToString("yyyyMMdd_HHmmss") + ".html";
+			saveFileDialog->Title = "Guardar reporte de clientes";
+
+			// Mostrar el diálogo y verificar si el usuario hizo clic en OK
+			if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			{
+				// Cargar la plantilla HTML
+				String^ plantillaPath = "templateClientes.html";
+				String^ htmlTemplate;
+
+				try {
+					htmlTemplate = File::ReadAllText(plantillaPath);
+				}
+				catch (Exception^ e) {
+					MessageBox::Show("No se pudo cargar la plantilla HTML: " + e->Message,
+						"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					return;
+				}
+
+				// Generar el contenido de la tabla
+				StringBuilder^ tableContent = gcnew StringBuilder();
+
+				for (int i = 0; i < ultimoCodigo; i++)
+				{
+					if (clientes[i] != nullptr)
+					{
+						tableContent->Append("<tr>");
+						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Codigo);
+						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Nombre);
+						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Apellido);
+						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->DPI);
+						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Telefono);
+						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Email);
+						tableContent->Append("</tr>");
+					}
+				}
+
+				// Reemplazar los placeholders en la plantilla
+				htmlTemplate = htmlTemplate->Replace("%%TITLE%%", "Reporte de Clientes");
+				htmlTemplate = htmlTemplate->Replace("%%HEADER%%", "Listado de Clientes Registrados");
+				htmlTemplate = htmlTemplate->Replace("%%DATE%%", DateTime::Now.ToString("dd/MM/yyyy HH:mm:ss"));
+				htmlTemplate = htmlTemplate->Replace("%%TABLECONTENT%%", tableContent->ToString());
+				htmlTemplate = htmlTemplate->Replace("%%FOOTER%%", "Sistema de Gestión de Clientes - ProyectMovies");
+
+				// Obtener la ruta seleccionada por el usuario
+				String^ outputPath = saveFileDialog->FileName;
+
+				try {
+					File::WriteAllText(outputPath, htmlTemplate);
+					MessageBox::Show("Reporte generado exitosamente en: " + outputPath,
+						"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+
+					// Opcional: abrir el reporte en el navegador predeterminado
+					System::Diagnostics::Process::Start(outputPath);
+				}
+				catch (Exception^ e) {
+					MessageBox::Show("Error al guardar el reporte: " + e->Message,
+						"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+				}
+			}
+		}
 
 	public:
 		Clientes(void)
@@ -177,7 +260,7 @@ namespace ProyectMovies {
 		/// <summary>
 		/// Variable del diseñador necesaria.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		// Para comboBox externo
@@ -412,6 +495,7 @@ namespace ProyectMovies {
 			this->btnHTML->TabIndex = 18;
 			this->btnHTML->Text = L"HTML";
 			this->btnHTML->UseVisualStyleBackColor = true;
+			this->btnHTML->Click += gcnew System::EventHandler(this, &Clientes::btnHTML_Click);
 			// 
 			// btnCargaDatos
 			// 
@@ -454,155 +538,164 @@ namespace ProyectMovies {
 		}
 #pragma endregion
 		//Eventos
-		private: System::Void tblClientes_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
-			if (e->RowIndex >= 0 && e->RowIndex < tblClientes->Rows->Count) {
-				DataGridViewRow^ fila = tblClientes->Rows[e->RowIndex];
+	private: System::Void tblClientes_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+		if (e->RowIndex >= 0 && e->RowIndex < tblClientes->Rows->Count) {
+			DataGridViewRow^ fila = tblClientes->Rows[e->RowIndex];
 
-				if (!fila->IsNewRow) {
-					clienteSeleccionado = e->RowIndex;
-					txtNombre->Text = fila->Cells["colNombre"]->Value->ToString();
-					txtApellido->Text = fila->Cells["colApellido"]->Value->ToString();
-					txtCUI->Text = fila->Cells["colCUI"]->Value->ToString();
-					//dateFechaNacimiento->Value = DateTime::Parse(fila->Cells["colFechaNacimiento"]->Value->ToString());
-					Object^ valorFecha = fila->Cells["colFechaNacimiento"]->Value;
-					if (valorFecha != nullptr && !String::IsNullOrWhiteSpace(valorFecha->ToString())) {
-						DateTime fecha;
-						if (DateTime::TryParse(valorFecha->ToString(), fecha)) {
-							dateFechaNacimiento->Value = fecha;
-						}
-						else {
-							// Opcional: manejar formato inválido
-							MessageBox::Show("Formato de fecha inválido en la fila seleccionada.");
-						}
+			if (!fila->IsNewRow) {
+				clienteSeleccionado = e->RowIndex;
+				txtNombre->Text = fila->Cells["colNombre"]->Value->ToString();
+				txtApellido->Text = fila->Cells["colApellido"]->Value->ToString();
+				txtCUI->Text = fila->Cells["colCUI"]->Value->ToString();
+				//dateFechaNacimiento->Value = DateTime::Parse(fila->Cells["colFechaNacimiento"]->Value->ToString());
+				Object^ valorFecha = fila->Cells["colFechaNacimiento"]->Value;
+				if (valorFecha != nullptr && !String::IsNullOrWhiteSpace(valorFecha->ToString())) {
+					DateTime fecha;
+					if (DateTime::TryParse(valorFecha->ToString(), fecha)) {
+						dateFechaNacimiento->Value = fecha;
 					}
 					else {
-						// Opcional: asignar una fecha por defecto si está vacío
-						dateFechaNacimiento->Value = DateTime::Now;
+						// Opcional: manejar formato inválido
+						MessageBox::Show("Formato de fecha inválido en la fila seleccionada.");
 					}
-					txtTelefono->Text = fila->Cells["colTelefono"]->Value->ToString();
-					txtEmail->Text = fila->Cells["colEmail"]->Value->ToString();
 				}
+				else {
+					// Opcional: asignar una fecha por defecto si está vacío
+					dateFechaNacimiento->Value = DateTime::Now;
+				}
+				txtTelefono->Text = fila->Cells["colTelefono"]->Value->ToString();
+				txtEmail->Text = fila->Cells["colEmail"]->Value->ToString();
 			}
 		}
+	}
 
-		private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
-			if (estadoActual == ModoFormulario::Ninguno) {
-				estadoActual = ModoFormulario::Agregar;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-			}
-			else if (estadoActual == ModoFormulario::Agregar) {
-				if (txtNombre->Text->Trim() == "" ||
-					txtApellido->Text->Trim() == "" ||
-					txtCUI->Text->Trim() == "" ||
-					dateFechaNacimiento->Value == DateTime::MinValue ||
-					txtTelefono->Text->Trim() == "" ||
-					txtEmail->Text->Trim() == "") {
-
-					MessageBox::Show("Por favor complete todos los campos antes de agregar el usuario.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-					return;
-				}
-
-				String^ nombre = txtNombre->Text;
-				String^ apellido = txtApellido->Text;
-				String^ dpi = txtCUI->Text;
-				DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
-				String^ telefono = txtTelefono->Text;
-				String^ email = txtEmail->Text;
-
-				AgregarCliente(nombre, apellido, dpi, fechaNacimiento, telefono, email);
-
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-			}
+	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			estadoActual = ModoFormulario::Agregar;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
 		}
+		else if (estadoActual == ModoFormulario::Agregar) {
+			if (txtNombre->Text->Trim() == "" ||
+				txtApellido->Text->Trim() == "" ||
+				txtCUI->Text->Trim() == "" ||
+				dateFechaNacimiento->Value == DateTime::MinValue ||
+				txtTelefono->Text->Trim() == "" ||
+				txtEmail->Text->Trim() == "") {
 
-		private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
-			if (estadoActual == ModoFormulario::Agregar) {
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-				clienteSeleccionado = -1; // Resetear la selección
+				MessageBox::Show("Por favor complete todos los campos antes de agregar el usuario.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 				return;
 			}
 
-			if (estadoActual == ModoFormulario::Editar) {
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-				clienteSeleccionado = -1; // Resetear la selección
-				return;
-			}
+			String^ nombre = txtNombre->Text;
+			String^ apellido = txtApellido->Text;
+			String^ dpi = txtCUI->Text;
+			DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
+			String^ telefono = txtTelefono->Text;
+			String^ email = txtEmail->Text;
 
-			if (clienteSeleccionado >= 0 && clienteSeleccionado < ultimoCodigo) {
-				System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show(
-					"¿Estás seguro de que deseas eliminar este cliente?",
-					"Confirmar eliminación",
-					System::Windows::Forms::MessageBoxButtons::YesNo,
-					System::Windows::Forms::MessageBoxIcon::Warning
-				);
+			AgregarCliente(nombre, apellido, dpi, fechaNacimiento, telefono, email);
 
-				if (result == System::Windows::Forms::DialogResult::Yes) {
-					clientes[clienteSeleccionado] = nullptr;
-					MostrarClientes();
-				}
-				ResetearFormulario();
-				tblClientes->ClearSelection();
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+		}
+	}
 
-				clienteSeleccionado = -1; // Resetear la selección
-			}
-			else {
-				System::Windows::Forms::MessageBox::Show("Seleccione un cliente para eliminar.");
-			}
+	private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Agregar) {
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+			clienteSeleccionado = -1; // Resetear la selección
+			return;
 		}
 
-		private: System::Void btnEditar_Click(System::Object^ sender, System::EventArgs^ e) {
-			if (estadoActual == ModoFormulario::Ninguno) {
-				if (clienteSeleccionado < 0 || clienteSeleccionado >= ultimoCodigo || clientes[clienteSeleccionado] == nullptr) {
-					System::Windows::Forms::MessageBox::Show("Seleccione un cliente para editar.");
-					return;
-				}
+		if (estadoActual == ModoFormulario::Editar) {
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+			clienteSeleccionado = -1; // Resetear la selección
+			return;
+		}
 
-				estadoActual = ModoFormulario::Editar;
-				ActualizarEstadoFormulario();
-			}
-			else if (estadoActual == ModoFormulario::Editar) {
-				if (txtNombre->Text->Trim() == "" ||
-					txtApellido->Text->Trim() == "" ||
-					txtCUI->Text->Trim() == "" ||
-					dateFechaNacimiento->Value == DateTime::MinValue ||
-					txtTelefono->Text->Trim() == "" ||
-					txtEmail->Text->Trim() == "") {
-					MessageBox::Show("Por favor complete todos los campos antes de editar el cliente.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-					return;
-				}
+		if (clienteSeleccionado >= 0 && clienteSeleccionado < ultimoCodigo) {
+			System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show(
+				"¿Estás seguro de que deseas eliminar este cliente?",
+				"Confirmar eliminación",
+				System::Windows::Forms::MessageBoxButtons::YesNo,
+				System::Windows::Forms::MessageBoxIcon::Warning
+			);
 
-				String^ nombre = txtNombre->Text;
-				String^ apellido = txtApellido->Text;
-				String^ dpi = txtCUI->Text;
-				DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
-				String^ telefono = txtTelefono->Text;
-				String^ email = txtEmail->Text;
-				clientes[clienteSeleccionado]->Nombre = nombre;
-				clientes[clienteSeleccionado]->Apellido = apellido;
-				clientes[clienteSeleccionado]->DPI = dpi;
-				clientes[clienteSeleccionado]->FechaNacimiento = fechaNacimiento;
-				clientes[clienteSeleccionado]->Telefono = telefono;
-				clientes[clienteSeleccionado]->Email = email;
-
+			if (result == System::Windows::Forms::DialogResult::Yes) {
+				clientes[clienteSeleccionado] = nullptr;
 				MostrarClientes();
-
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-				clienteSeleccionado = -1; // Resetear la selección
 			}
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+
+			clienteSeleccionado = -1; // Resetear la selección
 		}
-	
+		else {
+			System::Windows::Forms::MessageBox::Show("Seleccione un cliente para eliminar.");
+		}
+	}
+
+	private: System::Void btnEditar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			if (clienteSeleccionado < 0 || clienteSeleccionado >= ultimoCodigo || clientes[clienteSeleccionado] == nullptr) {
+				System::Windows::Forms::MessageBox::Show("Seleccione un cliente para editar.");
+				return;
+			}
+
+			estadoActual = ModoFormulario::Editar;
+			ActualizarEstadoFormulario();
+		}
+		else if (estadoActual == ModoFormulario::Editar) {
+			if (txtNombre->Text->Trim() == "" ||
+				txtApellido->Text->Trim() == "" ||
+				txtCUI->Text->Trim() == "" ||
+				dateFechaNacimiento->Value == DateTime::MinValue ||
+				txtTelefono->Text->Trim() == "" ||
+				txtEmail->Text->Trim() == "") {
+				MessageBox::Show("Por favor complete todos los campos antes de editar el cliente.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+				return;
+			}
+
+			String^ nombre = txtNombre->Text;
+			String^ apellido = txtApellido->Text;
+			String^ dpi = txtCUI->Text;
+			DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
+			String^ telefono = txtTelefono->Text;
+			String^ email = txtEmail->Text;
+			clientes[clienteSeleccionado]->Nombre = nombre;
+			clientes[clienteSeleccionado]->Apellido = apellido;
+			clientes[clienteSeleccionado]->DPI = dpi;
+			clientes[clienteSeleccionado]->FechaNacimiento = fechaNacimiento;
+			clientes[clienteSeleccionado]->Telefono = telefono;
+			clientes[clienteSeleccionado]->Email = email;
+
+			MostrarClientes();
+
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+			clienteSeleccionado = -1; // Resetear la selección
+		}
+	}
+	private: System::Void btnHTML_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (ultimoCodigo == 0) {
+			MessageBox::Show("No hay clientes para generar el reporte.",
+				"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			return;
+		}
+
+		GenerarReporteHTML();
+	}
+
 	};
 }
