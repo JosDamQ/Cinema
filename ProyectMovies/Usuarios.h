@@ -129,14 +129,14 @@ namespace ProyectMovies {
                 btnAgregar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnEditar->Enabled = false;
-				btnHTML->Enabled = false;
+				//btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
             }
             else if (estadoActual == ModoFormulario::Editar) {
                 btnEditar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnAgregar->Enabled = false;
-				btnHTML->Enabled = false;
+				//btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
             }
             else {
@@ -146,7 +146,7 @@ namespace ProyectMovies {
                 btnAgregar->Enabled = true;
                 btnEliminar->Enabled = true;
                 btnEditar->Enabled = true;
-				btnHTML->Enabled = true;
+				//btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
             }
         }
@@ -243,168 +243,150 @@ namespace ProyectMovies {
             // lblName
             // 
             this->lblName->AutoSize = true;
-            this->lblName->Location = System::Drawing::Point(21, 21);
-            this->lblName->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblName->Location = System::Drawing::Point(32, 32);
             this->lblName->Name = L"lblName";
-            this->lblName->Size = System::Drawing::Size(43, 13);
+            this->lblName->Size = System::Drawing::Size(64, 20);
             this->lblName->TabIndex = 0;
             this->lblName->Text = L"Usuario";
             // 
             // txtUsuario
             // 
-            this->txtUsuario->Location = System::Drawing::Point(61, 20);
-            this->txtUsuario->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtUsuario->Location = System::Drawing::Point(92, 31);
             this->txtUsuario->Name = L"txtUsuario";
-            this->txtUsuario->Size = System::Drawing::Size(93, 20);
+            this->txtUsuario->Size = System::Drawing::Size(138, 26);
             this->txtUsuario->TabIndex = 1;
             // 
             // lblPassword
             // 
             this->lblPassword->AutoSize = true;
-            this->lblPassword->Location = System::Drawing::Point(157, 21);
-            this->lblPassword->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblPassword->Location = System::Drawing::Point(236, 32);
             this->lblPassword->Name = L"lblPassword";
-            this->lblPassword->Size = System::Drawing::Size(53, 13);
+            this->lblPassword->Size = System::Drawing::Size(78, 20);
             this->lblPassword->TabIndex = 2;
             this->lblPassword->Text = L"Password";
             // 
             // txtPassword
             // 
-            this->txtPassword->Location = System::Drawing::Point(207, 20);
-            this->txtPassword->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtPassword->Location = System::Drawing::Point(310, 31);
             this->txtPassword->Name = L"txtPassword";
-            this->txtPassword->Size = System::Drawing::Size(90, 20);
+            this->txtPassword->Size = System::Drawing::Size(133, 26);
             this->txtPassword->TabIndex = 3;
             this->txtPassword->TextChanged += gcnew System::EventHandler(this, &Usuarios::textBox1_TextChanged);
             // 
             // lblRol
             // 
             this->lblRol->AutoSize = true;
-            this->lblRol->Location = System::Drawing::Point(534, 55);
-            this->lblRol->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblRol->Location = System::Drawing::Point(801, 85);
             this->lblRol->Name = L"lblRol";
-            this->lblRol->Size = System::Drawing::Size(23, 13);
+            this->lblRol->Size = System::Drawing::Size(33, 20);
             this->lblRol->TabIndex = 5;
             this->lblRol->Text = L"Rol";
             // 
             // lblNombre
             // 
             this->lblNombre->AutoSize = true;
-            this->lblNombre->Location = System::Drawing::Point(308, 21);
-            this->lblNombre->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblNombre->Location = System::Drawing::Point(462, 32);
             this->lblNombre->Name = L"lblNombre";
-            this->lblNombre->Size = System::Drawing::Size(44, 13);
+            this->lblNombre->Size = System::Drawing::Size(65, 20);
             this->lblNombre->TabIndex = 6;
             this->lblNombre->Text = L"Nombre";
             this->lblNombre->Click += gcnew System::EventHandler(this, &Usuarios::label2_Click);
             // 
             // txtNombre
             // 
-            this->txtNombre->Location = System::Drawing::Point(349, 20);
-            this->txtNombre->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtNombre->Location = System::Drawing::Point(524, 31);
             this->txtNombre->Name = L"txtNombre";
-            this->txtNombre->Size = System::Drawing::Size(97, 20);
+            this->txtNombre->Size = System::Drawing::Size(144, 26);
             this->txtNombre->TabIndex = 7;
             // 
             // lblApellido
             // 
             this->lblApellido->AutoSize = true;
-            this->lblApellido->Location = System::Drawing::Point(456, 21);
-            this->lblApellido->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblApellido->Location = System::Drawing::Point(684, 32);
             this->lblApellido->Name = L"lblApellido";
-            this->lblApellido->Size = System::Drawing::Size(44, 13);
+            this->lblApellido->Size = System::Drawing::Size(65, 20);
             this->lblApellido->TabIndex = 8;
             this->lblApellido->Text = L"Apellido";
             this->lblApellido->Click += gcnew System::EventHandler(this, &Usuarios::lblApellido_Click);
             // 
             // txtApellido
             // 
-            this->txtApellido->Location = System::Drawing::Point(503, 18);
-            this->txtApellido->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtApellido->Location = System::Drawing::Point(754, 28);
             this->txtApellido->Name = L"txtApellido";
-            this->txtApellido->Size = System::Drawing::Size(83, 20);
+            this->txtApellido->Size = System::Drawing::Size(122, 26);
             this->txtApellido->TabIndex = 9;
             // 
             // lblTelefono
             // 
             this->lblTelefono->AutoSize = true;
-            this->lblTelefono->Location = System::Drawing::Point(603, 21);
-            this->lblTelefono->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblTelefono->Location = System::Drawing::Point(904, 32);
             this->lblTelefono->Name = L"lblTelefono";
-            this->lblTelefono->Size = System::Drawing::Size(49, 13);
+            this->lblTelefono->Size = System::Drawing::Size(71, 20);
             this->lblTelefono->TabIndex = 10;
             this->lblTelefono->Text = L"Teléfono";
             // 
             // txtTelefono
             // 
-            this->txtTelefono->Location = System::Drawing::Point(665, 18);
-            this->txtTelefono->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtTelefono->Location = System::Drawing::Point(998, 28);
             this->txtTelefono->Name = L"txtTelefono";
-            this->txtTelefono->Size = System::Drawing::Size(90, 20);
+            this->txtTelefono->Size = System::Drawing::Size(133, 26);
             this->txtTelefono->TabIndex = 11;
             // 
             // lblCUI
             // 
             this->lblCUI->AutoSize = true;
-            this->lblCUI->Location = System::Drawing::Point(23, 55);
-            this->lblCUI->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblCUI->Location = System::Drawing::Point(34, 85);
             this->lblCUI->Name = L"lblCUI";
-            this->lblCUI->Size = System::Drawing::Size(78, 13);
+            this->lblCUI->Size = System::Drawing::Size(114, 20);
             this->lblCUI->TabIndex = 12;
             this->lblCUI->Text = L"CUI/Pasaporte";
             // 
             // txtCUI
             // 
-            this->txtCUI->Location = System::Drawing::Point(103, 53);
-            this->txtCUI->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtCUI->Location = System::Drawing::Point(154, 82);
             this->txtCUI->Name = L"txtCUI";
-            this->txtCUI->Size = System::Drawing::Size(100, 20);
+            this->txtCUI->Size = System::Drawing::Size(148, 26);
             this->txtCUI->TabIndex = 13;
             // 
             // lblEmail
             // 
             this->lblEmail->AutoSize = true;
-            this->lblEmail->Location = System::Drawing::Point(220, 55);
-            this->lblEmail->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblEmail->Location = System::Drawing::Point(330, 85);
             this->lblEmail->Name = L"lblEmail";
-            this->lblEmail->Size = System::Drawing::Size(32, 13);
+            this->lblEmail->Size = System::Drawing::Size(48, 20);
             this->lblEmail->TabIndex = 14;
             this->lblEmail->Text = L"Email";
             // 
             // txtEmail
             // 
-            this->txtEmail->Location = System::Drawing::Point(256, 53);
-            this->txtEmail->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtEmail->Location = System::Drawing::Point(384, 82);
             this->txtEmail->Name = L"txtEmail";
-            this->txtEmail->Size = System::Drawing::Size(97, 20);
+            this->txtEmail->Size = System::Drawing::Size(144, 26);
             this->txtEmail->TabIndex = 15;
             // 
             // lblDireccion
             // 
             this->lblDireccion->AutoSize = true;
-            this->lblDireccion->Location = System::Drawing::Point(369, 55);
-            this->lblDireccion->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+            this->lblDireccion->Location = System::Drawing::Point(554, 85);
             this->lblDireccion->Name = L"lblDireccion";
-            this->lblDireccion->Size = System::Drawing::Size(52, 13);
+            this->lblDireccion->Size = System::Drawing::Size(75, 20);
             this->lblDireccion->TabIndex = 16;
             this->lblDireccion->Text = L"Dirección";
             // 
             // txtDireccion
             // 
-            this->txtDireccion->Location = System::Drawing::Point(423, 53);
-            this->txtDireccion->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->txtDireccion->Location = System::Drawing::Point(634, 82);
             this->txtDireccion->Name = L"txtDireccion";
-            this->txtDireccion->Size = System::Drawing::Size(86, 20);
+            this->txtDireccion->Size = System::Drawing::Size(127, 26);
             this->txtDireccion->TabIndex = 17;
             // 
             // cboRol
             // 
             this->cboRol->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
             this->cboRol->FormattingEnabled = true;
-            this->cboRol->Location = System::Drawing::Point(560, 53);
-            this->cboRol->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->cboRol->Location = System::Drawing::Point(840, 82);
             this->cboRol->Name = L"cboRol";
-            this->cboRol->Size = System::Drawing::Size(82, 21);
+            this->cboRol->Size = System::Drawing::Size(121, 28);
             this->cboRol->TabIndex = 18;
             // 
             // tblUsuarios
@@ -415,11 +397,10 @@ namespace ProyectMovies {
                     this->colUsuario, this->colPassword, this->colNombre, this->colApellido, this->colCUI, this->colTelefono, this->colEmail, this->colDireccion,
                     this->colRol
             });
-            this->tblUsuarios->Location = System::Drawing::Point(32, 141);
-            this->tblUsuarios->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->tblUsuarios->Location = System::Drawing::Point(48, 217);
             this->tblUsuarios->Name = L"tblUsuarios";
             this->tblUsuarios->RowTemplate->Height = 28;
-            this->tblUsuarios->Size = System::Drawing::Size(737, 282);
+            this->tblUsuarios->Size = System::Drawing::Size(1106, 434);
             this->tblUsuarios->TabIndex = 19;
             this->tblUsuarios->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Usuarios::tblUsuarios_CellClick);
             // 
@@ -476,10 +457,9 @@ namespace ProyectMovies {
             // 
             // btnAgregar
             // 
-            this->btnAgregar->Location = System::Drawing::Point(197, 104);
-            this->btnAgregar->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->btnAgregar->Location = System::Drawing::Point(296, 160);
             this->btnAgregar->Name = L"btnAgregar";
-            this->btnAgregar->Size = System::Drawing::Size(65, 24);
+            this->btnAgregar->Size = System::Drawing::Size(98, 37);
             this->btnAgregar->TabIndex = 20;
             this->btnAgregar->Text = L"Agregar";
             this->btnAgregar->UseVisualStyleBackColor = true;
@@ -487,10 +467,9 @@ namespace ProyectMovies {
             // 
             // btnEditar
             // 
-            this->btnEditar->Location = System::Drawing::Point(387, 104);
-            this->btnEditar->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->btnEditar->Location = System::Drawing::Point(580, 160);
             this->btnEditar->Name = L"btnEditar";
-            this->btnEditar->Size = System::Drawing::Size(65, 24);
+            this->btnEditar->Size = System::Drawing::Size(98, 37);
             this->btnEditar->TabIndex = 21;
             this->btnEditar->Text = L"Editar";
             this->btnEditar->UseVisualStyleBackColor = true;
@@ -498,10 +477,9 @@ namespace ProyectMovies {
             // 
             // btnEliminar
             // 
-            this->btnEliminar->Location = System::Drawing::Point(293, 104);
-            this->btnEliminar->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->btnEliminar->Location = System::Drawing::Point(440, 160);
             this->btnEliminar->Name = L"btnEliminar";
-            this->btnEliminar->Size = System::Drawing::Size(65, 24);
+            this->btnEliminar->Size = System::Drawing::Size(98, 37);
             this->btnEliminar->TabIndex = 22;
             this->btnEliminar->Text = L"Eliminar";
             this->btnEliminar->UseVisualStyleBackColor = true;
@@ -509,19 +487,18 @@ namespace ProyectMovies {
             // 
             // btnCargaDatos
             // 
-            this->btnCargaDatos->Location = System::Drawing::Point(560, 99);
-            this->btnCargaDatos->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+            this->btnCargaDatos->Location = System::Drawing::Point(722, 153);
             this->btnCargaDatos->Name = L"btnCargaDatos";
-            this->btnCargaDatos->Size = System::Drawing::Size(75, 33);
+            this->btnCargaDatos->Size = System::Drawing::Size(112, 51);
             this->btnCargaDatos->TabIndex = 24;
             this->btnCargaDatos->Text = L"Carga de datos";
             this->btnCargaDatos->UseVisualStyleBackColor = true;
             // 
             // Usuarios
             // 
-            this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
+            this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(801, 460);
+            this->ClientSize = System::Drawing::Size(1202, 708);
             this->Controls->Add(this->btnCargaDatos);
             this->Controls->Add(this->btnEliminar);
             this->Controls->Add(this->btnEditar);
@@ -545,7 +522,6 @@ namespace ProyectMovies {
             this->Controls->Add(this->lblPassword);
             this->Controls->Add(this->txtUsuario);
             this->Controls->Add(this->lblName);
-            this->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
             this->Name = L"Usuarios";
             this->Text = L"Usuarios";
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblUsuarios))->EndInit();

@@ -31,6 +31,13 @@ namespace ProyectMovies {
 		int clienteSeleccionado;
 	private: System::Windows::Forms::Button^ btnHTML;
 	private: System::Windows::Forms::Button^ btnCargaDatos;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colNombre;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colApellido;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCUI;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaNacimiento;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colTelefono;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colEmail;
 
 		   enum class ModoFormulario {
 			   Ninguno,
@@ -213,14 +220,14 @@ namespace ProyectMovies {
 
 	private: System::Windows::Forms::DataGridView^ tblClientes;
 
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colNombre;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colApellido;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCUI;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaNacimiento;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colTelefono;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colEmail;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colUsuario;
+
+
+
+
+
+
+
+
 	private: System::Windows::Forms::Button^ btnAgregar;
 	private: System::Windows::Forms::Button^ btnEliminar;
 	private: System::Windows::Forms::Button^ btnEditar;
@@ -262,6 +269,11 @@ namespace ProyectMovies {
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->txtEmail = (gcnew System::Windows::Forms::TextBox());
 			this->tblClientes = (gcnew System::Windows::Forms::DataGridView());
+			this->btnAgregar = (gcnew System::Windows::Forms::Button());
+			this->btnEliminar = (gcnew System::Windows::Forms::Button());
+			this->btnEditar = (gcnew System::Windows::Forms::Button());
+			this->btnHTML = (gcnew System::Windows::Forms::Button());
+			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colNombre = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colApellido = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
@@ -269,12 +281,6 @@ namespace ProyectMovies {
 			this->colFechaNacimiento = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colTelefono = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colEmail = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->colUsuario = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->btnAgregar = (gcnew System::Windows::Forms::Button());
-			this->btnEliminar = (gcnew System::Windows::Forms::Button());
-			this->btnEditar = (gcnew System::Windows::Forms::Button());
-			this->btnHTML = (gcnew System::Windows::Forms::Button());
-			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblClientes))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -378,9 +384,9 @@ namespace ProyectMovies {
 			// tblClientes
 			// 
 			this->tblClientes->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->tblClientes->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(8) {
+			this->tblClientes->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(7) {
 				this->colCodigo,
-					this->colNombre, this->colApellido, this->colCUI, this->colFechaNacimiento, this->colTelefono, this->colEmail, this->colUsuario
+					this->colNombre, this->colApellido, this->colCUI, this->colFechaNacimiento, this->colTelefono, this->colEmail
 			});
 			this->tblClientes->Location = System::Drawing::Point(154, 272);
 			this->tblClientes->Name = L"tblClientes";
@@ -388,46 +394,6 @@ namespace ProyectMovies {
 			this->tblClientes->Size = System::Drawing::Size(985, 329);
 			this->tblClientes->TabIndex = 14;
 			this->tblClientes->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Clientes::tblClientes_CellClick);
-			// 
-			// colCodigo
-			// 
-			this->colCodigo->HeaderText = L"Codigo";
-			this->colCodigo->Name = L"colCodigo";
-			// 
-			// colNombre
-			// 
-			this->colNombre->HeaderText = L"Nombre";
-			this->colNombre->Name = L"colNombre";
-			// 
-			// colApellido
-			// 
-			this->colApellido->HeaderText = L"Apellido";
-			this->colApellido->Name = L"colApellido";
-			// 
-			// colCUI
-			// 
-			this->colCUI->HeaderText = L"CUI/Pasaporte";
-			this->colCUI->Name = L"colCUI";
-			// 
-			// colFechaNacimiento
-			// 
-			this->colFechaNacimiento->HeaderText = L"Fecha de nacimiento";
-			this->colFechaNacimiento->Name = L"colFechaNacimiento";
-			// 
-			// colTelefono
-			// 
-			this->colTelefono->HeaderText = L"Telefono";
-			this->colTelefono->Name = L"colTelefono";
-			// 
-			// colEmail
-			// 
-			this->colEmail->HeaderText = L"Email";
-			this->colEmail->Name = L"colEmail";
-			// 
-			// colUsuario
-			// 
-			this->colUsuario->HeaderText = L"Usuario";
-			this->colUsuario->Name = L"colUsuario";
 			// 
 			// btnAgregar
 			// 
@@ -477,6 +443,41 @@ namespace ProyectMovies {
 			this->btnCargaDatos->TabIndex = 19;
 			this->btnCargaDatos->Text = L"Carga de datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			// 
+			// colCodigo
+			// 
+			this->colCodigo->HeaderText = L"Codigo";
+			this->colCodigo->Name = L"colCodigo";
+			// 
+			// colNombre
+			// 
+			this->colNombre->HeaderText = L"Nombre";
+			this->colNombre->Name = L"colNombre";
+			// 
+			// colApellido
+			// 
+			this->colApellido->HeaderText = L"Apellido";
+			this->colApellido->Name = L"colApellido";
+			// 
+			// colCUI
+			// 
+			this->colCUI->HeaderText = L"CUI/Pasaporte";
+			this->colCUI->Name = L"colCUI";
+			// 
+			// colFechaNacimiento
+			// 
+			this->colFechaNacimiento->HeaderText = L"Fecha de nacimiento";
+			this->colFechaNacimiento->Name = L"colFechaNacimiento";
+			// 
+			// colTelefono
+			// 
+			this->colTelefono->HeaderText = L"Telefono";
+			this->colTelefono->Name = L"colTelefono";
+			// 
+			// colEmail
+			// 
+			this->colEmail->HeaderText = L"Email";
+			this->colEmail->Name = L"colEmail";
 			// 
 			// Clientes
 			// 
