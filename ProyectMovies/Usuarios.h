@@ -9,6 +9,8 @@ namespace ProyectMovies {
     using namespace System::Windows::Forms;
     using namespace System::Data;
     using namespace System::Drawing;
+    using namespace System::IO; 
+    using namespace System::Text;
 
     public ref class Usuarios : public System::Windows::Forms::Form
     {
@@ -493,6 +495,7 @@ namespace ProyectMovies {
             this->btnCargaDatos->TabIndex = 24;
             this->btnCargaDatos->Text = L"Carga de datos";
             this->btnCargaDatos->UseVisualStyleBackColor = true;
+            this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Usuarios::btnCargaDatos_Click);
             // 
             // Usuarios
             // 
@@ -689,6 +692,89 @@ namespace ProyectMovies {
                     ResetearFormulario();
                 }
             }
+        }
+
+        System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+             
+            OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+            openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+            openFileDialog->Title = "Seleccionar archivo CSV de usuarios";
+
+            if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+                String^ filePath = openFileDialog->FileName;
+                try {
+                    StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+                    String^ line;
+                    bool isFirstLine = true;
+                    int lineNumber = 0;
+                    int usuariosCargados = 0;
+
+                    while ((line = sr->ReadLine()) != nullptr) {
+                        lineNumber++;
+                        if (isFirstLine) {
+                            isFirstLine = false;
+                            continue;
+                        }
+
+                        array<String^>^ campos = line->Split(';');
+
+                        // Validación básica de campos
+                        if (campos->Length < 9) {
+                            MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban 9 campos, se encontraron {1}",
+                                lineNumber, campos->Length),
+                                "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                            continue;
+                        }
+
+                        try {
+                            // Procesamiento seguro del rol
+                            String^ rolStr = campos[8]->Trim()->ToLower();
+                            Role role;
+
+                            if (rolStr == "admin") {
+                                role = Role::Admin;
+                            }
+                            else if (rolStr == "user") {
+                                role = Role::User;
+                            }
+                            else {
+                                // Valor por defecto si el rol no es válido
+                                MessageBox::Show(String::Format("Línea {0}: Rol '{1}' no válido. Se asignará 'User' por defecto",
+                                    lineNumber, campos[8]),
+                                    "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                                role = Role::User;
+                            }
+
+                            // Agregar usuario
+                            AgregarUsuario(
+                                campos[0]->Trim(),
+                                campos[1]->Trim(),
+                                campos[2]->Trim(),
+                                campos[3]->Trim(),
+                                campos[4]->Trim(),
+                                campos[5]->Trim(),
+                                campos[6]->Trim(),
+                                campos[7]->Trim(),
+                                role
+                            );
+                            usuariosCargados++;
+                        }
+                        catch (Exception^ ex) {
+                            MessageBox::Show(String::Format("Error en línea {0}: {1}", lineNumber, ex->Message),
+                                "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+                        }
+                    }
+                    sr->Close();
+                    MessageBox::Show(String::Format("Se cargaron {0} usuarios exitosamente.", usuariosCargados),
+                        "Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+                    MostrarUsuarios();
+                }
+                catch (Exception^ ex) {
+                    MessageBox::Show("Error al cargar el archivo: " + ex->Message,
+                        "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+                }
+            }
+
         }
     };
 }
