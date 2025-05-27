@@ -718,7 +718,6 @@ namespace ProyectMovies {
 
                         array<String^>^ campos = line->Split(';');
 
-                        // Validación básica de campos
                         if (campos->Length < 9) {
                             MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban 9 campos, se encontraron {1}",
                                 lineNumber, campos->Length),
@@ -727,7 +726,6 @@ namespace ProyectMovies {
                         }
 
                         try {
-                            // Procesamiento seguro del rol
                             String^ rolStr = campos[8]->Trim()->ToLower();
                             Role role;
 
@@ -738,14 +736,12 @@ namespace ProyectMovies {
                                 role = Role::User;
                             }
                             else {
-                                // Valor por defecto si el rol no es válido
                                 MessageBox::Show(String::Format("Línea {0}: Rol '{1}' no válido. Se asignará 'User' por defecto",
                                     lineNumber, campos[8]),
                                     "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
                                 role = Role::User;
                             }
 
-                            // Agregar usuario
                             AgregarUsuario(
                                 campos[0]->Trim(),
                                 campos[1]->Trim(),
