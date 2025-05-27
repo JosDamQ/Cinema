@@ -1,5 +1,6 @@
 #pragma once
 #include "ClaseClientes.h"
+#include "GeneradorReporte.h"
 // Coloca estos includes al inicio
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -47,71 +48,35 @@ namespace ProyectMovies {
 				return;
 			}
 
-			// Crear y configurar el diálogo para guardar archivo
-			SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
-			saveFileDialog->Filter = "Archivos HTML (*.html)|*.html|Todos los archivos (*.*)|*.*";
-			saveFileDialog->FilterIndex = 1;
-			saveFileDialog->RestoreDirectory = true;
-			saveFileDialog->FileName = "ReporteClientes_" + DateTime::Now.ToString("yyyyMMdd_HHmmss") + ".html";
-			saveFileDialog->Title = "Guardar reporte de clientes";
+			// Preparar los datos para el reporte
+			array<String^>^ encabezados = gcnew array<String^> {
+				"Código", "Nombre", "Apellido", "DPI", "Teléfono", "Email"
+			};
 
-			// Mostrar el diálogo y verificar si el usuario hizo clic en OK
-			if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			array<array<String^>^>^ datos = gcnew array<array<String^>^>(ultimoCodigo);
+			for (int i = 0; i < ultimoCodigo; i++)
 			{
-				// Cargar la plantilla HTML
-				String^ plantillaPath = "templateClientes.html";
-				String^ htmlTemplate;
-
-				try {
-					htmlTemplate = File::ReadAllText(plantillaPath);
-				}
-				catch (Exception^ e) {
-					MessageBox::Show("No se pudo cargar la plantilla HTML: " + e->Message,
-						"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
-					return;
-				}
-
-				// Generar el contenido de la tabla
-				StringBuilder^ tableContent = gcnew StringBuilder();
-
-				for (int i = 0; i < ultimoCodigo; i++)
+				if (clientes[i] != nullptr)
 				{
-					if (clientes[i] != nullptr)
-					{
-						tableContent->Append("<tr>");
-						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Codigo);
-						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Nombre);
-						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Apellido);
-						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->DPI);
-						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Telefono);
-						tableContent->AppendFormat("<td>{0}</td>", clientes[i]->Email);
-						tableContent->Append("</tr>");
-					}
-				}
-
-				// Reemplazar los placeholders en la plantilla
-				htmlTemplate = htmlTemplate->Replace("%%TITLE%%", "Reporte de Clientes");
-				htmlTemplate = htmlTemplate->Replace("%%HEADER%%", "Listado de Clientes Registrados");
-				htmlTemplate = htmlTemplate->Replace("%%DATE%%", DateTime::Now.ToString("dd/MM/yyyy HH:mm:ss"));
-				htmlTemplate = htmlTemplate->Replace("%%TABLECONTENT%%", tableContent->ToString());
-				htmlTemplate = htmlTemplate->Replace("%%FOOTER%%", "Sistema de Gestión de Clientes - ProyectMovies");
-
-				// Obtener la ruta seleccionada por el usuario
-				String^ outputPath = saveFileDialog->FileName;
-
-				try {
-					File::WriteAllText(outputPath, htmlTemplate);
-					MessageBox::Show("Reporte generado exitosamente en: " + outputPath,
-						"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
-
-					// Opcional: abrir el reporte en el navegador predeterminado
-					System::Diagnostics::Process::Start(outputPath);
-				}
-				catch (Exception^ e) {
-					MessageBox::Show("Error al guardar el reporte: " + e->Message,
-						"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					datos[i] = gcnew array<String^> {
+						clientes[i]->Codigo.ToString(),
+							clientes[i]->Nombre,
+							clientes[i]->Apellido,
+							clientes[i]->DPI,
+							clientes[i]->Telefono,
+							clientes[i]->Email
+					};
 				}
 			}
+
+			// Generar el reporte usando la clase general
+			GeneradorReporte::GenerarReporte(
+				"Reporte de Clientes",
+				"Listado de Clientes Registrados",
+				"Sistema de Gestión de Clientes - ProyectMovies",
+				encabezados,
+				datos,
+				"ReporteClientes");
 		}
 
 	public:

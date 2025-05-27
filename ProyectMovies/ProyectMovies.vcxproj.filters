@@ -57,6 +57,9 @@
     <ClInclude Include="ClaseCompraBoletos.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="GeneradorReporte.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -64,7 +67,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="templateClientes.html">
+    <None Include="TemplateReporte.html">
       <Filter>Archivos de encabezado</Filter>
     </None>
   </ItemGroup>

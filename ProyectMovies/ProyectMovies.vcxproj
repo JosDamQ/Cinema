@@ -135,6 +135,7 @@
     <ClInclude Include="CompraBoletos.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="GeneradorReporte.h" />
     <ClInclude Include="Landing.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -181,7 +182,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="templateClientes.html" />
+    <None Include="TemplateReporte.html" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
