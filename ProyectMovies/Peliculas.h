@@ -1,6 +1,12 @@
 #pragma once
 #include "ClasePelicula.h"
-
+#include "GeneradorReporte.h"
+// Coloca estos includes al inicio
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fstream>
+// Evita conflictos con ServiceProvider de Windows
+#undef ServiceProvider
 namespace ProyectMovies {
 
     using namespace System;
@@ -176,6 +182,7 @@ namespace ProyectMovies {
 				btnCargaDatos->Enabled = true;
             }
         }
+        
 
 		//Cargar comboBox
         /*array<Pelicula^>^ ObtenerPeliculasExistentes()
@@ -201,6 +208,55 @@ namespace ProyectMovies {
 
             return activas;
         }
+        private:
+            void GenerarReporteHTML()
+            {
+                if (tblPelicula->Rows->Count == 0) {
+                    MessageBox::Show("No hay películas para generar el reporte.",
+                        "Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+                    return;
+                }
+
+                // Preparar los datos para el reporte
+                array<String^>^ encabezados = gcnew array<String^> {
+                    "Código", "Nombre", "Género", "Clasificación", "Idioma", "Formato", "Precio", "Estado"
+                };
+
+                // Crear lista de datos basada en el DataGridView
+                System::Collections::Generic::List<array<String^>^>^ datosLista = gcnew System::Collections::Generic::List<array<String^>^>();
+
+                for each (DataGridViewRow ^ fila in tblPelicula->Rows)
+                {
+                    if (!fila->IsNewRow)
+                    {
+                        array<String^>^ filaDatos = gcnew array<String^> {
+                            fila->Cells["colCodigo"]->Value == nullptr ? "" : fila->Cells["colCodigo"]->Value->ToString(),
+                                fila->Cells["colNombre"]->Value == nullptr ? "" : fila->Cells["colNombre"]->Value->ToString(),
+                                fila->Cells["colGenero"]->Value == nullptr ? "" : fila->Cells["colGenero"]->Value->ToString(),
+                                fila->Cells["colClasificacion"]->Value == nullptr ? "" : fila->Cells["colClasificacion"]->Value->ToString(),
+                                fila->Cells["colIdioma"]->Value == nullptr ? "" : fila->Cells["colIdioma"]->Value->ToString(),
+                                fila->Cells["colFormato"]->Value == nullptr ? "" : fila->Cells["colFormato"]->Value->ToString(),
+                                fila->Cells["colPrecio"]->Value == nullptr ? "" : fila->Cells["colPrecio"]->Value->ToString(),
+                                fila->Cells["colEstado"]->Value == nullptr ? "" : fila->Cells["colEstado"]->Value->ToString()
+                        };
+                        datosLista->Add(filaDatos);
+                    }
+                }
+
+                // Convertir la lista a array para el reporte
+                array<array<String^>^>^ datos = datosLista->ToArray();
+
+                // Generar el reporte usando la clase general
+                GeneradorReporte::GenerarReporte(
+                    "Reporte de Películas",
+                    "Listado de Películas Registradas",
+                    "Sistema de Gestión de Películas - ProyectMovies",
+                    encabezados,
+                    datos,
+                    "ReportePeliculas");
+            }
+
+
 
 
     protected:
@@ -514,6 +570,7 @@ namespace ProyectMovies {
             this->btnHTML->TabIndex = 23;
             this->btnHTML->Text = L"HTML";
             this->btnHTML->UseVisualStyleBackColor = true;
+            this->btnHTML->Click += gcnew System::EventHandler(this, &Peliculas::btnHTML_Click);
             // 
             // btnCargaDatos
             // 
@@ -772,6 +829,15 @@ namespace ProyectMovies {
             tblPelicula->ClearSelection();
             peliculaSeleccionada = -1;
         }
+    }
+    private: System::Void btnHTML_Click(System::Object^ sender, System::EventArgs^ e) {
+        if (ultimoCodigo == 0) {
+            MessageBox::Show("No hay películas para generar el reporte.",
+                "Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+            return;
+        }
+
+        GenerarReporteHTML();
     }
     };
 }

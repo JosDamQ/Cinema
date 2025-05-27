@@ -16,7 +16,7 @@ namespace ProyectMovies {
         System::Collections::Generic::List<User^>^ usuarios;
         int ultimoCodigo;
         int userSeleccionado;
-    private: System::Windows::Forms::Button^ btnHTML;
+
     private: System::Windows::Forms::Button^ btnCargaDatos;
 
         enum class ModoFormulario {
@@ -129,14 +129,14 @@ namespace ProyectMovies {
                 btnAgregar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnEditar->Enabled = false;
-				btnHTML->Enabled = false;
+				//btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
             }
             else if (estadoActual == ModoFormulario::Editar) {
                 btnEditar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnAgregar->Enabled = false;
-				btnHTML->Enabled = false;
+				//btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
             }
             else {
@@ -146,7 +146,7 @@ namespace ProyectMovies {
                 btnAgregar->Enabled = true;
                 btnEliminar->Enabled = true;
                 btnEditar->Enabled = true;
-				btnHTML->Enabled = true;
+				//btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
             }
         }
@@ -236,7 +236,6 @@ namespace ProyectMovies {
             this->btnAgregar = (gcnew System::Windows::Forms::Button());
             this->btnEditar = (gcnew System::Windows::Forms::Button());
             this->btnEliminar = (gcnew System::Windows::Forms::Button());
-            this->btnHTML = (gcnew System::Windows::Forms::Button());
             this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblUsuarios))->BeginInit();
             this->SuspendLayout();
@@ -244,7 +243,7 @@ namespace ProyectMovies {
             // lblName
             // 
             this->lblName->AutoSize = true;
-            this->lblName->Location = System::Drawing::Point(31, 33);
+            this->lblName->Location = System::Drawing::Point(32, 32);
             this->lblName->Name = L"lblName";
             this->lblName->Size = System::Drawing::Size(64, 20);
             this->lblName->TabIndex = 0;
@@ -252,15 +251,15 @@ namespace ProyectMovies {
             // 
             // txtUsuario
             // 
-            this->txtUsuario->Location = System::Drawing::Point(92, 30);
+            this->txtUsuario->Location = System::Drawing::Point(92, 31);
             this->txtUsuario->Name = L"txtUsuario";
-            this->txtUsuario->Size = System::Drawing::Size(137, 26);
+            this->txtUsuario->Size = System::Drawing::Size(138, 26);
             this->txtUsuario->TabIndex = 1;
             // 
             // lblPassword
             // 
             this->lblPassword->AutoSize = true;
-            this->lblPassword->Location = System::Drawing::Point(235, 33);
+            this->lblPassword->Location = System::Drawing::Point(236, 32);
             this->lblPassword->Name = L"lblPassword";
             this->lblPassword->Size = System::Drawing::Size(78, 20);
             this->lblPassword->TabIndex = 2;
@@ -268,7 +267,7 @@ namespace ProyectMovies {
             // 
             // txtPassword
             // 
-            this->txtPassword->Location = System::Drawing::Point(311, 30);
+            this->txtPassword->Location = System::Drawing::Point(310, 31);
             this->txtPassword->Name = L"txtPassword";
             this->txtPassword->Size = System::Drawing::Size(133, 26);
             this->txtPassword->TabIndex = 3;
@@ -286,7 +285,7 @@ namespace ProyectMovies {
             // lblNombre
             // 
             this->lblNombre->AutoSize = true;
-            this->lblNombre->Location = System::Drawing::Point(462, 33);
+            this->lblNombre->Location = System::Drawing::Point(462, 32);
             this->lblNombre->Name = L"lblNombre";
             this->lblNombre->Size = System::Drawing::Size(65, 20);
             this->lblNombre->TabIndex = 6;
@@ -295,15 +294,15 @@ namespace ProyectMovies {
             // 
             // txtNombre
             // 
-            this->txtNombre->Location = System::Drawing::Point(524, 30);
+            this->txtNombre->Location = System::Drawing::Point(524, 31);
             this->txtNombre->Name = L"txtNombre";
-            this->txtNombre->Size = System::Drawing::Size(143, 26);
+            this->txtNombre->Size = System::Drawing::Size(144, 26);
             this->txtNombre->TabIndex = 7;
             // 
             // lblApellido
             // 
             this->lblApellido->AutoSize = true;
-            this->lblApellido->Location = System::Drawing::Point(684, 33);
+            this->lblApellido->Location = System::Drawing::Point(684, 32);
             this->lblApellido->Name = L"lblApellido";
             this->lblApellido->Size = System::Drawing::Size(65, 20);
             this->lblApellido->TabIndex = 8;
@@ -312,7 +311,7 @@ namespace ProyectMovies {
             // 
             // txtApellido
             // 
-            this->txtApellido->Location = System::Drawing::Point(755, 27);
+            this->txtApellido->Location = System::Drawing::Point(754, 28);
             this->txtApellido->Name = L"txtApellido";
             this->txtApellido->Size = System::Drawing::Size(122, 26);
             this->txtApellido->TabIndex = 9;
@@ -320,7 +319,7 @@ namespace ProyectMovies {
             // lblTelefono
             // 
             this->lblTelefono->AutoSize = true;
-            this->lblTelefono->Location = System::Drawing::Point(905, 33);
+            this->lblTelefono->Location = System::Drawing::Point(904, 32);
             this->lblTelefono->Name = L"lblTelefono";
             this->lblTelefono->Size = System::Drawing::Size(71, 20);
             this->lblTelefono->TabIndex = 10;
@@ -328,7 +327,7 @@ namespace ProyectMovies {
             // 
             // txtTelefono
             // 
-            this->txtTelefono->Location = System::Drawing::Point(997, 27);
+            this->txtTelefono->Location = System::Drawing::Point(998, 28);
             this->txtTelefono->Name = L"txtTelefono";
             this->txtTelefono->Size = System::Drawing::Size(133, 26);
             this->txtTelefono->TabIndex = 11;
@@ -336,7 +335,7 @@ namespace ProyectMovies {
             // lblCUI
             // 
             this->lblCUI->AutoSize = true;
-            this->lblCUI->Location = System::Drawing::Point(35, 85);
+            this->lblCUI->Location = System::Drawing::Point(34, 85);
             this->lblCUI->Name = L"lblCUI";
             this->lblCUI->Size = System::Drawing::Size(114, 20);
             this->lblCUI->TabIndex = 12;
@@ -344,7 +343,7 @@ namespace ProyectMovies {
             // 
             // txtCUI
             // 
-            this->txtCUI->Location = System::Drawing::Point(155, 82);
+            this->txtCUI->Location = System::Drawing::Point(154, 82);
             this->txtCUI->Name = L"txtCUI";
             this->txtCUI->Size = System::Drawing::Size(148, 26);
             this->txtCUI->TabIndex = 13;
@@ -362,7 +361,7 @@ namespace ProyectMovies {
             // 
             this->txtEmail->Location = System::Drawing::Point(384, 82);
             this->txtEmail->Name = L"txtEmail";
-            this->txtEmail->Size = System::Drawing::Size(143, 26);
+            this->txtEmail->Size = System::Drawing::Size(144, 26);
             this->txtEmail->TabIndex = 15;
             // 
             // lblDireccion
@@ -376,7 +375,7 @@ namespace ProyectMovies {
             // 
             // txtDireccion
             // 
-            this->txtDireccion->Location = System::Drawing::Point(635, 82);
+            this->txtDireccion->Location = System::Drawing::Point(634, 82);
             this->txtDireccion->Name = L"txtDireccion";
             this->txtDireccion->Size = System::Drawing::Size(127, 26);
             this->txtDireccion->TabIndex = 17;
@@ -458,7 +457,7 @@ namespace ProyectMovies {
             // 
             // btnAgregar
             // 
-            this->btnAgregar->Location = System::Drawing::Point(295, 160);
+            this->btnAgregar->Location = System::Drawing::Point(296, 160);
             this->btnAgregar->Name = L"btnAgregar";
             this->btnAgregar->Size = System::Drawing::Size(98, 37);
             this->btnAgregar->TabIndex = 20;
@@ -468,7 +467,7 @@ namespace ProyectMovies {
             // 
             // btnEditar
             // 
-            this->btnEditar->Location = System::Drawing::Point(581, 160);
+            this->btnEditar->Location = System::Drawing::Point(580, 160);
             this->btnEditar->Name = L"btnEditar";
             this->btnEditar->Size = System::Drawing::Size(98, 37);
             this->btnEditar->TabIndex = 21;
@@ -486,18 +485,9 @@ namespace ProyectMovies {
             this->btnEliminar->UseVisualStyleBackColor = true;
             this->btnEliminar->Click += gcnew System::EventHandler(this, &Usuarios::btnEliminar_Click);
             // 
-            // btnHTML
-            // 
-            this->btnHTML->Location = System::Drawing::Point(717, 160);
-            this->btnHTML->Name = L"btnHTML";
-            this->btnHTML->Size = System::Drawing::Size(98, 37);
-            this->btnHTML->TabIndex = 23;
-            this->btnHTML->Text = L"HTML";
-            this->btnHTML->UseVisualStyleBackColor = true;
-            // 
             // btnCargaDatos
             // 
-            this->btnCargaDatos->Location = System::Drawing::Point(840, 153);
+            this->btnCargaDatos->Location = System::Drawing::Point(722, 153);
             this->btnCargaDatos->Name = L"btnCargaDatos";
             this->btnCargaDatos->Size = System::Drawing::Size(112, 51);
             this->btnCargaDatos->TabIndex = 24;
@@ -508,9 +498,8 @@ namespace ProyectMovies {
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(1201, 707);
+            this->ClientSize = System::Drawing::Size(1202, 708);
             this->Controls->Add(this->btnCargaDatos);
-            this->Controls->Add(this->btnHTML);
             this->Controls->Add(this->btnEliminar);
             this->Controls->Add(this->btnEditar);
             this->Controls->Add(this->btnAgregar);

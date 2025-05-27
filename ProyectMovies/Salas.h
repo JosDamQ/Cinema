@@ -1,6 +1,11 @@
-
 #pragma once
 #include "ClaseSalas.h"
+#include "GeneradorReporte.h"
+// Coloca estos includes al inicio
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fstream>
+#undef ServiceProvider
 
 namespace ProyectMovies {
 
@@ -124,6 +129,51 @@ namespace ProyectMovies {
 		{
 			return salas;
 		}
+		private:
+			void GenerarReporteHTML()
+			{
+				if (tblSalas->Rows->Count == 0) {
+					MessageBox::Show("No hay salas para generar el reporte.",
+						"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+					return;
+				}
+
+				// Preparar los datos para el reporte
+				array<String^>^ encabezados = gcnew array<String^> {
+					"Código", "Nombre", "Capacidad", "Ubicación", "Encargado", "Teléfono Encargado"
+				};
+
+				// Crear lista de datos basada en el DataGridView
+				System::Collections::Generic::List<array<String^>^>^ datosLista = gcnew System::Collections::Generic::List<array<String^>^>();
+
+				for each (DataGridViewRow ^ fila in tblSalas->Rows)
+				{
+					if (!fila->IsNewRow)
+					{
+						array<String^>^ filaDatos = gcnew array<String^> {
+							fila->Cells["colCodigo"]->Value == nullptr ? "" : fila->Cells["colCodigo"]->Value->ToString(),
+								fila->Cells["colNombre"]->Value == nullptr ? "" : fila->Cells["colNombre"]->Value->ToString(),
+								fila->Cells["colCapacidad"]->Value == nullptr ? "" : fila->Cells["colCapacidad"]->Value->ToString(),
+								fila->Cells["colUbicacion"]->Value == nullptr ? "" : fila->Cells["colUbicacion"]->Value->ToString(),
+								fila->Cells["colEncargado"]->Value == nullptr ? "" : fila->Cells["colEncargado"]->Value->ToString(),
+								fila->Cells["colTelefonoEncargado"]->Value == nullptr ? "" : fila->Cells["colTelefonoEncargado"]->Value->ToString()
+						};
+						datosLista->Add(filaDatos);
+					}
+				}
+
+				// Convertir la lista a array para el reporte
+				array<array<String^>^>^ datos = datosLista->ToArray();
+
+				// Generar el reporte usando la clase general
+				GeneradorReporte::GenerarReporte(
+					"Reporte de Salas",
+					"Listado de Salas Registradas",
+					"Sistema de Gestión de Salas - ProyectMovies",
+					encabezados,
+					datos,
+					"ReporteSalas");
+			}
 		
 
 	protected:
@@ -371,6 +421,7 @@ namespace ProyectMovies {
 			this->btnHTML->TabIndex = 14;
 			this->btnHTML->Text = L"HTML";
 			this->btnHTML->UseVisualStyleBackColor = true;
+			this->btnHTML->Click += gcnew System::EventHandler(this, &Salas::btnHTML_Click);;
 			// 
 			// btnCargaDatos
 			// 
@@ -544,6 +595,15 @@ namespace ProyectMovies {
 				salaSeleccionada = -1; // Resetear la selección
 			}
 		}
+	private: System::Void btnHTML_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (ultimoCodigo == 0) {
+			MessageBox::Show("No hay salas para generar el reporte.",
+				"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			return;
+		}
+
+		GenerarReporteHTML();
+	}
 
 	};
 }

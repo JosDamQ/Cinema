@@ -1,5 +1,6 @@
 #include "Login.h"
 
+[STAThread]  // <-- Este atributo es crucial
 int main()
 {
     System::Windows::Forms::Application::EnableVisualStyles();

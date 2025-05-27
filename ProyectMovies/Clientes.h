@@ -1,6 +1,14 @@
 #pragma once
-#include "ClaseClientes.h";
-//#include "ClaseUsuarios.h";
+#include "ClaseClientes.h"
+#include "GeneradorReporte.h"
+// Coloca estos includes al inicio
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fstream>
+
+
+// Evita conflictos con ServiceProvider de Windows
+#undef ServiceProvider
 
 namespace ProyectMovies {
 
@@ -10,10 +18,12 @@ namespace ProyectMovies {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::IO;
+	using namespace System::Text;
 
 	public ref class Clientes : public System::Windows::Forms::Form
 	{
-	private: 
+	private:
 		// para traer a los externos
 		//array<User^>^ listaUsuarios;
 		array <Cliente^>^ clientes;
@@ -21,15 +31,67 @@ namespace ProyectMovies {
 		int clienteSeleccionado;
 	private: System::Windows::Forms::Button^ btnHTML;
 	private: System::Windows::Forms::Button^ btnCargaDatos;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colNombre;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colApellido;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCUI;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaNacimiento;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colTelefono;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colEmail;
 
-		enum class ModoFormulario {
-			Ninguno,
-			Agregar,
-			Editar
-		};
+		   enum class ModoFormulario {
+			   Ninguno,
+			   Agregar,
+			   Editar
+		   };
 
-		ModoFormulario estadoActual = ModoFormulario::Ninguno;
+		   ModoFormulario estadoActual = ModoFormulario::Ninguno;
+	private:
+		void GenerarReporteHTML()
+		{
+			if (tblClientes->Rows->Count == 0) {
+				MessageBox::Show("No hay clientes para generar el reporte.",
+					"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				return;
+			}
 
+			// Preparar los datos para el reporte
+			array<String^>^ encabezados = gcnew array<String^> {
+				"Código", "Nombre", "Apellido", "DPI", "Fecha Nacimiento", "Teléfono", "Email"
+			};
+
+			// Crear lista de datos basada en el DataGridView
+			System::Collections::Generic::List<array<String^>^>^ datosLista = gcnew System::Collections::Generic::List<array<String^>^>();
+
+			for each (DataGridViewRow ^ fila in tblClientes->Rows)
+			{
+				if (!fila->IsNewRow)
+				{
+					array<String^>^ filaDatos = gcnew array<String^> {
+						fila->Cells["colCodigo"]->Value == nullptr ? "" : fila->Cells["colCodigo"]->Value->ToString(),
+							fila->Cells["colNombre"]->Value == nullptr ? "" : fila->Cells["colNombre"]->Value->ToString(),
+							fila->Cells["colApellido"]->Value == nullptr ? "" : fila->Cells["colApellido"]->Value->ToString(),
+							fila->Cells["colCUI"]->Value == nullptr ? "" : fila->Cells["colCUI"]->Value->ToString(),
+							fila->Cells["colFechaNacimiento"]->Value == nullptr ? "" : fila->Cells["colFechaNacimiento"]->Value->ToString(),
+							fila->Cells["colTelefono"]->Value == nullptr ? "" : fila->Cells["colTelefono"]->Value->ToString(),
+							fila->Cells["colEmail"]->Value == nullptr ? "" : fila->Cells["colEmail"]->Value->ToString()
+					};
+					datosLista->Add(filaDatos);
+				}
+			}
+
+			// Convertir la lista a array para el reporte
+			array<array<String^>^>^ datos = datosLista->ToArray();
+
+			// Generar el reporte usando la clase general
+			GeneradorReporte::GenerarReporte(
+				"Reporte de Clientes",
+				"Listado de Clientes Registrados",
+				"Sistema de Gestión de Clientes - ProyectMovies",
+				encabezados,
+				datos,
+				"ReporteClientes");
+		}
 
 	public:
 		Clientes(void)
@@ -158,14 +220,14 @@ namespace ProyectMovies {
 
 	private: System::Windows::Forms::DataGridView^ tblClientes;
 
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCodigo;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colNombre;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colApellido;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colCUI;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaNacimiento;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colTelefono;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colEmail;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colUsuario;
+
+
+
+
+
+
+
+
 	private: System::Windows::Forms::Button^ btnAgregar;
 	private: System::Windows::Forms::Button^ btnEliminar;
 	private: System::Windows::Forms::Button^ btnEditar;
@@ -177,7 +239,7 @@ namespace ProyectMovies {
 		/// <summary>
 		/// Variable del diseñador necesaria.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		// Para comboBox externo
@@ -207,6 +269,11 @@ namespace ProyectMovies {
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->txtEmail = (gcnew System::Windows::Forms::TextBox());
 			this->tblClientes = (gcnew System::Windows::Forms::DataGridView());
+			this->btnAgregar = (gcnew System::Windows::Forms::Button());
+			this->btnEliminar = (gcnew System::Windows::Forms::Button());
+			this->btnEditar = (gcnew System::Windows::Forms::Button());
+			this->btnHTML = (gcnew System::Windows::Forms::Button());
+			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colNombre = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colApellido = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
@@ -214,12 +281,6 @@ namespace ProyectMovies {
 			this->colFechaNacimiento = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colTelefono = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colEmail = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->colUsuario = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
-			this->btnAgregar = (gcnew System::Windows::Forms::Button());
-			this->btnEliminar = (gcnew System::Windows::Forms::Button());
-			this->btnEditar = (gcnew System::Windows::Forms::Button());
-			this->btnHTML = (gcnew System::Windows::Forms::Button());
-			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblClientes))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -323,9 +384,9 @@ namespace ProyectMovies {
 			// tblClientes
 			// 
 			this->tblClientes->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->tblClientes->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(8) {
+			this->tblClientes->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(7) {
 				this->colCodigo,
-					this->colNombre, this->colApellido, this->colCUI, this->colFechaNacimiento, this->colTelefono, this->colEmail, this->colUsuario
+					this->colNombre, this->colApellido, this->colCUI, this->colFechaNacimiento, this->colTelefono, this->colEmail
 			});
 			this->tblClientes->Location = System::Drawing::Point(154, 272);
 			this->tblClientes->Name = L"tblClientes";
@@ -333,46 +394,6 @@ namespace ProyectMovies {
 			this->tblClientes->Size = System::Drawing::Size(985, 329);
 			this->tblClientes->TabIndex = 14;
 			this->tblClientes->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Clientes::tblClientes_CellClick);
-			// 
-			// colCodigo
-			// 
-			this->colCodigo->HeaderText = L"Codigo";
-			this->colCodigo->Name = L"colCodigo";
-			// 
-			// colNombre
-			// 
-			this->colNombre->HeaderText = L"Nombre";
-			this->colNombre->Name = L"colNombre";
-			// 
-			// colApellido
-			// 
-			this->colApellido->HeaderText = L"Apellido";
-			this->colApellido->Name = L"colApellido";
-			// 
-			// colCUI
-			// 
-			this->colCUI->HeaderText = L"CUI/Pasaporte";
-			this->colCUI->Name = L"colCUI";
-			// 
-			// colFechaNacimiento
-			// 
-			this->colFechaNacimiento->HeaderText = L"Fecha de nacimiento";
-			this->colFechaNacimiento->Name = L"colFechaNacimiento";
-			// 
-			// colTelefono
-			// 
-			this->colTelefono->HeaderText = L"Telefono";
-			this->colTelefono->Name = L"colTelefono";
-			// 
-			// colEmail
-			// 
-			this->colEmail->HeaderText = L"Email";
-			this->colEmail->Name = L"colEmail";
-			// 
-			// colUsuario
-			// 
-			this->colUsuario->HeaderText = L"Usuario";
-			this->colUsuario->Name = L"colUsuario";
 			// 
 			// btnAgregar
 			// 
@@ -412,6 +433,7 @@ namespace ProyectMovies {
 			this->btnHTML->TabIndex = 18;
 			this->btnHTML->Text = L"HTML";
 			this->btnHTML->UseVisualStyleBackColor = true;
+			this->btnHTML->Click += gcnew System::EventHandler(this, &Clientes::btnHTML_Click);
 			// 
 			// btnCargaDatos
 			// 
@@ -421,6 +443,41 @@ namespace ProyectMovies {
 			this->btnCargaDatos->TabIndex = 19;
 			this->btnCargaDatos->Text = L"Carga de datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			// 
+			// colCodigo
+			// 
+			this->colCodigo->HeaderText = L"Codigo";
+			this->colCodigo->Name = L"colCodigo";
+			// 
+			// colNombre
+			// 
+			this->colNombre->HeaderText = L"Nombre";
+			this->colNombre->Name = L"colNombre";
+			// 
+			// colApellido
+			// 
+			this->colApellido->HeaderText = L"Apellido";
+			this->colApellido->Name = L"colApellido";
+			// 
+			// colCUI
+			// 
+			this->colCUI->HeaderText = L"CUI/Pasaporte";
+			this->colCUI->Name = L"colCUI";
+			// 
+			// colFechaNacimiento
+			// 
+			this->colFechaNacimiento->HeaderText = L"Fecha de nacimiento";
+			this->colFechaNacimiento->Name = L"colFechaNacimiento";
+			// 
+			// colTelefono
+			// 
+			this->colTelefono->HeaderText = L"Telefono";
+			this->colTelefono->Name = L"colTelefono";
+			// 
+			// colEmail
+			// 
+			this->colEmail->HeaderText = L"Email";
+			this->colEmail->Name = L"colEmail";
 			// 
 			// Clientes
 			// 
@@ -454,155 +511,164 @@ namespace ProyectMovies {
 		}
 #pragma endregion
 		//Eventos
-		private: System::Void tblClientes_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
-			if (e->RowIndex >= 0 && e->RowIndex < tblClientes->Rows->Count) {
-				DataGridViewRow^ fila = tblClientes->Rows[e->RowIndex];
+	private: System::Void tblClientes_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+		if (e->RowIndex >= 0 && e->RowIndex < tblClientes->Rows->Count) {
+			DataGridViewRow^ fila = tblClientes->Rows[e->RowIndex];
 
-				if (!fila->IsNewRow) {
-					clienteSeleccionado = e->RowIndex;
-					txtNombre->Text = fila->Cells["colNombre"]->Value->ToString();
-					txtApellido->Text = fila->Cells["colApellido"]->Value->ToString();
-					txtCUI->Text = fila->Cells["colCUI"]->Value->ToString();
-					//dateFechaNacimiento->Value = DateTime::Parse(fila->Cells["colFechaNacimiento"]->Value->ToString());
-					Object^ valorFecha = fila->Cells["colFechaNacimiento"]->Value;
-					if (valorFecha != nullptr && !String::IsNullOrWhiteSpace(valorFecha->ToString())) {
-						DateTime fecha;
-						if (DateTime::TryParse(valorFecha->ToString(), fecha)) {
-							dateFechaNacimiento->Value = fecha;
-						}
-						else {
-							// Opcional: manejar formato inválido
-							MessageBox::Show("Formato de fecha inválido en la fila seleccionada.");
-						}
+			if (!fila->IsNewRow) {
+				clienteSeleccionado = e->RowIndex;
+				txtNombre->Text = fila->Cells["colNombre"]->Value->ToString();
+				txtApellido->Text = fila->Cells["colApellido"]->Value->ToString();
+				txtCUI->Text = fila->Cells["colCUI"]->Value->ToString();
+				//dateFechaNacimiento->Value = DateTime::Parse(fila->Cells["colFechaNacimiento"]->Value->ToString());
+				Object^ valorFecha = fila->Cells["colFechaNacimiento"]->Value;
+				if (valorFecha != nullptr && !String::IsNullOrWhiteSpace(valorFecha->ToString())) {
+					DateTime fecha;
+					if (DateTime::TryParse(valorFecha->ToString(), fecha)) {
+						dateFechaNacimiento->Value = fecha;
 					}
 					else {
-						// Opcional: asignar una fecha por defecto si está vacío
-						dateFechaNacimiento->Value = DateTime::Now;
+						// Opcional: manejar formato inválido
+						MessageBox::Show("Formato de fecha inválido en la fila seleccionada.");
 					}
-					txtTelefono->Text = fila->Cells["colTelefono"]->Value->ToString();
-					txtEmail->Text = fila->Cells["colEmail"]->Value->ToString();
 				}
+				else {
+					// Opcional: asignar una fecha por defecto si está vacío
+					dateFechaNacimiento->Value = DateTime::Now;
+				}
+				txtTelefono->Text = fila->Cells["colTelefono"]->Value->ToString();
+				txtEmail->Text = fila->Cells["colEmail"]->Value->ToString();
 			}
 		}
+	}
 
-		private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
-			if (estadoActual == ModoFormulario::Ninguno) {
-				estadoActual = ModoFormulario::Agregar;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-			}
-			else if (estadoActual == ModoFormulario::Agregar) {
-				if (txtNombre->Text->Trim() == "" ||
-					txtApellido->Text->Trim() == "" ||
-					txtCUI->Text->Trim() == "" ||
-					dateFechaNacimiento->Value == DateTime::MinValue ||
-					txtTelefono->Text->Trim() == "" ||
-					txtEmail->Text->Trim() == "") {
-
-					MessageBox::Show("Por favor complete todos los campos antes de agregar el usuario.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-					return;
-				}
-
-				String^ nombre = txtNombre->Text;
-				String^ apellido = txtApellido->Text;
-				String^ dpi = txtCUI->Text;
-				DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
-				String^ telefono = txtTelefono->Text;
-				String^ email = txtEmail->Text;
-
-				AgregarCliente(nombre, apellido, dpi, fechaNacimiento, telefono, email);
-
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-			}
+	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			estadoActual = ModoFormulario::Agregar;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
 		}
+		else if (estadoActual == ModoFormulario::Agregar) {
+			if (txtNombre->Text->Trim() == "" ||
+				txtApellido->Text->Trim() == "" ||
+				txtCUI->Text->Trim() == "" ||
+				dateFechaNacimiento->Value == DateTime::MinValue ||
+				txtTelefono->Text->Trim() == "" ||
+				txtEmail->Text->Trim() == "") {
 
-		private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
-			if (estadoActual == ModoFormulario::Agregar) {
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-				clienteSeleccionado = -1; // Resetear la selección
+				MessageBox::Show("Por favor complete todos los campos antes de agregar el usuario.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
 				return;
 			}
 
-			if (estadoActual == ModoFormulario::Editar) {
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-				clienteSeleccionado = -1; // Resetear la selección
-				return;
-			}
+			String^ nombre = txtNombre->Text;
+			String^ apellido = txtApellido->Text;
+			String^ dpi = txtCUI->Text;
+			DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
+			String^ telefono = txtTelefono->Text;
+			String^ email = txtEmail->Text;
 
-			if (clienteSeleccionado >= 0 && clienteSeleccionado < ultimoCodigo) {
-				System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show(
-					"¿Estás seguro de que deseas eliminar este cliente?",
-					"Confirmar eliminación",
-					System::Windows::Forms::MessageBoxButtons::YesNo,
-					System::Windows::Forms::MessageBoxIcon::Warning
-				);
+			AgregarCliente(nombre, apellido, dpi, fechaNacimiento, telefono, email);
 
-				if (result == System::Windows::Forms::DialogResult::Yes) {
-					clientes[clienteSeleccionado] = nullptr;
-					MostrarClientes();
-				}
-				ResetearFormulario();
-				tblClientes->ClearSelection();
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+		}
+	}
 
-				clienteSeleccionado = -1; // Resetear la selección
-			}
-			else {
-				System::Windows::Forms::MessageBox::Show("Seleccione un cliente para eliminar.");
-			}
+	private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Agregar) {
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+			clienteSeleccionado = -1; // Resetear la selección
+			return;
 		}
 
-		private: System::Void btnEditar_Click(System::Object^ sender, System::EventArgs^ e) {
-			if (estadoActual == ModoFormulario::Ninguno) {
-				if (clienteSeleccionado < 0 || clienteSeleccionado >= ultimoCodigo || clientes[clienteSeleccionado] == nullptr) {
-					System::Windows::Forms::MessageBox::Show("Seleccione un cliente para editar.");
-					return;
-				}
+		if (estadoActual == ModoFormulario::Editar) {
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+			clienteSeleccionado = -1; // Resetear la selección
+			return;
+		}
 
-				estadoActual = ModoFormulario::Editar;
-				ActualizarEstadoFormulario();
-			}
-			else if (estadoActual == ModoFormulario::Editar) {
-				if (txtNombre->Text->Trim() == "" ||
-					txtApellido->Text->Trim() == "" ||
-					txtCUI->Text->Trim() == "" ||
-					dateFechaNacimiento->Value == DateTime::MinValue ||
-					txtTelefono->Text->Trim() == "" ||
-					txtEmail->Text->Trim() == "") {
-					MessageBox::Show("Por favor complete todos los campos antes de editar el cliente.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
-					return;
-				}
+		if (clienteSeleccionado >= 0 && clienteSeleccionado < ultimoCodigo) {
+			System::Windows::Forms::DialogResult result = System::Windows::Forms::MessageBox::Show(
+				"¿Estás seguro de que deseas eliminar este cliente?",
+				"Confirmar eliminación",
+				System::Windows::Forms::MessageBoxButtons::YesNo,
+				System::Windows::Forms::MessageBoxIcon::Warning
+			);
 
-				String^ nombre = txtNombre->Text;
-				String^ apellido = txtApellido->Text;
-				String^ dpi = txtCUI->Text;
-				DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
-				String^ telefono = txtTelefono->Text;
-				String^ email = txtEmail->Text;
-				clientes[clienteSeleccionado]->Nombre = nombre;
-				clientes[clienteSeleccionado]->Apellido = apellido;
-				clientes[clienteSeleccionado]->DPI = dpi;
-				clientes[clienteSeleccionado]->FechaNacimiento = fechaNacimiento;
-				clientes[clienteSeleccionado]->Telefono = telefono;
-				clientes[clienteSeleccionado]->Email = email;
-
+			if (result == System::Windows::Forms::DialogResult::Yes) {
+				clientes[clienteSeleccionado] = nullptr;
 				MostrarClientes();
-
-				estadoActual = ModoFormulario::Ninguno;
-				ActualizarEstadoFormulario();
-				ResetearFormulario();
-				tblClientes->ClearSelection();
-				clienteSeleccionado = -1; // Resetear la selección
 			}
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+
+			clienteSeleccionado = -1; // Resetear la selección
 		}
-	
+		else {
+			System::Windows::Forms::MessageBox::Show("Seleccione un cliente para eliminar.");
+		}
+	}
+
+	private: System::Void btnEditar_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (estadoActual == ModoFormulario::Ninguno) {
+			if (clienteSeleccionado < 0 || clienteSeleccionado >= ultimoCodigo || clientes[clienteSeleccionado] == nullptr) {
+				System::Windows::Forms::MessageBox::Show("Seleccione un cliente para editar.");
+				return;
+			}
+
+			estadoActual = ModoFormulario::Editar;
+			ActualizarEstadoFormulario();
+		}
+		else if (estadoActual == ModoFormulario::Editar) {
+			if (txtNombre->Text->Trim() == "" ||
+				txtApellido->Text->Trim() == "" ||
+				txtCUI->Text->Trim() == "" ||
+				dateFechaNacimiento->Value == DateTime::MinValue ||
+				txtTelefono->Text->Trim() == "" ||
+				txtEmail->Text->Trim() == "") {
+				MessageBox::Show("Por favor complete todos los campos antes de editar el cliente.", "Campos incompletos", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+				return;
+			}
+
+			String^ nombre = txtNombre->Text;
+			String^ apellido = txtApellido->Text;
+			String^ dpi = txtCUI->Text;
+			DateTime^ fechaNacimiento = dateFechaNacimiento->Value;
+			String^ telefono = txtTelefono->Text;
+			String^ email = txtEmail->Text;
+			clientes[clienteSeleccionado]->Nombre = nombre;
+			clientes[clienteSeleccionado]->Apellido = apellido;
+			clientes[clienteSeleccionado]->DPI = dpi;
+			clientes[clienteSeleccionado]->FechaNacimiento = fechaNacimiento;
+			clientes[clienteSeleccionado]->Telefono = telefono;
+			clientes[clienteSeleccionado]->Email = email;
+
+			MostrarClientes();
+
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblClientes->ClearSelection();
+			clienteSeleccionado = -1; // Resetear la selección
+		}
+	}
+	private: System::Void btnHTML_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (ultimoCodigo == 0) {
+			MessageBox::Show("No hay clientes para generar el reporte.",
+				"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			return;
+		}
+
+		GenerarReporteHTML();
+	}
+
 	};
 }
