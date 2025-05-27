@@ -2,12 +2,17 @@
 #include "ClaseAsignacionPeliculasSalas.h"
 #include "ClasePelicula.h"
 #include "ClaseSalas.h"
+#include "GeneradorReporte.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fstream>
+#undef ServiceProvider
 
 namespace ProyectMovies {
 
 	using namespace System;
 	using namespace System::ComponentModel;
-	using namespace System::Collections;
+	using namespace System::Collections;	
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
@@ -159,7 +164,55 @@ namespace ProyectMovies {
 		{
 			return asignacionesPeliculasSalas;
 		}
+	private:
+		void GenerarReporteHTML()
+		{
+			if (tblAsignacionPeliculas->Rows->Count == 0) {
+				MessageBox::Show("No hay asignaciones para generar el reporte.",
+					"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				return;
+			}
 
+			// Preparar los datos para el reporte
+			array<String^>^ encabezados = gcnew array<String^> {
+				"Código", "Película", "Formato", "Idioma",
+					"Sala", "Capacidad", "Fecha Estreno", "Hora Función"
+			};
+
+			// Crear lista de datos basada en el DataGridView
+			System::Collections::Generic::List<array<String^>^>^ datosLista =
+				gcnew System::Collections::Generic::List<array<String^>^>();
+
+			for each (DataGridViewRow ^ fila in tblAsignacionPeliculas->Rows)
+			{
+				if (!fila->IsNewRow)
+				{
+					array<String^>^ filaDatos = gcnew array<String^> {
+						fila->Cells["colCodigo"]->Value == nullptr ? "" : fila->Cells["colCodigo"]->Value->ToString(),
+							fila->Cells["colPelicula"]->Value == nullptr ? "" : fila->Cells["colPelicula"]->Value->ToString(),
+							fila->Cells["colFormato"]->Value == nullptr ? "" : fila->Cells["colFormato"]->Value->ToString(),
+							fila->Cells["colIdioma"]->Value == nullptr ? "" : fila->Cells["colIdioma"]->Value->ToString(),
+							fila->Cells["colSala"]->Value == nullptr ? "" : fila->Cells["colSala"]->Value->ToString(),
+							fila->Cells["colCapacidad"]->Value == nullptr ? "" : fila->Cells["colCapacidad"]->Value->ToString(),
+							fila->Cells["colFechaHoraAsignacion"]->Value == nullptr ? "" : fila->Cells["colFechaHoraAsignacion"]->Value->ToString(),
+							fila->Cells["colHora"]->Value == nullptr ? "" : fila->Cells["colHora"]->Value->ToString()
+					};
+					datosLista->Add(filaDatos);
+				}
+			}
+
+			// Convertir la lista a array para el reporte
+			array<array<String^>^>^ datos = datosLista->ToArray();
+
+			// Generar el reporte usando la clase general
+			GeneradorReporte::GenerarReporte(
+				"Reporte de Asignaciones Películas-Salas",
+				"Listado de Asignaciones Registradas",
+				"Sistema de Gestión de Asignaciones - ProyectMovies",
+				encabezados,
+				datos,
+				"ReporteAsignaciones");
+		}
 	protected:
 		~AsignacionPeliculasSalas()
 		{
@@ -428,6 +481,7 @@ namespace ProyectMovies {
 			this->btnHTML->TabIndex = 12;
 			this->btnHTML->Text = L"HTML";
 			this->btnHTML->UseVisualStyleBackColor = true;
+			this->btnHTML->Click += gcnew System::EventHandler(this, &AsignacionPeliculasSalas::btnHTML_Click);
 			// 
 			// btnCargaDatos
 			// 
@@ -629,5 +683,14 @@ namespace ProyectMovies {
 				asignacionSeleccionada = -1; // Resetear la selección
 			}
 		}
+	private: System::Void btnHTML_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (ultimoCodigo == 0) {
+			MessageBox::Show("No hay asignaciones para generar el reporte.",
+				"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			return;
+		}
+
+		GenerarReporteHTML();
+	}
 	};
 }

@@ -42,7 +42,7 @@ namespace ProyectMovies {
 	private:
 		void GenerarReporteHTML()
 		{
-			if (ultimoCodigo == 0) {
+			if (tblClientes->Rows->Count == 0) {
 				MessageBox::Show("No hay clientes para generar el reporte.",
 					"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
 				return;
@@ -50,24 +50,31 @@ namespace ProyectMovies {
 
 			// Preparar los datos para el reporte
 			array<String^>^ encabezados = gcnew array<String^> {
-				"Código", "Nombre", "Apellido", "DPI", "Teléfono", "Email"
+				"Código", "Nombre", "Apellido", "DPI", "Fecha Nacimiento", "Teléfono", "Email"
 			};
 
-			array<array<String^>^>^ datos = gcnew array<array<String^>^>(ultimoCodigo);
-			for (int i = 0; i < ultimoCodigo; i++)
+			// Crear lista de datos basada en el DataGridView
+			System::Collections::Generic::List<array<String^>^>^ datosLista = gcnew System::Collections::Generic::List<array<String^>^>();
+
+			for each (DataGridViewRow ^ fila in tblClientes->Rows)
 			{
-				if (clientes[i] != nullptr)
+				if (!fila->IsNewRow)
 				{
-					datos[i] = gcnew array<String^> {
-						clientes[i]->Codigo.ToString(),
-							clientes[i]->Nombre,
-							clientes[i]->Apellido,
-							clientes[i]->DPI,
-							clientes[i]->Telefono,
-							clientes[i]->Email
+					array<String^>^ filaDatos = gcnew array<String^> {
+						fila->Cells["colCodigo"]->Value == nullptr ? "" : fila->Cells["colCodigo"]->Value->ToString(),
+							fila->Cells["colNombre"]->Value == nullptr ? "" : fila->Cells["colNombre"]->Value->ToString(),
+							fila->Cells["colApellido"]->Value == nullptr ? "" : fila->Cells["colApellido"]->Value->ToString(),
+							fila->Cells["colCUI"]->Value == nullptr ? "" : fila->Cells["colCUI"]->Value->ToString(),
+							fila->Cells["colFechaNacimiento"]->Value == nullptr ? "" : fila->Cells["colFechaNacimiento"]->Value->ToString(),
+							fila->Cells["colTelefono"]->Value == nullptr ? "" : fila->Cells["colTelefono"]->Value->ToString(),
+							fila->Cells["colEmail"]->Value == nullptr ? "" : fila->Cells["colEmail"]->Value->ToString()
 					};
+					datosLista->Add(filaDatos);
 				}
 			}
+
+			// Convertir la lista a array para el reporte
+			array<array<String^>^>^ datos = datosLista->ToArray();
 
 			// Generar el reporte usando la clase general
 			GeneradorReporte::GenerarReporte(
