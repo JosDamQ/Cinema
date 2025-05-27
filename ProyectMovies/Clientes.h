@@ -443,6 +443,7 @@ namespace ProyectMovies {
 			this->btnCargaDatos->TabIndex = 19;
 			this->btnCargaDatos->Text = L"Carga de datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Clientes::btnCargaDatos_Click);
 			// 
 			// colCodigo
 			// 
@@ -668,6 +669,49 @@ namespace ProyectMovies {
 		}
 
 		GenerarReporteHTML();
+	}
+
+	private: System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+		openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		openFileDialog->Title = "Seleccionar archivo CSV de clientes";
+
+		if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = openFileDialog->FileName;
+			try {
+				StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+				String^ line;
+				bool isFirstLine = true; // Para saltar el encabezado
+
+				while ((line = sr->ReadLine()) != nullptr) {
+					if (isFirstLine) {
+						isFirstLine = false;
+						continue;
+					}
+
+					array<String^>^ campos = line->Split(';');
+
+					// Validar que tenga los campos necesarios (ajusta según tu CSV)
+					if (campos->Length >= 6) {
+						String^ nombre = campos[0]->Trim();
+						String^ apellido = campos[1]->Trim();
+						String^ dpi = campos[2]->Trim();
+						DateTime^ fechaNacimiento = DateTime::Parse(campos[3]->Trim());
+						String^ telefono = campos[4]->Trim();
+						String^ email = campos[5]->Trim();
+
+						// Agregar el cliente al array
+						AgregarCliente(nombre, apellido, dpi, fechaNacimiento, telefono, email);
+					}
+				}
+				sr->Close();
+				MessageBox::Show("Clientes cargados exitosamente desde el archivo CSV.", "Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				MostrarClientes();
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al cargar el archivo: " + ex->Message, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
 	}
 
 	};
