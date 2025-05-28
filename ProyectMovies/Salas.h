@@ -431,6 +431,7 @@ namespace ProyectMovies {
 			this->btnCargaDatos->TabIndex = 15;
 			this->btnCargaDatos->Text = L"Carga de datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Salas::btnCargaDatos_Click);
 			// 
 			// Salas
 			// 
@@ -603,6 +604,74 @@ namespace ProyectMovies {
 		}
 
 		GenerarReporteHTML();
+	}
+
+	private: System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+		openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		openFileDialog->Title = "Seleccionar archivo CSV de salas";
+
+		if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = openFileDialog->FileName;
+			try {
+				StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+				String^ line;
+				bool isFirstLine = true;
+				int lineNumber = 0;
+				int salasCargadas = 0;
+
+				while ((line = sr->ReadLine()) != nullptr) {
+					lineNumber++;
+					if (isFirstLine) {
+						isFirstLine = false;
+						continue;
+					}
+
+					array<String^>^ campos = line->Split(';');
+
+					// Validación básica de campos
+					if (campos->Length < 5) {
+						MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban al menos 5 campos, se encontraron {1}",
+							lineNumber, campos->Length),
+							"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+						continue;
+					}
+
+					try {
+						// Procesar campos básicos
+						String^ nombre = campos[0]->Trim();
+						String^ ubicacion = campos[2]->Trim();
+						String^ encargado = campos[3]->Trim();
+						String^ telefonoEncargado = campos[4]->Trim();
+
+						// Procesar capacidad con manejo de errores
+						CapacidadSala capacidad;
+						if (!Enum::TryParse<CapacidadSala>("Capacidad_" + campos[1]->Trim(), true, capacidad)) {
+							MessageBox::Show(String::Format("Línea {0}: Capacidad '{1}' no válida. Se usará 'Capacidad_40' por defecto",
+								lineNumber, campos[1]),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							capacidad = CapacidadSala::Capacidad_40;
+						}
+
+						// Agregar sala
+						AgregarSala(nombre, capacidad, ubicacion, encargado, telefonoEncargado);
+						salasCargadas++;
+					}
+					catch (Exception^ ex) {
+						MessageBox::Show(String::Format("Error en línea {0}: {1}", lineNumber, ex->Message),
+							"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					}
+				}
+				sr->Close();
+				MessageBox::Show(String::Format("Se cargaron {0} salas exitosamente.", salasCargadas),
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				MostrarSalas();
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al cargar el archivo: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
 	}
 
 	};
