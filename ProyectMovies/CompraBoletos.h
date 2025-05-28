@@ -105,6 +105,22 @@ namespace ProyectMovies {
 			MostrarComprasBoletos();
 		}
 
+		void AgregarCompraBoletoCargaData(AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra, int fila, int columna) {
+			/*if (asientoFilaSeleccionado == -1) {
+				MessageBox::Show("Seleccione un asiento.");
+				return;
+			}*/
+
+			// Ocupar el asiento en la sala
+			//asignacion->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+			// Resto de la lógica de agregar compra...
+			ultimoCodigo++;
+			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra, fila, columna);
+			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
+			MostrarComprasBoletos();
+		}
+
 		//Funcion de mostrar
 		void MostrarComprasBoletos()
 		{
@@ -566,6 +582,7 @@ namespace ProyectMovies {
 			this->btnCargaDatos->TabIndex = 13;
 			this->btnCargaDatos->Text = L"Carga de Datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &CompraBoletos::btnCargaDatos_Click);
 			// 
 			// CompraBoletos
 			// 
@@ -799,5 +816,113 @@ namespace ProyectMovies {
 
 		GenerarReporteHTML();
 	}
+
+	private: System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+		openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		openFileDialog->Title = "Seleccionar archivo CSV de compras";
+
+		if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = openFileDialog->FileName;
+			try {
+				StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+				String^ line;
+				bool isFirstLine = true;
+				int lineNumber = 0;
+				int comprasCargadas = 0;
+
+				while ((line = sr->ReadLine()) != nullptr) {
+					lineNumber++;
+					if (isFirstLine) {
+						isFirstLine = false;
+						continue;
+					}
+
+					array<String^>^ campos = line->Split(';');
+
+					// Validación básica de campos (AsignaciónID;ClienteID;Fecha;Fila;Columna)
+					if (campos->Length < 5) {
+						MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban 5 campos, se encontraron {1}",
+							lineNumber, campos->Length),
+							"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+						continue;
+					}
+
+					try {
+						// Buscar asignación por ID
+						int asignacionId = Convert::ToInt32(campos[0]->Trim());
+						AsignacionPeliculaSala^ asignacion = nullptr;
+						for each(AsignacionPeliculaSala ^ a in listaAsignaciones) {
+							if (a != nullptr && a->Codigo == asignacionId) {
+								asignacion = a;
+								break;
+							}
+						}
+
+						if (asignacion == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Asignación con ID {1} no encontrada", lineNumber, asignacionId),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Buscar cliente por ID
+						int clienteId = Convert::ToInt32(campos[1]->Trim());
+						Cliente^ cliente = nullptr;
+						for each(Cliente ^ c in listaClientes) {
+							if (c != nullptr && c->Codigo == clienteId) {
+								cliente = c;
+								break;
+							}
+						}
+
+						if (cliente == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Cliente con ID {1} no encontrado", lineNumber, clienteId),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Procesar fecha
+						DateTime fechaCompra;
+						if (!DateTime::TryParse(campos[2]->Trim(), fechaCompra)) {
+							MessageBox::Show(String::Format("Línea {0}: Formato de fecha inválido", lineNumber),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Procesar asiento
+						int fila = Convert::ToInt32(campos[3]->Trim());
+						int columna = Convert::ToInt32(campos[4]->Trim());
+
+						// Validar disponibilidad de asiento (opcional)
+						if (!asignacion->SalaAsignada->Asientos[fila][columna]) {
+							MessageBox::Show(String::Format("Línea {0}: Asiento [{1},{2}] ya está ocupado", lineNumber, fila, columna),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Crear la compra y ocupar el asiento
+						AgregarCompraBoletoCargaData(asignacion, cliente, fechaCompra, fila, columna);
+						asignacion->SalaAsignada->OcuparAsiento(fila, columna);
+						comprasCargadas++;
+						MostrarComprasBoletos();
+					}
+					catch (Exception^ ex) {
+						MessageBox::Show(String::Format("Error en línea {0}: {1}", lineNumber, ex->Message),
+							"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					}
+				}
+				sr->Close();
+				MessageBox::Show(String::Format("Se cargaron {0} compras exitosamente.", comprasCargadas),
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				MostrarComprasBoletos();
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al cargar el archivo: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+			MostrarComprasBoletos();
+		}
+		MostrarComprasBoletos();
+	};
 	};
 }
