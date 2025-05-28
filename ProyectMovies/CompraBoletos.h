@@ -1,3 +1,8 @@
+/*
+	Josue Garcia 9490-24-4256
+	Fabian 
+*/
+
 #pragma once
 #include "ClaseCompraBoletos.h"
 #include "ClaseAsignacionPeliculasSalas.h"
@@ -84,18 +89,6 @@ namespace ProyectMovies {
 		}
 
 		//Funcion agregar
-		/*void AgregarCompraBoleto
-		(
-			AsignacionPeliculaSala^ asignacion,
-			Cliente^ cliente,
-			DateTime fechaCompra
-		)
-		{
-			ultimoCodigo++;
-			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra);
-			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
-			MostrarComprasBoletos();
-		}*/
 		void AgregarCompraBoleto(AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra, int fila, int columna) {
 			if (asientoFilaSeleccionado == -1) {
 				MessageBox::Show("Seleccione un asiento.");
@@ -620,8 +613,6 @@ namespace ProyectMovies {
 				}
 
 				if (compraSeleccionadaObj != nullptr) {
-					// Cargar los datos en los controles
-					// Seleccionar la función correspondiente en el ComboBox
 					for (int i = 0; i < cboFuncion->Items->Count; i++) {
 						AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->Items[i]);
 						if (asignacion != nullptr && asignacion == compraSeleccionadaObj->AsignacionCompra) {
@@ -641,10 +632,6 @@ namespace ProyectMovies {
 
 					// Establecer la fecha de compra
 					dateFecha->Value = compraSeleccionadaObj->FechaCompra;
-
-					// Cambiar al modo de edición (si lo implementas)
-					// estadoActual = ModoFormulario::Editar;
-					// ActualizarEstadoFormulario();
 				}
 			}
 		}
