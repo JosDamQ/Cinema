@@ -2,6 +2,11 @@
 #include "ClaseCompraBoletos.h"
 #include "ClaseAsignacionPeliculasSalas.h"
 #include "ClaseClientes.h"
+#include "GeneradorReporte.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fstream>
+#undef ServiceProvider
 
 namespace ProyectMovies {
 
@@ -47,11 +52,11 @@ namespace ProyectMovies {
 
 
 
-		enum class ModoFormulario {
-			Ninguno,
-			Agregar,
-		};
-		ModoFormulario estadoActual = ModoFormulario::Ninguno;
+		   enum class ModoFormulario {
+			   Ninguno,
+			   Agregar,
+		   };
+		   ModoFormulario estadoActual = ModoFormulario::Ninguno;
 
 
 	public:
@@ -163,7 +168,55 @@ namespace ProyectMovies {
 			}
 		}
 
+	private:
+		void GenerarReporteHTML()
+		{
+			if (compraSeleccionada == -1) {
+				MessageBox::Show("Por favor seleccione una compra para generar el reporte.",
+					"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				return;
+			}
 
+			// Obtener la compra seleccionada
+			ComprasBoletos^ compra = comprasBoletos[compraSeleccionada];
+			if (compra == nullptr) {
+				MessageBox::Show("La compra seleccionada no es válida.",
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+				return;
+			}
+
+			// Preparar los datos para el reporte
+			array<String^>^ encabezados = gcnew array<String^>{
+				"Código", "Película", "Idioma", "Formato",
+					"Sala", "Cliente", "Función", "Hora",
+					"Asiento", "Total", "Fecha Compra"
+			};
+
+			// Crear array con solo la compra seleccionada
+			array<array<String^>^>^ datos = gcnew array<array<String^>^>(1);
+			datos[0] = gcnew array<String^>{
+				compra->Codigo.ToString(),
+					compra->AsignacionCompra->PeliculaAsignada->Nombre,
+					compra->AsignacionCompra->PeliculaAsignada->IdiomaPelicula.ToString(),
+					compra->AsignacionCompra->PeliculaAsignada->FormatoPelicula.ToString(),
+					compra->AsignacionCompra->SalaAsignada->Nombre,
+					compra->ClienteCompra->Nombre + " " + compra->ClienteCompra->Apellido,
+					compra->AsignacionCompra->FechaEstreno.ToString("dd/MM/yyyy"),
+					compra->AsignacionCompra->HoraFuncion,
+					String::Format("Fila {0}, Columna {1}", compra->FilaAsiento + 1, compra->ColumnaAsiento + 1),
+					compra->AsignacionCompra->PeliculaAsignada->Precio,
+					compra->FechaCompra.ToString("dd/MM/yyyy")
+			};
+
+			// Generar el reporte usando la clase general
+			GeneradorReporte::GenerarReporte(
+				"Reporte de Compra de Boletos",
+				"Detalle de Compra Seleccionada",
+				"Sistema de Gestión de Compras - ProyectMovies",
+				encabezados,
+				datos,
+				"ReporteCompraBoletos");
+		}
 	protected:
 
 		~CompraBoletos()
@@ -195,7 +248,7 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::Label^ lblFecha;
 	private: System::Windows::Forms::DateTimePicker^ dateFecha;
 
-    // Asientos
+		   // Asientos
 	private: System::Windows::Forms::Panel^ panelAsientos;
 	private: System::Windows::Forms::Label^ lblAsientos;
 
@@ -205,10 +258,10 @@ namespace ProyectMovies {
 	protected:
 
 	private:
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
-		
+
 		void CargarAsignacionesComboBox() {
 			this->cboFuncion->Items->Clear();
 			this->cboFuncion->DisplayMember = "ResumenAsignacion";
@@ -510,6 +563,7 @@ namespace ProyectMovies {
 			this->btnHTML->TabIndex = 12;
 			this->btnHTML->Text = L"HTML";
 			this->btnHTML->UseVisualStyleBackColor = true;
+			this->btnHTML->Click += gcnew System::EventHandler(this, &CompraBoletos::btnHTML_Click);
 			// 
 			// btnCargaDatos
 			// 
@@ -548,52 +602,52 @@ namespace ProyectMovies {
 #pragma endregion
 	private: System::Void tblCompras_CellClick(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
 		if (e->RowIndex >= 0 && e->RowIndex < tblCompras->Rows->Count) {
-        DataGridViewRow^ fila = tblCompras->Rows[e->RowIndex];
-        
-        if (!fila->IsNewRow) {
-            compraSeleccionada = e->RowIndex;
-            
-            // Obtener el código de la compra seleccionada
-            int codigoCompra = Convert::ToInt32(fila->Cells["colCodigo"]->Value);
-            
-            // Buscar la compra en el array de comprasBoletos
-            ComprasBoletos^ compraSeleccionadaObj = nullptr;
-            for (int i = 0; i < ultimoCodigo; i++) {
-                if (comprasBoletos[i] != nullptr && comprasBoletos[i]->Codigo == codigoCompra) {
-                    compraSeleccionadaObj = comprasBoletos[i];
-                    break;
-                }
-            }
-            
-            if (compraSeleccionadaObj != nullptr) {
-                // Cargar los datos en los controles
-                // Seleccionar la función correspondiente en el ComboBox
-                for (int i = 0; i < cboFuncion->Items->Count; i++) {
-                    AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->Items[i]);
-                    if (asignacion != nullptr && asignacion == compraSeleccionadaObj->AsignacionCompra) {
-                        cboFuncion->SelectedIndex = i;
-                        break;
-                    }
-                }
-                
-                // Seleccionar el cliente correspondiente en el ComboBox
-                for (int i = 0; i < cboCliente->Items->Count; i++) {
-                    Cliente^ cliente = dynamic_cast<Cliente^>(cboCliente->Items[i]);
-                    if (cliente != nullptr && cliente == compraSeleccionadaObj->ClienteCompra) {
-                        cboCliente->SelectedIndex = i;
-                        break;
-                    }
-                }
-                
-                // Establecer la fecha de compra
-                dateFecha->Value = compraSeleccionadaObj->FechaCompra;
-                
-                // Cambiar al modo de edición (si lo implementas)
-                // estadoActual = ModoFormulario::Editar;
-                // ActualizarEstadoFormulario();
-            }
-        }
-    }
+			DataGridViewRow^ fila = tblCompras->Rows[e->RowIndex];
+
+			if (!fila->IsNewRow) {
+				compraSeleccionada = e->RowIndex;
+
+				// Obtener el código de la compra seleccionada
+				int codigoCompra = Convert::ToInt32(fila->Cells["colCodigo"]->Value);
+
+				// Buscar la compra en el array de comprasBoletos
+				ComprasBoletos^ compraSeleccionadaObj = nullptr;
+				for (int i = 0; i < ultimoCodigo; i++) {
+					if (comprasBoletos[i] != nullptr && comprasBoletos[i]->Codigo == codigoCompra) {
+						compraSeleccionadaObj = comprasBoletos[i];
+						break;
+					}
+				}
+
+				if (compraSeleccionadaObj != nullptr) {
+					// Cargar los datos en los controles
+					// Seleccionar la función correspondiente en el ComboBox
+					for (int i = 0; i < cboFuncion->Items->Count; i++) {
+						AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->Items[i]);
+						if (asignacion != nullptr && asignacion == compraSeleccionadaObj->AsignacionCompra) {
+							cboFuncion->SelectedIndex = i;
+							break;
+						}
+					}
+
+					// Seleccionar el cliente correspondiente en el ComboBox
+					for (int i = 0; i < cboCliente->Items->Count; i++) {
+						Cliente^ cliente = dynamic_cast<Cliente^>(cboCliente->Items[i]);
+						if (cliente != nullptr && cliente == compraSeleccionadaObj->ClienteCompra) {
+							cboCliente->SelectedIndex = i;
+							break;
+						}
+					}
+
+					// Establecer la fecha de compra
+					dateFecha->Value = compraSeleccionadaObj->FechaCompra;
+
+					// Cambiar al modo de edición (si lo implementas)
+					// estadoActual = ModoFormulario::Editar;
+					// ActualizarEstadoFormulario();
+				}
+			}
+		}
 	}
 	private: System::Void btnAgregar_Click(System::Object^ sender, System::EventArgs^ e) {
 		if (estadoActual == ModoFormulario::Ninguno) {
@@ -690,65 +744,73 @@ namespace ProyectMovies {
 		}
 	}
 	private: System::Void btnEliminar_Click(System::Object^ sender, System::EventArgs^ e) {
-			   if (estadoActual == ModoFormulario::Agregar) {
-				   estadoActual = ModoFormulario::Ninguno;
-				   ActualizarEstadoFormulario();
-				   ResetearFormulario();
-				   tblCompras->ClearSelection();
-				   compraSeleccionada = -1;
-				   panelAsientos->Controls->Clear();
-				   return;
-			   }
+		if (estadoActual == ModoFormulario::Agregar) {
+			estadoActual = ModoFormulario::Ninguno;
+			ActualizarEstadoFormulario();
+			ResetearFormulario();
+			tblCompras->ClearSelection();
+			compraSeleccionada = -1;
+			panelAsientos->Controls->Clear();
+			return;
+		}
 
-			   if (compraSeleccionada >= 0 && compraSeleccionada < comprasBoletos->Length && comprasBoletos[compraSeleccionada] != nullptr) {
-				   System::Windows::Forms::DialogResult result = MessageBox::Show(
-					   "¿Estás seguro de eliminar esta compra?",
-					   "Confirmar eliminación",
-					   MessageBoxButtons::YesNo,
-					   MessageBoxIcon::Warning
-				   );
+		if (compraSeleccionada >= 0 && compraSeleccionada < comprasBoletos->Length && comprasBoletos[compraSeleccionada] != nullptr) {
+			System::Windows::Forms::DialogResult result = MessageBox::Show(
+				"¿Estás seguro de eliminar esta compra?",
+				"Confirmar eliminación",
+				MessageBoxButtons::YesNo,
+				MessageBoxIcon::Warning
+			);
 
-				   if (result == System::Windows::Forms::DialogResult::Yes) {
-					   ComprasBoletos^ compraAEliminar = comprasBoletos[compraSeleccionada];
+			if (result == System::Windows::Forms::DialogResult::Yes) {
+				ComprasBoletos^ compraAEliminar = comprasBoletos[compraSeleccionada];
 
-					   // Liberar asiento
-					   if (compraAEliminar->AsignacionCompra != nullptr &&
-						   compraAEliminar->AsignacionCompra->SalaAsignada != nullptr) {
-						   compraAEliminar->AsignacionCompra->SalaAsignada->LiberarAsiento(
-							   compraAEliminar->FilaAsiento,
-							   compraAEliminar->ColumnaAsiento
-						   );
-					   }
+				// Liberar asiento
+				if (compraAEliminar->AsignacionCompra != nullptr &&
+					compraAEliminar->AsignacionCompra->SalaAsignada != nullptr) {
+					compraAEliminar->AsignacionCompra->SalaAsignada->LiberarAsiento(
+						compraAEliminar->FilaAsiento,
+						compraAEliminar->ColumnaAsiento
+					);
+				}
 
-					   // Eliminar compra y compactar array
-					   comprasBoletos[compraSeleccionada] = nullptr;
+				// Eliminar compra y compactar array
+				comprasBoletos[compraSeleccionada] = nullptr;
 
-					   // Compactar el array eliminando nulls
-					   CompactarArrayCompras();
+				// Compactar el array eliminando nulls
+				CompactarArrayCompras();
 
-					   // Actualizar último código
-					   ActualizarUltimoCodigo();
+				// Actualizar último código
+				ActualizarUltimoCodigo();
 
-					   MostrarComprasBoletos();
+				MostrarComprasBoletos();
 
-					   // Actualizar visualización si es necesario
-					   if (cboFuncion->SelectedIndex != -1) {
-						   AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
-						   if (asignacion != nullptr) {
-							   MostrarAsientos(asignacion->SalaAsignada);
-						   }
-					   }
-				   }
+				// Actualizar visualización si es necesario
+				if (cboFuncion->SelectedIndex != -1) {
+					AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->SelectedItem);
+					if (asignacion != nullptr) {
+						MostrarAsientos(asignacion->SalaAsignada);
+					}
+				}
+			}
 
-				   ResetearFormulario();
-				   tblCompras->ClearSelection();
-				   compraSeleccionada = -1;
-				   panelAsientos->Controls->Clear();
-			   }
-			   else {
-				   MessageBox::Show("Seleccione una compra para eliminar.");
-			   }
-		   }
+			ResetearFormulario();
+			tblCompras->ClearSelection();
+			compraSeleccionada = -1;
+			panelAsientos->Controls->Clear();
+		}
+		else {
+			MessageBox::Show("Seleccione una compra para eliminar.");
+		}
+	}
+	private: System::Void btnHTML_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (compraSeleccionada == -1) {
+			MessageBox::Show("Por favor seleccione una compra para generar el reporte.",
+				"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			return;
+		}
 
-};
+		GenerarReporteHTML();
+	}
+	};
 }
