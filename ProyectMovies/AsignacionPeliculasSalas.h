@@ -491,6 +491,7 @@ namespace ProyectMovies {
 			this->btnCargaDatos->TabIndex = 13;
 			this->btnCargaDatos->Text = L"Carga de datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &AsignacionPeliculasSalas::btnCargaDatos_Click);
 			// 
 			// AsignacionPeliculasSalas
 			// 
@@ -692,5 +693,104 @@ namespace ProyectMovies {
 
 		GenerarReporteHTML();
 	}
+
+	private: System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+		openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		openFileDialog->Title = "Seleccionar archivo CSV de asignaciones";
+
+		if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = openFileDialog->FileName;
+			try {
+				StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+				String^ line;
+				bool isFirstLine = true;
+				int lineNumber = 0;
+				int asignacionesCargadas = 0;
+
+				while ((line = sr->ReadLine()) != nullptr) {
+					lineNumber++;
+					if (isFirstLine) {
+						isFirstLine = false;
+						continue;
+					}
+
+					array<String^>^ campos = line->Split(';');
+
+					// Validación básica de campos
+					if (campos->Length < 4) {
+						MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban al menos 4 campos (Película;Sala;Fecha;Hora), se encontraron {1}",
+							lineNumber, campos->Length),
+							"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+						continue;
+					}
+
+					try {
+						// Buscar película por nombre
+						String^ nombrePelicula = campos[0]->Trim();
+						Pelicula^ pelicula = nullptr;
+						for each(Pelicula ^ p in listaPeliculas) {
+							if (p != nullptr && p->Nombre->Equals(nombrePelicula)) {
+								pelicula = p;
+								break;
+							}
+						}
+
+						if (pelicula == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Película '{1}' no encontrada", lineNumber, nombrePelicula),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Buscar sala por nombre
+						String^ nombreSala = campos[1]->Trim();
+						Sala^ sala = nullptr;
+						for each(Sala ^ s in listaSalas) {
+							if (s != nullptr && s->Nombre->Equals(nombreSala)) {
+								sala = s;
+								break;
+							}
+						}
+
+						if (sala == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Sala '{1}' no encontrada", lineNumber, nombreSala),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Procesar fecha y hora
+						DateTime fechaEstreno;
+						if (!DateTime::TryParse(campos[2]->Trim(), fechaEstreno)) {
+							MessageBox::Show(String::Format("Línea {0}: Formato de fecha inválido", lineNumber),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						String^ horaFuncion = campos[3]->Trim();
+
+						// Validar formato de hora (opcional)
+						// Puedes agregar una validación de regex para el formato de hora si lo necesitas
+
+						// Crear la asignación
+						AgregarAsignacion(pelicula, sala, fechaEstreno, horaFuncion);
+						asignacionesCargadas++;
+					}
+					catch (Exception^ ex) {
+						MessageBox::Show(String::Format("Error en línea {0}: {1}", lineNumber, ex->Message),
+							"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					}
+				}
+				sr->Close();
+				MessageBox::Show(String::Format("Se cargaron {0} asignaciones exitosamente.", asignacionesCargadas),
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				MostrarAsignacion();
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al cargar el archivo: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
+	}
+
 	};
 }
