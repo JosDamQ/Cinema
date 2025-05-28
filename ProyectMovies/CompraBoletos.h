@@ -2,6 +2,11 @@
 #include "ClaseCompraBoletos.h"
 #include "ClaseAsignacionPeliculasSalas.h"
 #include "ClaseClientes.h"
+#include "GeneradorReporte.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fstream>
+#undef ServiceProvider
 
 namespace ProyectMovies {
 
@@ -163,7 +168,55 @@ namespace ProyectMovies {
 			}
 		}
 
+	private:
+		void GenerarReporteHTML()
+		{
+			if (compraSeleccionada == -1) {
+				MessageBox::Show("Por favor seleccione una compra para generar el reporte.",
+					"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				return;
+			}
 
+			// Obtener la compra seleccionada
+			ComprasBoletos^ compra = comprasBoletos[compraSeleccionada];
+			if (compra == nullptr) {
+				MessageBox::Show("La compra seleccionada no es válida.",
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+				return;
+			}
+
+			// Preparar los datos para el reporte
+			array<String^>^ encabezados = gcnew array<String^> {
+				"Código", "Película", "Idioma", "Formato",
+					"Sala", "Cliente", "Función", "Hora",
+					"Asiento", "Total", "Fecha Compra"
+			};
+
+			// Crear array con solo la compra seleccionada
+			array<array<String^>^>^ datos = gcnew array<array<String^>^>(1);
+			datos[0] = gcnew array<String^> {
+				compra->Codigo.ToString(),
+					compra->AsignacionCompra->PeliculaAsignada->Nombre,
+					compra->AsignacionCompra->PeliculaAsignada->IdiomaPelicula.ToString(),
+					compra->AsignacionCompra->PeliculaAsignada->FormatoPelicula.ToString(),
+					compra->AsignacionCompra->SalaAsignada->Nombre,
+					compra->ClienteCompra->Nombre + " " + compra->ClienteCompra->Apellido,
+					compra->AsignacionCompra->FechaEstreno.ToString("dd/MM/yyyy"),
+					compra->AsignacionCompra->HoraFuncion,
+					String::Format("Fila {0}, Columna {1}", compra->FilaAsiento + 1, compra->ColumnaAsiento + 1),
+					compra->AsignacionCompra->PeliculaAsignada->Precio,
+					compra->FechaCompra.ToString("dd/MM/yyyy")
+			};
+
+			// Generar el reporte usando la clase general
+			GeneradorReporte::GenerarReporte(
+				"Reporte de Compra de Boletos",
+				"Detalle de Compra Seleccionada",
+				"Sistema de Gestión de Compras - ProyectMovies",
+				encabezados,
+				datos,
+				"ReporteCompraBoletos");
+		}
 	protected:
 
 		~CompraBoletos()
@@ -510,6 +563,7 @@ namespace ProyectMovies {
 			this->btnHTML->TabIndex = 12;
 			this->btnHTML->Text = L"HTML";
 			this->btnHTML->UseVisualStyleBackColor = true;
+			this->btnHTML->Click += gcnew System::EventHandler(this, &CompraBoletos::btnHTML_Click);
 			// 
 			// btnCargaDatos
 			// 
@@ -749,6 +803,14 @@ namespace ProyectMovies {
 				   MessageBox::Show("Seleccione una compra para eliminar.");
 			   }
 		   }
+	private: System::Void btnHTML_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (compraSeleccionada == -1) {
+			MessageBox::Show("Por favor seleccione una compra para generar el reporte.",
+				"Información", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			return;
+		}
 
+		GenerarReporteHTML();
+	}
 };
 }

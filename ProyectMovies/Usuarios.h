@@ -129,14 +129,14 @@ namespace ProyectMovies {
                 btnAgregar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnEditar->Enabled = false;
-				btnHTML->Enabled = false;
+				
 				btnCargaDatos->Enabled = false;
             }
             else if (estadoActual == ModoFormulario::Editar) {
                 btnEditar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnAgregar->Enabled = false;
-				btnHTML->Enabled = false;
+				
 				btnCargaDatos->Enabled = false;
             }
             else {
@@ -146,7 +146,7 @@ namespace ProyectMovies {
                 btnAgregar->Enabled = true;
                 btnEliminar->Enabled = true;
                 btnEditar->Enabled = true;
-				btnHTML->Enabled = true;
+				
 				btnCargaDatos->Enabled = true;
             }
         }
