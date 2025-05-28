@@ -581,6 +581,7 @@ namespace ProyectMovies {
             this->btnCargaDatos->TabIndex = 24;
             this->btnCargaDatos->Text = L"Carga de datos";
             this->btnCargaDatos->UseVisualStyleBackColor = true;
+            this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Peliculas::btnCargaDatos_Click);
             // 
             // Peliculas
             // 
@@ -838,6 +839,100 @@ namespace ProyectMovies {
         }
 
         GenerarReporteHTML();
+    }
+
+    private: System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+        OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+        openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+        openFileDialog->Title = "Seleccionar archivo CSV de películas";
+
+        if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+            String^ filePath = openFileDialog->FileName;
+            try {
+                StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+                String^ line;
+                bool isFirstLine = true;
+                int lineNumber = 0;
+                int peliculasCargadas = 0;
+
+                while ((line = sr->ReadLine()) != nullptr) {
+                    lineNumber++;
+                    if (isFirstLine) {
+                        isFirstLine = false;
+                        continue;
+                    }
+
+                    array<String^>^ campos = line->Split(';');
+
+                    // Validación básica de campos
+                    if (campos->Length < 7) {
+                        MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban al menos 7 campos, se encontraron {1}",
+                            lineNumber, campos->Length),
+                            "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                        continue;
+                    }
+
+                    try {
+                        // Procesar campos básicos
+                        String^ nombre = campos[0]->Trim();
+                        String^ precio = campos[5]->Trim();
+
+                        // Procesar enums con manejo de errores
+                        Genero genero;
+                        if (!Enum::TryParse<Genero>(campos[1]->Trim(), true, genero)) {
+                            MessageBox::Show(String::Format("Línea {0}: Género '{1}' no válido. Se usará 'Accion' por defecto",
+                                lineNumber, campos[1]),
+                                "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                            genero = Genero::Accion;
+                        }
+
+                        Clasificacion clasificacion;
+                        if (!Enum::TryParse<Clasificacion>(campos[2]->Trim(), true, clasificacion)) {
+                            MessageBox::Show(String::Format("Línea {0}: Clasificación '{1}' no válida. Se usará 'A14' por defecto",
+                                lineNumber, campos[2]),
+                                "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                            clasificacion = Clasificacion::A14;
+                        }
+
+                        Idioma idioma;
+                        if (!Enum::TryParse<Idioma>(campos[3]->Trim(), true, idioma)) {
+                            MessageBox::Show(String::Format("Línea {0}: Idioma '{1}' no válido. Se usará 'Doblada' por defecto",
+                                lineNumber, campos[3]),
+                                "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                            idioma = Idioma::Doblada;
+                        }
+
+                        Formato formato;
+                        if (!Enum::TryParse<Formato>(campos[4]->Trim(), true, formato)) {
+                            MessageBox::Show(String::Format("Línea {0}: Formato '{1}' no válido. Se usará 'Formato2D' por defecto",
+                                lineNumber, campos[4]),
+                                "Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+                            formato = Formato::Formato2D;
+                        }
+
+                        Estado estado = campos->Length > 6 ?
+                            (Enum::TryParse<Estado>(campos[6]->Trim(), true, estado) ? estado : Estado::Activo) :
+                            Estado::Activo;
+
+                        // Agregar película
+                        AgregarPelicula(nombre, genero, clasificacion, idioma, formato, precio, estado);
+                        peliculasCargadas++;
+                    }
+                    catch (Exception^ ex) {
+                        MessageBox::Show(String::Format("Error en línea {0}: {1}", lineNumber, ex->Message),
+                            "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+                    }
+                }
+                sr->Close();
+                MessageBox::Show(String::Format("Se cargaron {0} películas exitosamente.", peliculasCargadas),
+                    "Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+                MostrarPeliculas();
+            }
+            catch (Exception^ ex) {
+                MessageBox::Show("Error al cargar el archivo: " + ex->Message,
+                    "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+            }
+        }
     }
     };
 }
