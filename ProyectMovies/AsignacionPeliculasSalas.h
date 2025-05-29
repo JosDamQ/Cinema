@@ -470,6 +470,7 @@ namespace ProyectMovies {
 			this->tblAsignacionPeliculas->Size = System::Drawing::Size(1238, 364);
 			this->tblAsignacionPeliculas->TabIndex = 9;
 			this->tblAsignacionPeliculas->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &AsignacionPeliculasSalas::tblAsignacionPeliculas_CellClick);
+			this->tblAsignacionPeliculas->AllowUserToAddRows = false;
 			// 
 			// colHora
 			// 

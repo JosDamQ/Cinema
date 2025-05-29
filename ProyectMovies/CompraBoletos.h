@@ -450,6 +450,7 @@ namespace ProyectMovies {
 			this->tblCompras->Size = System::Drawing::Size(1193, 409);
 			this->tblCompras->TabIndex = 6;
 			this->tblCompras->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &CompraBoletos::tblCompras_CellClick);
+			this->tblCompras->AllowUserToAddRows = false;
 			// 
 			// colCodigo
 			// 

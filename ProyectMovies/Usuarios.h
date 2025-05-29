@@ -407,6 +407,7 @@ namespace ProyectMovies {
             this->tblUsuarios->Size = System::Drawing::Size(1106, 434);
             this->tblUsuarios->TabIndex = 19;
             this->tblUsuarios->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Usuarios::tblUsuarios_CellClick);
+            this->tblUsuarios->AllowUserToAddRows = false;
             // 
             // colCodigo
             // 

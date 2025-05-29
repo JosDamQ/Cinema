@@ -357,6 +357,7 @@ namespace ProyectMovies {
 			this->tblSalas->Size = System::Drawing::Size(893, 280);
 			this->tblSalas->TabIndex = 10;
 			this->tblSalas->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Salas::tblSalas_CellClick);
+			this->tblSalas->AllowUserToAddRows = false;
 			// 
 			// colCodigo
 			// 

@@ -400,6 +400,7 @@ namespace ProyectMovies {
 			this->tblClientes->Size = System::Drawing::Size(985, 329);
 			this->tblClientes->TabIndex = 14;
 			this->tblClientes->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Clientes::tblClientes_CellClick);
+			this->tblClientes->AllowUserToAddRows = false;
 			// 
 			// colCodigo
 			// 
@@ -708,7 +709,6 @@ namespace ProyectMovies {
 
 					array<String^>^ campos = line->Split(';');
 
-					// Validar que tenga los campos necesarios (ajusta según tu CSV)
 					if (campos->Length >= 6) {
 						String^ nombre = campos[0]->Trim();
 						String^ apellido = campos[1]->Trim();
