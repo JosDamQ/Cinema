@@ -46,6 +46,7 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaCompra;
 	private: System::Windows::Forms::Button^ btnHTML;
 	private: System::Windows::Forms::Button^ btnCargaDatos;
+	private: System::Windows::Forms::Button^ btnDescargaDatos;
 
 
 
@@ -166,6 +167,7 @@ namespace ProyectMovies {
 				btnEliminar->Text = "Cancelar";
 				btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
 			}
 			else {
 				btnAgregar->Text = "Agregar";
@@ -174,6 +176,7 @@ namespace ProyectMovies {
 				btnEliminar->Enabled = true;
 				btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
+				btnDescargaDatos->Enabled = true;
 			}
 		}
 
@@ -383,6 +386,7 @@ namespace ProyectMovies {
 			this->panelAsientos = (gcnew System::Windows::Forms::Panel());
 			this->btnHTML = (gcnew System::Windows::Forms::Button());
 			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
+			this->btnDescargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblCompras))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -538,7 +542,7 @@ namespace ProyectMovies {
 			// 
 			// btnAgregar
 			// 
-			this->btnAgregar->Location = System::Drawing::Point(287, 196);
+			this->btnAgregar->Location = System::Drawing::Point(197, 196);
 			this->btnAgregar->Name = L"btnAgregar";
 			this->btnAgregar->Size = System::Drawing::Size(112, 43);
 			this->btnAgregar->TabIndex = 9;
@@ -548,7 +552,7 @@ namespace ProyectMovies {
 			// 
 			// btnEliminar
 			// 
-			this->btnEliminar->Location = System::Drawing::Point(465, 196);
+			this->btnEliminar->Location = System::Drawing::Point(379, 196);
 			this->btnEliminar->Name = L"btnEliminar";
 			this->btnEliminar->Size = System::Drawing::Size(112, 43);
 			this->btnEliminar->TabIndex = 10;
@@ -566,7 +570,7 @@ namespace ProyectMovies {
 			// 
 			// btnHTML
 			// 
-			this->btnHTML->Location = System::Drawing::Point(639, 196);
+			this->btnHTML->Location = System::Drawing::Point(558, 196);
 			this->btnHTML->Name = L"btnHTML";
 			this->btnHTML->Size = System::Drawing::Size(112, 43);
 			this->btnHTML->TabIndex = 12;
@@ -576,7 +580,7 @@ namespace ProyectMovies {
 			// 
 			// btnCargaDatos
 			// 
-			this->btnCargaDatos->Location = System::Drawing::Point(802, 189);
+			this->btnCargaDatos->Location = System::Drawing::Point(734, 189);
 			this->btnCargaDatos->Name = L"btnCargaDatos";
 			this->btnCargaDatos->Size = System::Drawing::Size(110, 56);
 			this->btnCargaDatos->TabIndex = 13;
@@ -584,11 +588,22 @@ namespace ProyectMovies {
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
 			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &CompraBoletos::btnCargaDatos_Click);
 			// 
+			// btnDescargaDatos
+			// 
+			this->btnDescargaDatos->Location = System::Drawing::Point(881, 189);
+			this->btnDescargaDatos->Name = L"btnDescargaDatos";
+			this->btnDescargaDatos->Size = System::Drawing::Size(110, 56);
+			this->btnDescargaDatos->TabIndex = 14;
+			this->btnDescargaDatos->Text = L"Descarga de Datos";
+			this->btnDescargaDatos->UseVisualStyleBackColor = true;
+			this->btnDescargaDatos->Click += gcnew System::EventHandler(this, &CompraBoletos::btnExportarCSV_Click);
+			// 
 			// CompraBoletos
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1684, 1031);
+			this->Controls->Add(this->btnDescargaDatos);
 			this->Controls->Add(this->btnCargaDatos);
 			this->Controls->Add(this->btnHTML);
 			this->Controls->Add(this->btnEliminar);
@@ -924,5 +939,101 @@ namespace ProyectMovies {
 		}
 		MostrarComprasBoletos();
 	};
+	/*private: System::Void btnExportarCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+		SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+		saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		saveFileDialog->Title = "Exportar compras a CSV";
+		saveFileDialog->FileName = "ComprasBoletos_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
+
+		if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = saveFileDialog->FileName;
+			try {
+				StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+				// Escribir encabezados
+				sw->WriteLine("AsignacionID;ClienteID;FechaCompra;FilaAsiento;ColumnaAsiento");
+
+				// Escribir datos
+				for each(ComprasBoletos ^ compra in comprasBoletos) {
+					if (compra != nullptr) {
+						String^ linea = String::Format("{0};{1};{2};{3};{4}",
+							compra->AsignacionCompra->Codigo,
+							compra->ClienteCompra->Codigo,
+							compra->FechaCompra.ToString("dd/MM/yyyy"),
+							compra->FilaAsiento,
+							compra->ColumnaAsiento);
+
+						sw->WriteLine(linea);
+					}
+				}
+
+				sw->Close();
+				MessageBox::Show("Compras exportadas exitosamente a: " + filePath,
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al exportar: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
+	}*/
+
+	private: System::Void btnExportarCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+		// Validar si hay datos para exportar
+		bool tieneDatos = false;
+		for each (ComprasBoletos ^ compra in comprasBoletos) {
+			if (compra != nullptr) {
+				tieneDatos = true;
+				break;
+			}
+		}
+
+		if (!tieneDatos) {
+			MessageBox::Show("No hay datos de compras para exportar.",
+				"Advertencia",
+				MessageBoxButtons::OK,
+				MessageBoxIcon::Warning);
+			return;
+		}
+
+		SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+		saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		saveFileDialog->Title = "Exportar compras a CSV";
+		saveFileDialog->FileName = "ComprasBoletos_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
+
+		if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = saveFileDialog->FileName;
+			try {
+				StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+				// Escribir encabezados
+				sw->WriteLine("AsignacionID;ClienteID;FechaCompra;FilaAsiento;ColumnaAsiento");
+
+				// Escribir datos
+				for each (ComprasBoletos ^ compra in comprasBoletos) {
+					if (compra != nullptr) {
+						String^ linea = String::Format("{0};{1};{2};{3};{4};{5};{6}",
+							compra->AsignacionCompra->Codigo,
+							compra->AsignacionCompra->PeliculaAsignada->Nombre,
+							compra->ClienteCompra->Codigo,
+							compra->ClienteCompra->Nombre,
+							compra->FechaCompra.ToString("dd/MM/yyyy"),
+							compra->FilaAsiento,
+							compra->ColumnaAsiento);
+
+						sw->WriteLine(linea);
+					}
+				}
+
+				sw->Close();
+				MessageBox::Show("Compras exportadas exitosamente a: " + filePath,
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al exportar: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
+	}
 	};
 }
