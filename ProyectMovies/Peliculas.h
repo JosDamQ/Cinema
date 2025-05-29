@@ -24,6 +24,7 @@ namespace ProyectMovies {
         int peliculaSeleccionada;
     private: System::Windows::Forms::Button^ btnHTML;
     private: System::Windows::Forms::Button^ btnCargaDatos;
+    private: System::Windows::Forms::Button^ btnDescargaDatos;
 
         enum class ModoFormulario {
             Ninguno,
@@ -163,6 +164,7 @@ namespace ProyectMovies {
                 btnEditar->Enabled = false;
 				btnHTML->Enabled = false;
                 btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
             }
             else if (estadoActual == ModoFormulario::Editar) {
                 btnEditar->Text = "Confirmar";
@@ -170,6 +172,7 @@ namespace ProyectMovies {
                 btnAgregar->Enabled = false;
                 btnHTML->Enabled = false;
                 btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
             }
             else {
                 btnAgregar->Text = "Agregar";
@@ -180,6 +183,7 @@ namespace ProyectMovies {
                 btnEditar->Enabled = true;
 				btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
+				btnDescargaDatos->Enabled = true;
             }
         }
         
@@ -329,6 +333,7 @@ namespace ProyectMovies {
             this->btnEliminar = (gcnew System::Windows::Forms::Button());
             this->btnHTML = (gcnew System::Windows::Forms::Button());
             this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
+            this->btnDescargaDatos = (gcnew System::Windows::Forms::Button());
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblPelicula))->BeginInit();
             this->SuspendLayout();
             // 
@@ -530,7 +535,7 @@ namespace ProyectMovies {
             // 
             // btnAgregar
             // 
-            this->btnAgregar->Location = System::Drawing::Point(382, 156);
+            this->btnAgregar->Location = System::Drawing::Point(322, 163);
             this->btnAgregar->Margin = System::Windows::Forms::Padding(3, 4, 3, 4);
             this->btnAgregar->Name = L"btnAgregar";
             this->btnAgregar->Size = System::Drawing::Size(110, 46);
@@ -541,7 +546,7 @@ namespace ProyectMovies {
             // 
             // btnEditar
             // 
-            this->btnEditar->Location = System::Drawing::Point(717, 156);
+            this->btnEditar->Location = System::Drawing::Point(597, 163);
             this->btnEditar->Margin = System::Windows::Forms::Padding(3, 4, 3, 4);
             this->btnEditar->Name = L"btnEditar";
             this->btnEditar->Size = System::Drawing::Size(110, 46);
@@ -552,7 +557,7 @@ namespace ProyectMovies {
             // 
             // btnEliminar
             // 
-            this->btnEliminar->Location = System::Drawing::Point(544, 156);
+            this->btnEliminar->Location = System::Drawing::Point(460, 163);
             this->btnEliminar->Margin = System::Windows::Forms::Padding(3, 4, 3, 4);
             this->btnEliminar->Name = L"btnEliminar";
             this->btnEliminar->Size = System::Drawing::Size(110, 46);
@@ -563,7 +568,7 @@ namespace ProyectMovies {
             // 
             // btnHTML
             // 
-            this->btnHTML->Location = System::Drawing::Point(892, 156);
+            this->btnHTML->Location = System::Drawing::Point(737, 163);
             this->btnHTML->Margin = System::Windows::Forms::Padding(3, 4, 3, 4);
             this->btnHTML->Name = L"btnHTML";
             this->btnHTML->Size = System::Drawing::Size(110, 46);
@@ -574,7 +579,7 @@ namespace ProyectMovies {
             // 
             // btnCargaDatos
             // 
-            this->btnCargaDatos->Location = System::Drawing::Point(1042, 149);
+            this->btnCargaDatos->Location = System::Drawing::Point(879, 156);
             this->btnCargaDatos->Margin = System::Windows::Forms::Padding(3, 4, 3, 4);
             this->btnCargaDatos->Name = L"btnCargaDatos";
             this->btnCargaDatos->Size = System::Drawing::Size(119, 60);
@@ -583,11 +588,23 @@ namespace ProyectMovies {
             this->btnCargaDatos->UseVisualStyleBackColor = true;
             this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Peliculas::btnCargaDatos_Click);
             // 
+            // btnDescargaDatos
+            // 
+            this->btnDescargaDatos->Location = System::Drawing::Point(1019, 154);
+            this->btnDescargaDatos->Margin = System::Windows::Forms::Padding(3, 4, 3, 4);
+            this->btnDescargaDatos->Name = L"btnDescargaDatos";
+            this->btnDescargaDatos->Size = System::Drawing::Size(119, 60);
+            this->btnDescargaDatos->TabIndex = 25;
+            this->btnDescargaDatos->Text = L"Descarga de datos";
+            this->btnDescargaDatos->UseVisualStyleBackColor = true;
+			this->btnDescargaDatos->Click += gcnew System::EventHandler(this, &Peliculas::btnExportarPeliculasCSV_Click);
+            // 
             // Peliculas
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(1380, 612);
+            this->Controls->Add(this->btnDescargaDatos);
             this->Controls->Add(this->btnCargaDatos);
             this->Controls->Add(this->btnHTML);
             this->Controls->Add(this->btnEliminar);
@@ -934,5 +951,74 @@ namespace ProyectMovies {
             }
         }
     }
+
+    private: System::Void btnExportarPeliculasCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+        
+        bool tieneDatosValidos = false;
+        if (peliculas != nullptr && peliculas->Length > 0) {
+            for each (Pelicula ^ peli in peliculas) {
+                if (peli != nullptr) {
+                    tieneDatosValidos = true;
+                    break;
+                }
+            }
+        }
+
+        if (!tieneDatosValidos) {
+            MessageBox::Show("No hay registros válidos para exportar.\n"
+                "Verifica que existan películas registradas.",
+                "Error",
+                MessageBoxButtons::OK,
+                MessageBoxIcon::Error);
+            return;
+        }
+
+        SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+        saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv"; // Filtro estándar
+        saveFileDialog->Title = "Exportar catálogo de películas";
+        saveFileDialog->FileName = "Peliculas_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
+
+        if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+            String^ filePath = saveFileDialog->FileName;
+            try {
+                StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+                // Encabezados (formato profesional)
+                sw->WriteLine("Nombre;Género;Clasificación;Idioma;Formato;Precio;Estado");
+
+                // Datos
+                int registros = 0;
+                for each (Pelicula ^ peli in peliculas) {
+                    if (peli != nullptr) {
+                        sw->WriteLine(
+                            String::Format("{0};{1};{2};{3};{4};{5};{6}",
+                                peli->Nombre,
+                                peli->GeneroPelicula.ToString(),
+                                peli->ClasificacionPelicula.ToString(),
+                                peli->IdiomaPelicula.ToString(),
+                                peli->FormatoPelicula.ToString(),
+                                peli->Precio,
+                                peli->EstadoPelicula.ToString()
+                            )
+                        );
+                        registros++;
+                    }
+                }
+                sw->Close();
+
+                MessageBox::Show("Se exportaron {registros} películas correctamente.",
+                    "Operación exitosa",
+                    MessageBoxButtons::OK,
+                    MessageBoxIcon::Information);
+            }
+            catch (Exception^ ex) {
+                MessageBox::Show("Error al exportar: {ex->Message}",
+                    "Error",
+                    MessageBoxButtons::OK,
+                    MessageBoxIcon::Error);
+            }
+        }
+    }
+
     };
 }
