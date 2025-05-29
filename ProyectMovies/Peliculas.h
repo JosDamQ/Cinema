@@ -974,7 +974,7 @@ namespace ProyectMovies {
         }
 
         SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
-        saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv"; // Filtro estándar
+        saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
         saveFileDialog->Title = "Exportar catálogo de películas";
         saveFileDialog->FileName = "Peliculas_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
 
@@ -983,7 +983,7 @@ namespace ProyectMovies {
             try {
                 StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
 
-                // Encabezados (formato profesional)
+                // Encabezados
                 sw->WriteLine("Nombre;Género;Clasificación;Idioma;Formato;Precio;Estado");
 
                 // Datos
