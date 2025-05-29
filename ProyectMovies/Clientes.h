@@ -38,6 +38,8 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaNacimiento;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colTelefono;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colEmail;
+	private: System::Windows::Forms::Button^ btnDescargaDatos;
+
 
 		   enum class ModoFormulario {
 			   Ninguno,
@@ -170,6 +172,7 @@ namespace ProyectMovies {
 				btnEditar->Enabled = false;
 				btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
 			}
 			else if (estadoActual == ModoFormulario::Editar) {
 				btnEditar->Text = "Confirmar";
@@ -177,6 +180,7 @@ namespace ProyectMovies {
 				btnAgregar->Enabled = false;
 				btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
 			}
 			else {
 				btnAgregar->Text = "Agregar";
@@ -187,6 +191,7 @@ namespace ProyectMovies {
 				btnEditar->Enabled = true;
 				btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
+				btnDescargaDatos->Enabled = true;
 			}
 		}
 
@@ -269,11 +274,6 @@ namespace ProyectMovies {
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->txtEmail = (gcnew System::Windows::Forms::TextBox());
 			this->tblClientes = (gcnew System::Windows::Forms::DataGridView());
-			this->btnAgregar = (gcnew System::Windows::Forms::Button());
-			this->btnEliminar = (gcnew System::Windows::Forms::Button());
-			this->btnEditar = (gcnew System::Windows::Forms::Button());
-			this->btnHTML = (gcnew System::Windows::Forms::Button());
-			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
 			this->colCodigo = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colNombre = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colApellido = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
@@ -281,6 +281,12 @@ namespace ProyectMovies {
 			this->colFechaNacimiento = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colTelefono = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->colEmail = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
+			this->btnAgregar = (gcnew System::Windows::Forms::Button());
+			this->btnEliminar = (gcnew System::Windows::Forms::Button());
+			this->btnEditar = (gcnew System::Windows::Forms::Button());
+			this->btnHTML = (gcnew System::Windows::Forms::Button());
+			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
+			this->btnDescargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblClientes))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -395,56 +401,6 @@ namespace ProyectMovies {
 			this->tblClientes->TabIndex = 14;
 			this->tblClientes->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Clientes::tblClientes_CellClick);
 			// 
-			// btnAgregar
-			// 
-			this->btnAgregar->Location = System::Drawing::Point(340, 213);
-			this->btnAgregar->Name = L"btnAgregar";
-			this->btnAgregar->Size = System::Drawing::Size(85, 31);
-			this->btnAgregar->TabIndex = 15;
-			this->btnAgregar->Text = L"Agregar";
-			this->btnAgregar->UseVisualStyleBackColor = true;
-			this->btnAgregar->Click += gcnew System::EventHandler(this, &Clientes::btnAgregar_Click);
-			// 
-			// btnEliminar
-			// 
-			this->btnEliminar->Location = System::Drawing::Point(469, 213);
-			this->btnEliminar->Name = L"btnEliminar";
-			this->btnEliminar->Size = System::Drawing::Size(85, 31);
-			this->btnEliminar->TabIndex = 16;
-			this->btnEliminar->Text = L"Eliminar";
-			this->btnEliminar->UseVisualStyleBackColor = true;
-			this->btnEliminar->Click += gcnew System::EventHandler(this, &Clientes::btnEliminar_Click);
-			// 
-			// btnEditar
-			// 
-			this->btnEditar->Location = System::Drawing::Point(601, 213);
-			this->btnEditar->Name = L"btnEditar";
-			this->btnEditar->Size = System::Drawing::Size(85, 31);
-			this->btnEditar->TabIndex = 17;
-			this->btnEditar->Text = L"Editar";
-			this->btnEditar->UseVisualStyleBackColor = true;
-			this->btnEditar->Click += gcnew System::EventHandler(this, &Clientes::btnEditar_Click);
-			// 
-			// btnHTML
-			// 
-			this->btnHTML->Location = System::Drawing::Point(726, 213);
-			this->btnHTML->Name = L"btnHTML";
-			this->btnHTML->Size = System::Drawing::Size(85, 31);
-			this->btnHTML->TabIndex = 18;
-			this->btnHTML->Text = L"HTML";
-			this->btnHTML->UseVisualStyleBackColor = true;
-			this->btnHTML->Click += gcnew System::EventHandler(this, &Clientes::btnHTML_Click);
-			// 
-			// btnCargaDatos
-			// 
-			this->btnCargaDatos->Location = System::Drawing::Point(847, 202);
-			this->btnCargaDatos->Name = L"btnCargaDatos";
-			this->btnCargaDatos->Size = System::Drawing::Size(96, 53);
-			this->btnCargaDatos->TabIndex = 19;
-			this->btnCargaDatos->Text = L"Carga de datos";
-			this->btnCargaDatos->UseVisualStyleBackColor = true;
-			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Clientes::btnCargaDatos_Click);
-			// 
 			// colCodigo
 			// 
 			this->colCodigo->HeaderText = L"Codigo";
@@ -480,11 +436,72 @@ namespace ProyectMovies {
 			this->colEmail->HeaderText = L"Email";
 			this->colEmail->Name = L"colEmail";
 			// 
+			// btnAgregar
+			// 
+			this->btnAgregar->Location = System::Drawing::Point(340, 213);
+			this->btnAgregar->Name = L"btnAgregar";
+			this->btnAgregar->Size = System::Drawing::Size(85, 31);
+			this->btnAgregar->TabIndex = 15;
+			this->btnAgregar->Text = L"Agregar";
+			this->btnAgregar->UseVisualStyleBackColor = true;
+			this->btnAgregar->Click += gcnew System::EventHandler(this, &Clientes::btnAgregar_Click);
+			// 
+			// btnEliminar
+			// 
+			this->btnEliminar->Location = System::Drawing::Point(460, 213);
+			this->btnEliminar->Name = L"btnEliminar";
+			this->btnEliminar->Size = System::Drawing::Size(85, 31);
+			this->btnEliminar->TabIndex = 16;
+			this->btnEliminar->Text = L"Eliminar";
+			this->btnEliminar->UseVisualStyleBackColor = true;
+			this->btnEliminar->Click += gcnew System::EventHandler(this, &Clientes::btnEliminar_Click);
+			// 
+			// btnEditar
+			// 
+			this->btnEditar->Location = System::Drawing::Point(585, 213);
+			this->btnEditar->Name = L"btnEditar";
+			this->btnEditar->Size = System::Drawing::Size(85, 31);
+			this->btnEditar->TabIndex = 17;
+			this->btnEditar->Text = L"Editar";
+			this->btnEditar->UseVisualStyleBackColor = true;
+			this->btnEditar->Click += gcnew System::EventHandler(this, &Clientes::btnEditar_Click);
+			// 
+			// btnHTML
+			// 
+			this->btnHTML->Location = System::Drawing::Point(705, 213);
+			this->btnHTML->Name = L"btnHTML";
+			this->btnHTML->Size = System::Drawing::Size(85, 31);
+			this->btnHTML->TabIndex = 18;
+			this->btnHTML->Text = L"HTML";
+			this->btnHTML->UseVisualStyleBackColor = true;
+			this->btnHTML->Click += gcnew System::EventHandler(this, &Clientes::btnHTML_Click);
+			// 
+			// btnCargaDatos
+			// 
+			this->btnCargaDatos->Location = System::Drawing::Point(824, 202);
+			this->btnCargaDatos->Name = L"btnCargaDatos";
+			this->btnCargaDatos->Size = System::Drawing::Size(96, 53);
+			this->btnCargaDatos->TabIndex = 19;
+			this->btnCargaDatos->Text = L"Carga de datos";
+			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Clientes::btnCargaDatos_Click);
+			// 
+			// btnDescargaDatos
+			// 
+			this->btnDescargaDatos->Location = System::Drawing::Point(945, 202);
+			this->btnDescargaDatos->Name = L"btnDescargaDatos";
+			this->btnDescargaDatos->Size = System::Drawing::Size(96, 53);
+			this->btnDescargaDatos->TabIndex = 20;
+			this->btnDescargaDatos->Text = L"Descarga de datos";
+			this->btnDescargaDatos->UseVisualStyleBackColor = true;
+			this->btnDescargaDatos->Click += gcnew System::EventHandler(this, &Clientes::btnExportarClientesCSV_Click);
+			// 
 			// Clientes
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1249, 779);
+			this->Controls->Add(this->btnDescargaDatos);
 			this->Controls->Add(this->btnCargaDatos);
 			this->Controls->Add(this->btnHTML);
 			this->Controls->Add(this->btnEditar);
@@ -710,6 +727,79 @@ namespace ProyectMovies {
 			}
 			catch (Exception^ ex) {
 				MessageBox::Show("Error al cargar el archivo: " + ex->Message, "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
+	}
+
+	private: System::Void btnExportarClientesCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+		bool tieneDatosValidos = false;
+		if (clientes != nullptr && clientes->Length > 0) {
+			for each(Cliente ^ cliente in clientes) {
+				if (cliente != nullptr) {
+					tieneDatosValidos = true;
+					break;
+				}
+			}
+		}
+
+		if (!tieneDatosValidos) {
+			MessageBox::Show("No hay clientes registrados para exportar.",
+				"Datos no encontrados",
+				MessageBoxButtons::OK,
+				MessageBoxIcon::Warning);
+			return;
+		}
+
+		SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+		saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		saveFileDialog->Title = "Exportar clientes a CSV";
+		saveFileDialog->FileName = "Clientes_" + DateTime::Now.ToString("yyyyMMdd_HHmmss") + ".csv";
+
+		if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = saveFileDialog->FileName;
+			try {
+				StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+				// Encabezados
+				sw->WriteLine("Nombre;Apellido;DPI;FechaNacimiento;Telefono;Email");
+
+				int registrosExportados = 0;
+				for each(Cliente ^ cliente in clientes) {
+					if (cliente != nullptr && cliente->FechaNacimiento != nullptr) {
+						sw->WriteLine(
+							String::Format("{0};{1};{2};{3};{4};{5}",
+								cliente->Nombre,
+								cliente->Apellido,
+								cliente->DPI,
+								cliente->FechaNacimiento->ToString("dd/MM/yyyy"),
+								cliente->Telefono,
+								cliente->Email
+							)
+						);
+						registrosExportados++;
+					}
+				}
+				sw->Close();
+
+				if (registrosExportados > 0) {
+					MessageBox::Show(String::Format("Se exportaron {0} clientes exitosamente.", registrosExportados),
+						"Éxito",
+						MessageBoxButtons::OK,
+						MessageBoxIcon::Information);
+				}
+				else {
+					File::Delete(filePath);
+					MessageBox::Show("No se encontraron clientes válidos para exportar.",
+						"Advertencia",
+						MessageBoxButtons::OK,
+						MessageBoxIcon::Warning);
+				}
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al exportar: " + ex->Message,
+					"Error",
+					MessageBoxButtons::OK,
+					MessageBoxIcon::Error);
 			}
 		}
 	}

@@ -39,6 +39,7 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colHora;
 	private: System::Windows::Forms::Button^ btnHTML;
 	private: System::Windows::Forms::Button^ btnCargaDatos;
+	private: System::Windows::Forms::Button^ btnDescargarDatos;
 
 
 
@@ -135,6 +136,7 @@ namespace ProyectMovies {
 				btnEditar->Enabled = false;
 				btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargarDatos->Enabled = false;
 			}
 			else if (estadoActual == ModoFormulario::Editar) {
 				btnEditar->Text = "Confirmar";
@@ -142,6 +144,7 @@ namespace ProyectMovies {
 				btnAgregar->Enabled = false;
 				btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargarDatos->Enabled = false;
 			}
 			else {
 				btnAgregar->Text = "Agregar";
@@ -152,6 +155,7 @@ namespace ProyectMovies {
 				btnEditar->Enabled = true;
 				btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
+				btnDescargarDatos->Enabled = true;
 			}
 		}
 
@@ -301,6 +305,7 @@ namespace ProyectMovies {
 			this->colHora = (gcnew System::Windows::Forms::DataGridViewTextBoxColumn());
 			this->btnHTML = (gcnew System::Windows::Forms::Button());
 			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
+			this->btnDescargarDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblAsignacionPeliculas))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -491,12 +496,24 @@ namespace ProyectMovies {
 			this->btnCargaDatos->TabIndex = 13;
 			this->btnCargaDatos->Text = L"Carga de datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &AsignacionPeliculasSalas::btnCargaDatos_Click);
+			// 
+			// btnDescargarDatos
+			// 
+			this->btnDescargarDatos->Location = System::Drawing::Point(842, 111);
+			this->btnDescargarDatos->Name = L"btnDescargarDatos";
+			this->btnDescargarDatos->Size = System::Drawing::Size(99, 52);
+			this->btnDescargarDatos->TabIndex = 14;
+			this->btnDescargarDatos->Text = L"Descargar de datos";
+			this->btnDescargarDatos->UseVisualStyleBackColor = true;
+			this->btnDescargarDatos->Click += gcnew System::EventHandler(this, &AsignacionPeliculasSalas::btnExportarAsignacionesCSV_Click);
 			// 
 			// AsignacionPeliculasSalas
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1359, 663);
+			this->Controls->Add(this->btnDescargarDatos);
 			this->Controls->Add(this->btnCargaDatos);
 			this->Controls->Add(this->btnHTML);
 			this->Controls->Add(this->txtHora);
@@ -692,5 +709,227 @@ namespace ProyectMovies {
 
 		GenerarReporteHTML();
 	}
+
+	private: System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+		openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		openFileDialog->Title = "Seleccionar archivo CSV de asignaciones";
+
+		if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = openFileDialog->FileName;
+			try {
+				StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+				String^ line;
+				bool isFirstLine = true;
+				int lineNumber = 0;
+				int asignacionesCargadas = 0;
+
+				while ((line = sr->ReadLine()) != nullptr) {
+					lineNumber++;
+					if (isFirstLine) {
+						isFirstLine = false;
+						continue;
+					}
+
+					array<String^>^ campos = line->Split(';');
+
+					// Validación básica de campos
+					if (campos->Length < 4) {
+						MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban al menos 4 campos (Película;Sala;Fecha;Hora), se encontraron {1}",
+							lineNumber, campos->Length),
+							"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+						continue;
+					}
+
+					try {
+						// Buscar película por nombre
+						String^ nombrePelicula = campos[0]->Trim();
+						Pelicula^ pelicula = nullptr;
+						for each(Pelicula ^ p in listaPeliculas) {
+							if (p != nullptr && p->Nombre->Equals(nombrePelicula)) {
+								pelicula = p;
+								break;
+							}
+						}
+
+						if (pelicula == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Película '{1}' no encontrada", lineNumber, nombrePelicula),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Buscar sala por nombre
+						String^ nombreSala = campos[1]->Trim();
+						Sala^ sala = nullptr;
+						for each(Sala ^ s in listaSalas) {
+							if (s != nullptr && s->Nombre->Equals(nombreSala)) {
+								sala = s;
+								break;
+							}
+						}
+
+						if (sala == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Sala '{1}' no encontrada", lineNumber, nombreSala),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Procesar fecha y hora
+						DateTime fechaEstreno;
+						if (!DateTime::TryParse(campos[2]->Trim(), fechaEstreno)) {
+							MessageBox::Show(String::Format("Línea {0}: Formato de fecha inválido", lineNumber),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						String^ horaFuncion = campos[3]->Trim();
+
+						// Validar formato de hora (opcional)
+						// Puedes agregar una validación de regex para el formato de hora si lo necesitas
+
+						// Crear la asignación
+						AgregarAsignacion(pelicula, sala, fechaEstreno, horaFuncion);
+						asignacionesCargadas++;
+					}
+					catch (Exception^ ex) {
+						MessageBox::Show(String::Format("Error en línea {0}: {1}", lineNumber, ex->Message),
+							"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					}
+				}
+				sr->Close();
+				MessageBox::Show(String::Format("Se cargaron {0} asignaciones exitosamente.", asignacionesCargadas),
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				MostrarAsignacion();
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al cargar el archivo: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
+	}
+
+	//private: System::Void btnExportarAsignacionesCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+	//	// Validar si hay datos para exportar
+	//	if (asignacionesPeliculasSalas == nullptr || asignacionesPeliculasSalas->Length == 0) {
+	//		MessageBox::Show("No hay asignaciones de películas/salas para exportar.",
+	//			"Advertencia",
+	//			MessageBoxButtons::OK,
+	//			MessageBoxIcon::Warning);
+	//		return;
+	//	}
+
+	//	SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+	//	saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+	//	saveFileDialog->Title = "Exportar asignaciones de películas/salas";
+	//	saveFileDialog->FileName = "AsignacionesPeliculasSalas_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
+
+	//	if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+	//		String^ filePath = saveFileDialog->FileName;
+	//		try {
+	//			StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+	//			// Escribir encabezados (consistentes con tu clase)
+	//			sw->WriteLine("Codigo;Pelicula;Sala;FechaEstreno;HoraFuncion");
+
+	//			// Escribir datos
+	//			for each (AsignacionPeliculaSala ^ asignacion in asignacionesPeliculasSalas) {
+	//				if (asignacion != nullptr && asignacion->PeliculaAsignada != nullptr && asignacion->SalaAsignada != nullptr) {
+	//					String^ linea = String::Format("{0};{1};{2};{3};{4}",
+	//						asignacion->Codigo,
+	//						asignacion->PeliculaAsignada->Nombre,  // Asume que Pelicula tiene propiedad Nombre
+	//						asignacion->SalaAsignada->Nombre,      // Asume que Sala tiene propiedad Nombre
+	//						asignacion->FechaEstreno.ToString("dd/MM/yyyy"),
+	//						asignacion->HoraFuncion);
+
+	//					sw->WriteLine(linea);
+	//				}
+	//			}
+
+	//			sw->Close();
+	//			MessageBox::Show("Asignaciones exportadas exitosamente a:\n" + filePath,
+	//				"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+	//		}
+	//		catch (Exception^ ex) {
+	//			MessageBox::Show("Error al exportar: " + ex->Message,
+	//				"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	//		}
+	//	}
+	//}
+
+	private: System::Void btnExportarAsignacionesCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+		// Validación robusta: array nulo, vacío o con todos elementos nulos
+		bool tieneDatosValidos = false;
+		if (asignacionesPeliculasSalas != nullptr && asignacionesPeliculasSalas->Length > 0) {
+			for each (AsignacionPeliculaSala ^ asignacion in asignacionesPeliculasSalas) {
+				if (asignacion != nullptr && asignacion->PeliculaAsignada != nullptr && asignacion->SalaAsignada != nullptr) {
+					tieneDatosValidos = true;
+					break;
+				}
+			}
+		}
+
+		if (!tieneDatosValidos) {
+			MessageBox::Show("No hay asignaciones válidas para exportar.\n"
+				"Verifique que existan datos y que tengan película y sala asignadas.",
+				"Advertencia",
+				MessageBoxButtons::OK,
+				MessageBoxIcon::Exclamation);
+			return;
+		}
+
+		SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+		saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		saveFileDialog->Title = "Exportar asignaciones de películas/salas";
+		saveFileDialog->FileName = "AsignacionesPeliculasSalas_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
+
+		if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = saveFileDialog->FileName;
+			try {
+				StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+				// Encabezados
+				sw->WriteLine("Codigo;Pelicula;Sala;FechaEstreno;HoraFuncion");
+
+				// Datos
+				int registrosExportados = 0;
+				for each (AsignacionPeliculaSala ^ asignacion in asignacionesPeliculasSalas) {
+					if (asignacion != nullptr && asignacion->PeliculaAsignada != nullptr && asignacion->SalaAsignada != nullptr) {
+						sw->WriteLine(
+							String::Format("{0};{1};{2};{3};{4}",
+								asignacion->Codigo,
+								asignacion->PeliculaAsignada->Nombre,
+								asignacion->SalaAsignada->Nombre,
+								asignacion->FechaEstreno.ToString("dd/MM/yyyy"),
+								asignacion->HoraFuncion)
+						);
+						registrosExportados++;
+					}
+				}
+
+				sw->Close();
+
+				if (registrosExportados == 0) {
+					File::Delete(filePath); // Eliminar archivo vacío
+					MessageBox::Show("No se exportaron registros válidos.",
+						"Advertencia",
+						MessageBoxButtons::OK,
+						MessageBoxIcon::Warning);
+				}
+				else {
+					MessageBox::Show(String::Format("Se exportaron {0} asignaciones exitosamente.", registrosExportados),
+						"Éxito",
+						MessageBoxButtons::OK,
+						MessageBoxIcon::Information);
+				}
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al exportar: " + ex->Message,
+					"Error",
+					MessageBoxButtons::OK,
+					MessageBoxIcon::Error);
+			}
+		}
+	}
+
 	};
 }

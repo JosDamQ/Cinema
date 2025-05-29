@@ -1,3 +1,8 @@
+/*
+	Josue Garcia 9490-24-4256
+	Fabian 
+*/
+
 #pragma once
 #include "ClaseCompraBoletos.h"
 #include "ClaseAsignacionPeliculasSalas.h"
@@ -41,6 +46,7 @@ namespace ProyectMovies {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^ colFechaCompra;
 	private: System::Windows::Forms::Button^ btnHTML;
 	private: System::Windows::Forms::Button^ btnCargaDatos;
+	private: System::Windows::Forms::Button^ btnDescargaDatos;
 
 
 
@@ -84,18 +90,6 @@ namespace ProyectMovies {
 		}
 
 		//Funcion agregar
-		/*void AgregarCompraBoleto
-		(
-			AsignacionPeliculaSala^ asignacion,
-			Cliente^ cliente,
-			DateTime fechaCompra
-		)
-		{
-			ultimoCodigo++;
-			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra);
-			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
-			MostrarComprasBoletos();
-		}*/
 		void AgregarCompraBoleto(AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra, int fila, int columna) {
 			if (asientoFilaSeleccionado == -1) {
 				MessageBox::Show("Seleccione un asiento.");
@@ -104,6 +98,22 @@ namespace ProyectMovies {
 
 			// Ocupar el asiento en la sala
 			asignacion->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado);
+
+			// Resto de la lógica de agregar compra...
+			ultimoCodigo++;
+			ComprasBoletos^ nuevaCompra = gcnew ComprasBoletos(ultimoCodigo, asignacion, cliente, fechaCompra, fila, columna);
+			comprasBoletos[ultimoCodigo - 1] = nuevaCompra;
+			MostrarComprasBoletos();
+		}
+
+		void AgregarCompraBoletoCargaData(AsignacionPeliculaSala^ asignacion, Cliente^ cliente, DateTime fechaCompra, int fila, int columna) {
+			/*if (asientoFilaSeleccionado == -1) {
+				MessageBox::Show("Seleccione un asiento.");
+				return;
+			}*/
+
+			// Ocupar el asiento en la sala
+			//asignacion->SalaAsignada->OcuparAsiento(asientoFilaSeleccionado, asientoColumnaSeleccionado);
 
 			// Resto de la lógica de agregar compra...
 			ultimoCodigo++;
@@ -157,6 +167,7 @@ namespace ProyectMovies {
 				btnEliminar->Text = "Cancelar";
 				btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
 			}
 			else {
 				btnAgregar->Text = "Agregar";
@@ -165,6 +176,7 @@ namespace ProyectMovies {
 				btnEliminar->Enabled = true;
 				btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
+				btnDescargaDatos->Enabled = true;
 			}
 		}
 
@@ -374,6 +386,7 @@ namespace ProyectMovies {
 			this->panelAsientos = (gcnew System::Windows::Forms::Panel());
 			this->btnHTML = (gcnew System::Windows::Forms::Button());
 			this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
+			this->btnDescargaDatos = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblCompras))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -529,7 +542,7 @@ namespace ProyectMovies {
 			// 
 			// btnAgregar
 			// 
-			this->btnAgregar->Location = System::Drawing::Point(287, 196);
+			this->btnAgregar->Location = System::Drawing::Point(197, 196);
 			this->btnAgregar->Name = L"btnAgregar";
 			this->btnAgregar->Size = System::Drawing::Size(112, 43);
 			this->btnAgregar->TabIndex = 9;
@@ -539,7 +552,7 @@ namespace ProyectMovies {
 			// 
 			// btnEliminar
 			// 
-			this->btnEliminar->Location = System::Drawing::Point(465, 196);
+			this->btnEliminar->Location = System::Drawing::Point(379, 196);
 			this->btnEliminar->Name = L"btnEliminar";
 			this->btnEliminar->Size = System::Drawing::Size(112, 43);
 			this->btnEliminar->TabIndex = 10;
@@ -557,7 +570,7 @@ namespace ProyectMovies {
 			// 
 			// btnHTML
 			// 
-			this->btnHTML->Location = System::Drawing::Point(639, 196);
+			this->btnHTML->Location = System::Drawing::Point(558, 196);
 			this->btnHTML->Name = L"btnHTML";
 			this->btnHTML->Size = System::Drawing::Size(112, 43);
 			this->btnHTML->TabIndex = 12;
@@ -567,18 +580,30 @@ namespace ProyectMovies {
 			// 
 			// btnCargaDatos
 			// 
-			this->btnCargaDatos->Location = System::Drawing::Point(802, 189);
+			this->btnCargaDatos->Location = System::Drawing::Point(734, 189);
 			this->btnCargaDatos->Name = L"btnCargaDatos";
 			this->btnCargaDatos->Size = System::Drawing::Size(110, 56);
 			this->btnCargaDatos->TabIndex = 13;
 			this->btnCargaDatos->Text = L"Carga de Datos";
 			this->btnCargaDatos->UseVisualStyleBackColor = true;
+			this->btnCargaDatos->Click += gcnew System::EventHandler(this, &CompraBoletos::btnCargaDatos_Click);
+			// 
+			// btnDescargaDatos
+			// 
+			this->btnDescargaDatos->Location = System::Drawing::Point(881, 189);
+			this->btnDescargaDatos->Name = L"btnDescargaDatos";
+			this->btnDescargaDatos->Size = System::Drawing::Size(110, 56);
+			this->btnDescargaDatos->TabIndex = 14;
+			this->btnDescargaDatos->Text = L"Descarga de Datos";
+			this->btnDescargaDatos->UseVisualStyleBackColor = true;
+			this->btnDescargaDatos->Click += gcnew System::EventHandler(this, &CompraBoletos::btnExportarCSV_Click);
 			// 
 			// CompraBoletos
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1684, 1031);
+			this->Controls->Add(this->btnDescargaDatos);
 			this->Controls->Add(this->btnCargaDatos);
 			this->Controls->Add(this->btnHTML);
 			this->Controls->Add(this->btnEliminar);
@@ -620,8 +645,6 @@ namespace ProyectMovies {
 				}
 
 				if (compraSeleccionadaObj != nullptr) {
-					// Cargar los datos en los controles
-					// Seleccionar la función correspondiente en el ComboBox
 					for (int i = 0; i < cboFuncion->Items->Count; i++) {
 						AsignacionPeliculaSala^ asignacion = dynamic_cast<AsignacionPeliculaSala^>(cboFuncion->Items[i]);
 						if (asignacion != nullptr && asignacion == compraSeleccionadaObj->AsignacionCompra) {
@@ -641,10 +664,6 @@ namespace ProyectMovies {
 
 					// Establecer la fecha de compra
 					dateFecha->Value = compraSeleccionadaObj->FechaCompra;
-
-					// Cambiar al modo de edición (si lo implementas)
-					// estadoActual = ModoFormulario::Editar;
-					// ActualizarEstadoFormulario();
 				}
 			}
 		}
@@ -811,6 +830,210 @@ namespace ProyectMovies {
 		}
 
 		GenerarReporteHTML();
+	}
+
+	private: System::Void btnCargaDatos_Click(System::Object^ sender, System::EventArgs^ e) {
+		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
+		openFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		openFileDialog->Title = "Seleccionar archivo CSV de compras";
+
+		if (openFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = openFileDialog->FileName;
+			try {
+				StreamReader^ sr = gcnew StreamReader(filePath, Encoding::UTF8);
+				String^ line;
+				bool isFirstLine = true;
+				int lineNumber = 0;
+				int comprasCargadas = 0;
+
+				while ((line = sr->ReadLine()) != nullptr) {
+					lineNumber++;
+					if (isFirstLine) {
+						isFirstLine = false;
+						continue;
+					}
+
+					array<String^>^ campos = line->Split(';');
+
+					// Validación básica de campos (AsignaciónID;ClienteID;Fecha;Fila;Columna)
+					if (campos->Length < 5) {
+						MessageBox::Show(String::Format("Línea {0}: Formato incorrecto. Se esperaban 5 campos, se encontraron {1}",
+							lineNumber, campos->Length),
+							"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+						continue;
+					}
+
+					try {
+						// Buscar asignación por ID
+						int asignacionId = Convert::ToInt32(campos[0]->Trim());
+						AsignacionPeliculaSala^ asignacion = nullptr;
+						for each(AsignacionPeliculaSala ^ a in listaAsignaciones) {
+							if (a != nullptr && a->Codigo == asignacionId) {
+								asignacion = a;
+								break;
+							}
+						}
+
+						if (asignacion == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Asignación con ID {1} no encontrada", lineNumber, asignacionId),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Buscar cliente por ID
+						int clienteId = Convert::ToInt32(campos[1]->Trim());
+						Cliente^ cliente = nullptr;
+						for each(Cliente ^ c in listaClientes) {
+							if (c != nullptr && c->Codigo == clienteId) {
+								cliente = c;
+								break;
+							}
+						}
+
+						if (cliente == nullptr) {
+							MessageBox::Show(String::Format("Línea {0}: Cliente con ID {1} no encontrado", lineNumber, clienteId),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Procesar fecha
+						DateTime fechaCompra;
+						if (!DateTime::TryParse(campos[2]->Trim(), fechaCompra)) {
+							MessageBox::Show(String::Format("Línea {0}: Formato de fecha inválido", lineNumber),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Procesar asiento
+						int fila = Convert::ToInt32(campos[3]->Trim());
+						int columna = Convert::ToInt32(campos[4]->Trim());
+
+						// Validar disponibilidad de asiento (opcional)
+						if (!asignacion->SalaAsignada->Asientos[fila][columna]) {
+							MessageBox::Show(String::Format("Línea {0}: Asiento [{1},{2}] ya está ocupado", lineNumber, fila, columna),
+								"Advertencia", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+							continue;
+						}
+
+						// Crear la compra y ocupar el asiento
+						AgregarCompraBoletoCargaData(asignacion, cliente, fechaCompra, fila, columna);
+						asignacion->SalaAsignada->OcuparAsiento(fila, columna);
+						comprasCargadas++;
+						MostrarComprasBoletos();
+					}
+					catch (Exception^ ex) {
+						MessageBox::Show(String::Format("Error en línea {0}: {1}", lineNumber, ex->Message),
+							"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+					}
+				}
+				sr->Close();
+				MessageBox::Show(String::Format("Se cargaron {0} compras exitosamente.", comprasCargadas),
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				MostrarComprasBoletos();
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al cargar el archivo: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+			MostrarComprasBoletos();
+		}
+		MostrarComprasBoletos();
+	};
+	/*private: System::Void btnExportarCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+		SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+		saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		saveFileDialog->Title = "Exportar compras a CSV";
+		saveFileDialog->FileName = "ComprasBoletos_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
+
+		if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = saveFileDialog->FileName;
+			try {
+				StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+				// Escribir encabezados
+				sw->WriteLine("AsignacionID;ClienteID;FechaCompra;FilaAsiento;ColumnaAsiento");
+
+				// Escribir datos
+				for each(ComprasBoletos ^ compra in comprasBoletos) {
+					if (compra != nullptr) {
+						String^ linea = String::Format("{0};{1};{2};{3};{4}",
+							compra->AsignacionCompra->Codigo,
+							compra->ClienteCompra->Codigo,
+							compra->FechaCompra.ToString("dd/MM/yyyy"),
+							compra->FilaAsiento,
+							compra->ColumnaAsiento);
+
+						sw->WriteLine(linea);
+					}
+				}
+
+				sw->Close();
+				MessageBox::Show("Compras exportadas exitosamente a: " + filePath,
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al exportar: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
+	}*/
+
+	private: System::Void btnExportarCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+		// Validar si hay datos para exportar
+		bool tieneDatos = false;
+		for each (ComprasBoletos ^ compra in comprasBoletos) {
+			if (compra != nullptr) {
+				tieneDatos = true;
+				break;
+			}
+		}
+
+		if (!tieneDatos) {
+			MessageBox::Show("No hay datos de compras para exportar.",
+				"Advertencia",
+				MessageBoxButtons::OK,
+				MessageBoxIcon::Warning);
+			return;
+		}
+
+		SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+		saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+		saveFileDialog->Title = "Exportar compras a CSV";
+		saveFileDialog->FileName = "ComprasBoletos_" + DateTime::Now.ToString("yyyyMMdd") + ".csv";
+
+		if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+			String^ filePath = saveFileDialog->FileName;
+			try {
+				StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+				// Escribir encabezados
+				sw->WriteLine("AsignacionID;ClienteID;FechaCompra;FilaAsiento;ColumnaAsiento");
+
+				// Escribir datos
+				for each (ComprasBoletos ^ compra in comprasBoletos) {
+					if (compra != nullptr) {
+						String^ linea = String::Format("{0};{1};{2};{3};{4};{5};{6}",
+							compra->AsignacionCompra->Codigo,
+							compra->AsignacionCompra->PeliculaAsignada->Nombre,
+							compra->ClienteCompra->Codigo,
+							compra->ClienteCompra->Nombre,
+							compra->FechaCompra.ToString("dd/MM/yyyy"),
+							compra->FilaAsiento,
+							compra->ColumnaAsiento);
+
+						sw->WriteLine(linea);
+					}
+				}
+
+				sw->Close();
+				MessageBox::Show("Compras exportadas exitosamente a: " + filePath,
+					"Éxito", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			}
+			catch (Exception^ ex) {
+				MessageBox::Show("Error al exportar: " + ex->Message,
+					"Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+			}
+		}
 	}
 	};
 }

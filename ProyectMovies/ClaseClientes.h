@@ -15,12 +15,11 @@ namespace ProyectMovies {
 		DateTime^ fechaNacimiento;
 		String^ telefono;
 		String^ email;
-		//User^ usuario;
 
 
 	public:
 		// Constructor
-		Cliente(int codigo, String^ nombre, String^ apellido, String^ dpi, DateTime^ fechaNacimiento, String^ telefono, String^ email/*, User^ usuario*/)
+		Cliente(int codigo, String^ nombre, String^ apellido, String^ dpi, DateTime^ fechaNacimiento, String^ telefono, String^ email)
 		{
 			this->codigo = codigo;
 			this->nombre = nombre;
@@ -29,9 +28,6 @@ namespace ProyectMovies {
 			this->fechaNacimiento = fechaNacimiento;
 			this->telefono = telefono;
 			this->email = email;
-
-			//Solo test
-			//this->usuario = usuario;
 		}
 		// Getters y Setters
 		property int Codigo
@@ -69,10 +65,5 @@ namespace ProyectMovies {
 			String^ get() { return email; }
 			void set(String^ value) { email = value; }
 		}
-		/*property User^ Usuario
-		{
-			User^ get() { return usuario; }
-			void set(User^ value) { usuario = value; }
-		}*/
 	};
 }

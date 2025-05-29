@@ -20,6 +20,7 @@ namespace ProyectMovies {
         int userSeleccionado;
 
     private: System::Windows::Forms::Button^ btnCargaDatos;
+    private: System::Windows::Forms::Button^ btnDescargaDatos;
 
         enum class ModoFormulario {
             Ninguno,
@@ -131,15 +132,15 @@ namespace ProyectMovies {
                 btnAgregar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnEditar->Enabled = false;
-				//btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
             }
             else if (estadoActual == ModoFormulario::Editar) {
                 btnEditar->Text = "Confirmar";
                 btnEliminar->Text = "Cancelar";
                 btnAgregar->Enabled = false;
-				//btnHTML->Enabled = false;
 				btnCargaDatos->Enabled = false;
+				btnDescargaDatos->Enabled = false;
             }
             else {
                 btnAgregar->Text = "Agregar";
@@ -148,8 +149,8 @@ namespace ProyectMovies {
                 btnAgregar->Enabled = true;
                 btnEliminar->Enabled = true;
                 btnEditar->Enabled = true;
-				//btnHTML->Enabled = true;
 				btnCargaDatos->Enabled = true;
+				btnDescargaDatos->Enabled = true;
             }
         }
 
@@ -239,6 +240,7 @@ namespace ProyectMovies {
             this->btnEditar = (gcnew System::Windows::Forms::Button());
             this->btnEliminar = (gcnew System::Windows::Forms::Button());
             this->btnCargaDatos = (gcnew System::Windows::Forms::Button());
+            this->btnDescargaDatos = (gcnew System::Windows::Forms::Button());
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->tblUsuarios))->BeginInit();
             this->SuspendLayout();
             // 
@@ -497,11 +499,22 @@ namespace ProyectMovies {
             this->btnCargaDatos->UseVisualStyleBackColor = true;
             this->btnCargaDatos->Click += gcnew System::EventHandler(this, &Usuarios::btnCargaDatos_Click);
             // 
+            // btnDescargaDatos
+            // 
+            this->btnDescargaDatos->Location = System::Drawing::Point(863, 153);
+            this->btnDescargaDatos->Name = L"btnDescargaDatos";
+            this->btnDescargaDatos->Size = System::Drawing::Size(112, 51);
+            this->btnDescargaDatos->TabIndex = 25;
+            this->btnDescargaDatos->Text = L"Descarga de datos";
+            this->btnDescargaDatos->UseVisualStyleBackColor = true;
+			this->btnDescargaDatos->Click += gcnew System::EventHandler(this, &Usuarios::btnExportarUsuariosCSV_Click);
+            // 
             // Usuarios
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(1202, 708);
+            this->Controls->Add(this->btnDescargaDatos);
             this->Controls->Add(this->btnCargaDatos);
             this->Controls->Add(this->btnEliminar);
             this->Controls->Add(this->btnEditar);
@@ -771,6 +784,66 @@ namespace ProyectMovies {
                 }
             }
 
+        }
+
+        System::Void btnExportarUsuariosCSV_Click(System::Object^ sender, System::EventArgs^ e) {
+            if (usuarios == nullptr || usuarios->Count == 0) {
+                MessageBox::Show("No hay usuarios registrados para exportar.",
+                    "Datos no encontrados",
+                    MessageBoxButtons::OK,
+                    MessageBoxIcon::Warning);
+                return;
+            }
+
+            SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();
+            saveFileDialog->Filter = "Archivos CSV (*.csv)|*.csv";
+            saveFileDialog->Title = "Exportar usuarios a CSV";
+            saveFileDialog->FileName = "Usuarios_" + DateTime::Now.ToString("yyyyMMdd_HHmmss") + ".csv";
+
+            if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+                String^ filePath = saveFileDialog->FileName;
+                try {
+                    StreamWriter^ sw = gcnew StreamWriter(filePath, false, Encoding::UTF8);
+
+                    // Encabezados
+                    sw->WriteLine("Username;Password;Nombre;Apellido;DPI;Telefono;Email;Direccion;Role");
+
+                    int registrosExportados = 0;
+                    for each(User ^ usuario in usuarios) {
+                        if (usuario != nullptr) {
+                            // Convertir Role a string (admin/user)
+                            String^ roleStr = usuario->UserRole == Role::Admin ? "admin" : "user";
+
+                            sw->WriteLine(
+                                String::Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
+                                    usuario->Username,
+                                    usuario->Password,
+                                    usuario->Nombre,
+                                    usuario->Apellido,
+                                    usuario->DPI,
+                                    usuario->Telefono,
+                                    usuario->Email,
+                                    usuario->Direccion,
+                                    roleStr
+                                )
+                            );
+                            registrosExportados++;
+                        }
+                    }
+                    sw->Close();
+
+                    MessageBox::Show(String::Format("Se exportaron {0} usuarios exitosamente.", registrosExportados),
+                        "Éxito",
+                        MessageBoxButtons::OK,
+                        MessageBoxIcon::Information);
+                }
+                catch (Exception^ ex) {
+                    MessageBox::Show("Error al exportar: " + ex->Message,
+                        "Error",
+                        MessageBoxButtons::OK,
+                        MessageBoxIcon::Error);
+                }
+            }
         }
     };
 }
