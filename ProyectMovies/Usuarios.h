@@ -395,6 +395,7 @@ namespace ProyectMovies {
             // 
             // tblUsuarios
             // 
+            this->tblUsuarios->AllowUserToAddRows = false;
             this->tblUsuarios->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
             this->tblUsuarios->Columns->AddRange(gcnew cli::array< System::Windows::Forms::DataGridViewColumn^  >(10) {
                 this->colCodigo,
@@ -407,7 +408,6 @@ namespace ProyectMovies {
             this->tblUsuarios->Size = System::Drawing::Size(1106, 434);
             this->tblUsuarios->TabIndex = 19;
             this->tblUsuarios->CellClick += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &Usuarios::tblUsuarios_CellClick);
-            this->tblUsuarios->AllowUserToAddRows = false;
             // 
             // colCodigo
             // 
@@ -492,9 +492,9 @@ namespace ProyectMovies {
             // 
             // btnCargaDatos
             // 
-            this->btnCargaDatos->Location = System::Drawing::Point(722, 153);
+            this->btnCargaDatos->Location = System::Drawing::Point(711, 153);
             this->btnCargaDatos->Name = L"btnCargaDatos";
-            this->btnCargaDatos->Size = System::Drawing::Size(112, 51);
+            this->btnCargaDatos->Size = System::Drawing::Size(135, 51);
             this->btnCargaDatos->TabIndex = 24;
             this->btnCargaDatos->Text = L"Carga de datos";
             this->btnCargaDatos->UseVisualStyleBackColor = true;
@@ -502,13 +502,13 @@ namespace ProyectMovies {
             // 
             // btnDescargaDatos
             // 
-            this->btnDescargaDatos->Location = System::Drawing::Point(863, 153);
+            this->btnDescargaDatos->Location = System::Drawing::Point(875, 153);
             this->btnDescargaDatos->Name = L"btnDescargaDatos";
-            this->btnDescargaDatos->Size = System::Drawing::Size(112, 51);
+            this->btnDescargaDatos->Size = System::Drawing::Size(163, 51);
             this->btnDescargaDatos->TabIndex = 25;
             this->btnDescargaDatos->Text = L"Descarga de datos";
             this->btnDescargaDatos->UseVisualStyleBackColor = true;
-			this->btnDescargaDatos->Click += gcnew System::EventHandler(this, &Usuarios::btnExportarUsuariosCSV_Click);
+            this->btnDescargaDatos->Click += gcnew System::EventHandler(this, &Usuarios::btnExportarUsuariosCSV_Click);
             // 
             // Usuarios
             // 
