@@ -906,8 +906,8 @@ namespace ProyectMovies {
 						}
 
 						// Procesar asiento
-						int fila = Convert::ToInt32(campos[3]->Trim());
-						int columna = Convert::ToInt32(campos[4]->Trim());
+						int fila = Convert::ToInt32(campos[3]->Trim()) - 1;
+						int columna = Convert::ToInt32(campos[4]->Trim()) - 1;
 
 						// Validar disponibilidad de asiento (opcional)
 						if (!asignacion->SalaAsignada->Asientos[fila][columna]) {
